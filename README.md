@@ -1,5 +1,5 @@
 # snowstorm
-ServiceNow library and cross platform REST API browser UI
+ServiceNow library and UI
 
 Key characteristics:
 - Async capable
