@@ -53,7 +53,7 @@ class FetchQueue:
 
 
 class Session:
-    base_url = "https://dev49212.service-now.com"
+    base_url = ""
     connection = None
 
     def __init__(self, path):
@@ -68,7 +68,7 @@ class Session:
 
     async def __aenter__(self):
         self.connection = aiohttp.ClientSession(
-            auth=aiohttp.helpers.BasicAuth("admin", "Bajskorv123!"),
+            auth=aiohttp.helpers.BasicAuth(),
         )
 
         return self
