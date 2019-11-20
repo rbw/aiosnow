@@ -5,7 +5,7 @@ from urllib.parse import urljoin, urlencode, parse_qs
 import aiohttp
 import ujson
 
-from marshmallow import Schema, fields, EXCLUDE, post_load
+from marshmallow import Schema, fields, EXCLUDE
 
 
 class Record(Schema):
