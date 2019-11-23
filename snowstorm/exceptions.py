@@ -1,0 +1,3 @@
+class SnowstormException(Exception):
+    pass
+

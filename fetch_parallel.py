@@ -12,8 +12,9 @@ class Incident(ResourceSchema):
 
 async def get_many():
     async with Resource(Incident) as incidents:
-        async for record in incidents.find({"test": "asdf"}).all(limit=1):
-            print(record)
+        async for record in incidents.find({"test": "asdf"}).all():
+            #print(record)
+            pass
 
 
 if __name__ == "__main__":
