@@ -22,7 +22,11 @@ class SchemaOpts(marshmallow.schema.SchemaOpts):
         self.unknown = marshmallow.EXCLUDE
 
 
-class ResourceSchema(marshmallow.Schema):
+class Schema(marshmallow.Schema):
     OPTIONS_CLASS = SchemaOpts
 
-    __location__ = None
+    @property
+    def __location__(self):
+        raise NotImplementedError
+
+    __resolve__ = True

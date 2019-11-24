@@ -13,5 +13,3 @@ class Finder:
             async for content in stream.read():
                 for item in self.schema.load(content, many=True):
                     yield item
-
-                print("CHUNK!")

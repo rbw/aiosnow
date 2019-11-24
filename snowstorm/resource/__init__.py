@@ -5,20 +5,22 @@ from marshmallow import fields
 
 from snowstorm.query import Finder
 
-from .schema import ResourceSchema, SchemaOpts
+from .schema import Schema, SchemaOpts
 
 
 class Resource:
-    base_url = ""
     connection = None
 
-    def __init__(self, schema_cls):
+    def __init__(self, schema_cls, config):
+        self.config = config
         self.schema = schema_cls()
-        self.url = urljoin(self.base_url, schema_cls.__location__)
+        self.fields = self.schema.declared_fields.keys()
+        self.url = urljoin(config["base_url"], schema_cls.__location__)
 
     async def __aenter__(self):
+        config = self.config
         self.connection = aiohttp.ClientSession(
-            auth=aiohttp.helpers.BasicAuth(),
+            auth=aiohttp.helpers.BasicAuth(config["username"], config["password"]),
         )
 
         return self
@@ -28,4 +30,3 @@ class Resource:
 
     def find(self, query):
         return Finder(self, query)
-
