@@ -17,13 +17,10 @@ class Stream:
 
     @property
     def _page_size(self):
-        if self._limit <= self._chunk_size:
-            return self._limit
-        elif self._offset + self._chunk_size >= self._limit:
-            # Reduce last page to whats requested
+        if self._offset + self._chunk_size >= self._limit:
             return self._limit - self._offset
-        else:
-            return self._chunk_size
+
+        return self._chunk_size
 
     @property
     def _url(self):
