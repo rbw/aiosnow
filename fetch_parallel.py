@@ -10,7 +10,7 @@ class Incident(Schema):
 
     sys_id = fields.String(required=False)
     number = fields.String(required=False)
-    short_description = fields.String(attribute="text")
+    short_description = fields.String()
 
 
 async def main():
@@ -29,11 +29,9 @@ async def main():
             print(item)
 
         await r.create(
-            sys_id="asdf",
-            number="asdf"
+            short_description="test"
         )
 
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    asyncio.run(main())

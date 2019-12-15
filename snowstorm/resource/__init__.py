@@ -40,7 +40,7 @@ class Resource:
         if method == "GET":
             params["sysparm_fields"] = ",".join(self.fields)
 
-        return f"{self.url_base}{urlencode(params) if params else ''}"
+        return f"{self.url_base}{'?' + urlencode(params) if params else ''}"
 
     def find(self, query) -> Selector:
         return Selector(self, query)
@@ -50,5 +50,7 @@ class Resource:
             payload = self.schema_cls(unknown=marshmallow.RAISE).load(kwargs)
         except marshmallow.exceptions.ValidationError as e:
             raise PayloadValidationError(e)
+
+        print(payload)
 
         return

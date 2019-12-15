@@ -12,3 +12,7 @@ class NoSchemaFields(SnowstormException):
 
 class PayloadValidationError(SnowstormException):
     pass
+
+
+class ErrorResponse(SnowstormException):
+    pass

@@ -12,6 +12,5 @@ class Selector:
         stream = Stream(self.resource, limit, offset, chunk_size)
         while not stream.exhausted:
             async for content in stream.read():
-                print(content)
                 for item in self.schema.load(content, many=True):
                     yield item

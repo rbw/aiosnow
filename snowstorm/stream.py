@@ -2,7 +2,8 @@ from urllib.parse import urlencode, parse_qs
 
 import ujson
 
-from snowstorm.exceptions import StreamExhausted
+from snowstorm.exceptions import StreamExhausted, ErrorResponse
+from snowstorm.schemas import SnowErrorText
 
 
 class Stream:
@@ -47,8 +48,14 @@ class Stream:
 
     async def read(self, **kwargs):
         response = await self._connection.get(self._url, **kwargs)
-        print(await response.text())
-        yield ujson.loads(await response.text()).get("result")
+        content = ujson.loads(await response.text())
+
+        if "error" in content:
+            err = SnowErrorText().load(content["error"])
+            text = f"{err['message'] ({err['detail']})}" if err["detail"] else err["message"]
+            raise ErrorResponse(text)
+
+        yield content.get("result")
 
         try:
             self._prepare_next(response.links)
