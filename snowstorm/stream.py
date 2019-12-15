@@ -8,12 +8,14 @@ from snowstorm.exceptions import StreamExhausted
 class Stream:
     exhausted = False
 
-    def __init__(self, session, limit, offset, chunk_size):
-        self._connection = session.connection
-        self._session = session
+    def __init__(self, resource, limit, offset, chunk_size):
+        self._connection = resource.connection
+        self._resource = resource
         self._limit = limit
         self._offset = offset
         self._chunk_size = chunk_size
+        self._fields = None
+        self._url_start = resource.get_url()
 
     @property
     def _page_size(self):
@@ -24,12 +26,12 @@ class Stream:
 
     @property
     def _url(self):
-        query = urlencode({
-            "sysparm_limit": self._page_size,
-            "sysparm_offset": self._offset
-        })
+        params = dict(
+            sysparm_limit=self._page_size,
+            sysparm_offset=self._offset,
+        )
 
-        return f"{self._session.url}?{query}"
+        return f"{self._url_start}&{urlencode(params)}"
 
     def _prepare_next(self, links):
         if "next" in links:
@@ -45,6 +47,7 @@ class Stream:
 
     async def read(self, **kwargs):
         response = await self._connection.get(self._url, **kwargs)
+        print(await response.text())
         yield ujson.loads(await response.text()).get("result")
 
         try:

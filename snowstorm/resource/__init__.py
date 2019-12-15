@@ -1,11 +1,14 @@
 import aiohttp
 
-from urllib.parse import urljoin
-from marshmallow import fields
+from urllib.parse import urljoin, urlencode
+import marshmallow
 
-from snowstorm.query import Finder
+from snowstorm.selector import Selector
+from snowstorm.exceptions import NoSchemaFields, PayloadValidationError
 
 from .schema import Schema, SchemaOpts
+
+fields = marshmallow.fields
 
 
 class Resource:
@@ -13,9 +16,12 @@ class Resource:
 
     def __init__(self, schema_cls, config):
         self.config = config
-        self.schema = schema_cls()
-        self.fields = self.schema.declared_fields.keys()
-        self.url = urljoin(config["base_url"], schema_cls.__location__)
+        self.schema_cls = schema_cls
+        self.fields = getattr(self.schema_cls, "_declared_fields", None)
+        if not self.fields:
+            raise NoSchemaFields(f"Schema {self.schema_cls} lacks fields definitions")
+
+        self.url_base = urljoin(self.config["base_url"], schema_cls.__location__)
 
     async def __aenter__(self):
         config = self.config
@@ -28,5 +34,21 @@ class Resource:
     async def __aexit__(self, exc_type, exc, tb):
         await self.connection.close()
 
-    def find(self, query):
-        return Finder(self, query)
+    def get_url(self, method="GET"):
+        params = {}
+
+        if method == "GET":
+            params["sysparm_fields"] = ",".join(self.fields)
+
+        return f"{self.url_base}{urlencode(params) if params else ''}"
+
+    def find(self, query) -> Selector:
+        return Selector(self, query)
+
+    async def create(self, **kwargs):
+        try:
+            payload = self.schema_cls(unknown=marshmallow.RAISE).load(kwargs)
+        except marshmallow.exceptions.ValidationError as e:
+            raise PayloadValidationError(e)
+
+        return

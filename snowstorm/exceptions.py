@@ -2,5 +2,13 @@ class SnowstormException(Exception):
     pass
 
 
-class StreamExhausted(Exception):
+class StreamExhausted(SnowstormException):
+    pass
+
+
+class NoSchemaFields(SnowstormException):
+    pass
+
+
+class PayloadValidationError(SnowstormException):
     pass
