@@ -14,5 +14,13 @@ class PayloadValidationError(SnowstormException):
     pass
 
 
+class UnexpectedContentType(SnowstormException):
+    pass
+
+
 class ErrorResponse(SnowstormException):
+    pass
+
+
+class QueryTypeError(SnowstormException):
     pass

@@ -6,9 +6,8 @@ import marshmallow
 from snowstorm.selector import Selector
 from snowstorm.exceptions import NoSchemaFields, PayloadValidationError
 
-from .schema import Schema, SchemaOpts
-
-fields = marshmallow.fields
+from .schema import Schema, SchemaOpts, String
+from .query import QueryBuilder
 
 
 class Resource:
@@ -17,7 +16,7 @@ class Resource:
     def __init__(self, schema_cls, config):
         self.config = config
         self.schema_cls = schema_cls
-        self.fields = getattr(self.schema_cls, "_declared_fields", None)
+        self.fields = schema_cls._declared_fields
         if not self.fields:
             raise NoSchemaFields(f"Schema {self.schema_cls} lacks fields definitions")
 
@@ -42,7 +41,13 @@ class Resource:
 
         return f"{self.url_base}{'?' + urlencode(params) if params else ''}"
 
-    def find(self, query) -> Selector:
+    def build_query(self, query):
+        return QueryBuilder(query)
+
+    def select(self, query) -> Selector:
+        return Selector(self, query)
+
+    def select_raw(self, query) -> Selector:
         return Selector(self, query)
 
     async def create(self, **kwargs):
