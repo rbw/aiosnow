@@ -19,6 +19,7 @@ python = "^3.6"
 aiohttp = "^3.6.2"
 marshmallow = "^3.2.2"
 ujson = "^1.35"
+pytz = "^2019.3"
 
 [build-system]
 requires = ["poetry>=0.12"]
