@@ -6,7 +6,7 @@ import marshmallow
 from snowstorm.selector import Selector
 from snowstorm.exceptions import NoSchemaFields, PayloadValidationError
 
-from .schema import Schema, SchemaOpts, Text, TextField
+from .schema import Schema, SchemaOpts, Text
 from .operators import LogicalOperator, StringOperator
 from .query import QueryBuilder
 
@@ -45,11 +45,6 @@ class Resource:
 
     def build_query(self, condition):
         builder = QueryBuilder(condition)
-        for name, field in self.fields:
-            # print(field)
-            print(name)
-            # setattr(self.schema_cls, name, TextField())
-
         return builder
 
     def select(self, query) -> Selector:

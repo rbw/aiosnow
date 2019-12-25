@@ -5,62 +5,43 @@ from .operators import LogicalOperator
 
 class QueryBuilder:
     def __init__(self, root):
-        self.tokens = root.tokens
+        self.conditions = root.instances
 
     @property
     def sysparms(self):
-        query = ""
-        print(self.tokens)
-
-        for token in self.tokens:
-            print(token.__dict__)
-
-        """if isinstance(token, LogicalOperator):
-            query += token.value
-        elif isinstance(token, tuple):
-            for k in token:
-                if isinstance(k, StringOperator):
-                    query += k.value
-                else:
-                    query += k"""
-
-        return query
+        return "".join([c.__str__ for c in self.conditions])
 
 
 class Condition:
-    op_conditional = None
-    op_logical = None
     value = None
+    instances = []
 
-    def __init__(self, key, condition, value=None):
-        self.key = key
-        self.condition = condition
-        self.value = value
+    def __init__(self, key, operator, value=None):
+        self.operand_left = key
+        self.operand_right = value
+        self.operator_conditional = operator
+        self.operator_logical = None
+        self.instances.append(self)
 
     @property
-    def __dict__(self):
-        return dict(
-            logical=self.op_logical,
-            conditional=self.op_conditional,
-            key=self.key,
-            value=self.value
+    def __str__(self):
+        return (
+            self.operand_left +
+            self.operator_conditional.value +
+            self.operand_right +
+            (self.operator_logical.value if self.operator_logical else "")
         )
 
-    tokens = []
-
-    def _push_condition(self):
-        self.tokens.append(self)
-
     def __and__(self, cond):
-        self.op_logical = LogicalOperator.AND
+        self.operator_logical = LogicalOperator.AND
         return cond
 
     def __or__(self, cond):
-        self.op_logical = LogicalOperator.OR
+        self.operator_logical = LogicalOperator.OR
         return cond
 
     def __xor__(self, cond):
-        self.op_logical = LogicalOperator.NQ
+        self.operator_logical = LogicalOperator.NQ
         return cond
 
     def eq(self, value):
