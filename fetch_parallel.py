@@ -12,12 +12,6 @@ class Incident(Schema):
     number = Text(required=False)
     short_description = Text()
 
-"""
-
-
-
-"""
-
 
 async def main():
     config = dict(
