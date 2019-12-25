@@ -22,21 +22,15 @@ class Incident(Schema):
 async def main():
     config = dict(
         base_url="https://dev49212.service-now.com",
-        username="admin",
-        password="Bajskorv123!"
+        username="",
+        password=""
     )
 
     snow = Snowstorm(config)
 
     async with snow.resource(Incident) as r:
-        query = r.build_query(
-            Incident.number.eq("INC0000001") &
-            Incident.number.eq("INC0000002") |
-            Incident.sys_id.eq("INC0000003") ^
-            Incident.sys_id.eq("INC0000004")
-        )
-
-        print(query.sysparms)
+        query = r.build_query(Incident.number.eq("INC0000001") & Incident.sys_id.eq("INC0000002") | Incident.sys_id.eq("INC0000003"))
+        print(query.raw)
 
         #async for item in r.select(query).all(limit=1, offset=0, chunk_size=5):
         #    print(item)
