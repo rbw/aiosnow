@@ -1,4 +1,4 @@
-from .resource import Resource, Schema, String
+from .resource import Resource, Schema
 
 
 class Snowstorm:

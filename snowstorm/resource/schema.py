@@ -1,22 +1,23 @@
 import marshmallow
 import ujson
 
-from .query import QueryBuilder
+from .operators import StringOperator
+from .query import Condition
 
 _fields = marshmallow.fields
 
 
-class QueryMeta(type):
-    _instances = {}
+class TextField(marshmallow.fields.String):
+    operator = StringOperator
 
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(QueryMeta, cls).__call__(*args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(TextField, self).__init__(*args, **kwargs)
 
-        return cls._instances[cls]
+    def eq(self, value):
+        return Condition(self.name, StringOperator.EQUALS, value)
 
 
-class String(_fields.String, QueryBuilder):
+class Text(TextField):
     pass
 
 
@@ -30,16 +31,7 @@ class SchemaOpts(marshmallow.schema.SchemaOpts):
         self.unknown = marshmallow.EXCLUDE
 
 
-class SchemaMeta(marshmallow.schema.SchemaMeta):
-    def __new__(mcs, name, bases, attrs):
-        cls = super().__new__(mcs, name, bases, attrs)
-        for name, field in cls._declared_fields.items():
-            setattr(cls, name, QueryBuilder(name))
-
-        return cls
-
-
-class Schema(marshmallow.Schema, metaclass=SchemaMeta):
+class Schema(marshmallow.Schema):
     OPTIONS_CLASS = SchemaOpts
 
     @property
