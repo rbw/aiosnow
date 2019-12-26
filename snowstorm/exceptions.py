@@ -6,10 +6,6 @@ class StreamExhausted(SnowstormException):
     pass
 
 
-class NoSchemaFields(SnowstormException):
-    pass
-
-
 class PayloadValidationError(SnowstormException):
     pass
 
@@ -22,5 +18,25 @@ class ErrorResponse(SnowstormException):
     pass
 
 
-class QueryTypeError(SnowstormException):
+class UnexpectedSchema(SnowstormException):
+    pass
+
+
+class UnexpectedQueryType(SnowstormException):
+    pass
+
+
+class NoLocationField(SnowstormException):
+    pass
+
+
+class InvalidSegment(SnowstormException):
+    pass
+
+
+class NoSchemaFields(SnowstormException):
+    pass
+
+
+class EmptyQuery(SnowstormException):
     pass

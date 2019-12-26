@@ -23,18 +23,10 @@ async def main():
     snow = Snowstorm(config)
 
     async with snow.resource(Incident) as r:
-        query = r.build_query(Incident.number.eq("INC0000001") & Incident.sys_id.eq("INC0000002") | Incident.sys_id.eq("INC0000003"))
-        print(query.sysparms)
+        query = Incident.number.eq("INC0000060") | Incident.number.eq("INC0000059")
 
-        #async for item in r.select(query).all(limit=1, offset=0, chunk_size=5):
-        #    print(item)
-
-        # await r.select_native({"test": "asdf"}).update({"test": "bajs"})
-
-        #await r.create(
-        #    short_description="test"
-        #)
-
+        async for item in r.select(query).stream(limit=5, offset=0, chunk_size=5):
+            print(item)
 
 if __name__ == "__main__":
     asyncio.run(main())

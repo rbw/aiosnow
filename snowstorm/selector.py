@@ -1,5 +1,6 @@
-from .stream import PageStream
 from typing import Iterable
+
+from .stream import PageStream
 
 
 class Selector:
@@ -8,8 +9,8 @@ class Selector:
         self.resource = resource
         self.schema = resource.schema_cls()
 
-    async def all(self, *args, **kwargs) -> Iterable:
-        stream = PageStream(self.resource, *args, **kwargs)
+    async def stream(self, *args, **kwargs) -> Iterable:
+        stream = PageStream(self.resource, *args, query=self.query, **kwargs)
         while not stream.exhausted:
             async for content in stream.read():
                 for item in self.schema.load(content, many=True):

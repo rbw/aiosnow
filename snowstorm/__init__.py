@@ -1,4 +1,5 @@
-from .resource import Resource, Schema
+from .resource import Resource
+from .query import QueryBuilder
 
 
 class Snowstorm:

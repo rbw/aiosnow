@@ -1,21 +1,7 @@
-from abc import abstractmethod
-
 import marshmallow
 import ujson
 
-from .operators import StringOperator
-from .query import Condition
-
-_fields = marshmallow.fields
-
-
-class BaseField(marshmallow.fields.String):
-    pass
-
-
-class Text(BaseField):
-    def eq(self, value):
-        return Condition(self.name, StringOperator.EQUALS, value)
+from .fields.base import BaseField
 
 
 class SchemaOpts(marshmallow.schema.SchemaOpts):
@@ -31,13 +17,13 @@ class SchemaOpts(marshmallow.schema.SchemaOpts):
 class SchemaMeta(marshmallow.schema.SchemaMeta):
     def __new__(mcs, name, bases, attrs):
         fields = [item for item in attrs.items() if isinstance(item[1], BaseField)]
-        klass = super().__new__(mcs, name, bases, attrs)
+        cls = super().__new__(mcs, name, bases, attrs)
 
         for name, field in fields:
             field.name = name
-            setattr(klass, name, field)
+            setattr(cls, name, field)
 
-        return klass
+        return cls
 
 
 class Schema(marshmallow.Schema, metaclass=SchemaMeta):

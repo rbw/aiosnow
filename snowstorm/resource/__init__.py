@@ -1,14 +1,16 @@
-import aiohttp
+import re
 
 from urllib.parse import urljoin, urlencode
+
+import aiohttp
 import marshmallow
 
 from snowstorm.selector import Selector
-from snowstorm.exceptions import NoSchemaFields, PayloadValidationError
+from snowstorm.exceptions import NoSchemaFields, PayloadValidationError, UnexpectedSchema, UnexpectedQueryType
+from snowstorm.query import QueryBuilder, Segment
 
-from .schema import Schema, SchemaOpts, Text
-from .operators import LogicalOperator, StringOperator
-from .query import QueryBuilder
+from .schema import Schema
+from .fields.text import Text
 
 
 class Resource:
@@ -16,13 +18,21 @@ class Resource:
 
     def __init__(self, schema_cls, config):
         self.config = config
+
+        if not issubclass(schema_cls, Schema):
+            raise UnexpectedSchema(f"Invalid schema class: {schema_cls}, must be of type {Schema}")
+        if not re.match(r"^/.*", str(schema_cls.__location__)):
+            raise UnexpectedSchema(
+                f"Unexpected path in {schema_cls.__name__}.__location__: {schema_cls.__location__}"
+            )
+
         self.schema_cls = schema_cls
-        self.fields = schema_cls._declared_fields
+        self.fields = getattr(schema_cls, "_declared_fields")
 
         if not self.fields:
-            raise NoSchemaFields(f"Schema {self.schema_cls} lacks fields definitions")
+            raise NoSchemaFields(f"Schema {schema_cls} lacks fields definitions")
 
-        self.url_base = urljoin(self.config["base_url"], schema_cls.__location__)
+        self.url_base = urljoin(self.config["base_url"], str(schema_cls.__location__))
 
     async def __aenter__(self):
         config = self.config
@@ -35,6 +45,10 @@ class Resource:
     async def __aexit__(self, exc_type, exc, tb):
         await self.connection.close()
 
+    @property
+    def name(self):
+        return self.__class__.__name__
+
     def get_url(self, method="GET"):
         params = {}
 
@@ -43,15 +57,18 @@ class Resource:
 
         return f"{self.url_base}{'?' + urlencode(params) if params else ''}"
 
-    def build_query(self, condition):
-        builder = QueryBuilder(condition)
-        return builder
+    def select(self, segment) -> Selector:
+        if not isinstance(segment, Segment):
+            raise UnexpectedQueryType(f"{self.name}.select() expects a root {Segment}")
 
-    def select(self, query) -> Selector:
-        return Selector(self, query)
+        builder = QueryBuilder(segment)
+        return Selector(self, builder.sysparms)
 
-    def select_raw(self, query) -> Selector:
-        return Selector(self, query)
+    def select_raw(self, query_string):
+        if not isinstance(query_string, str):
+            raise UnexpectedQueryType(f"{self.name}.select_raw() expects a sysparm query {str} argument")
+
+        return Selector(self, query_string)
 
     async def create(self, **kwargs):
         try:

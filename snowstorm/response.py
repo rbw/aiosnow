@@ -29,7 +29,7 @@ class Response:
 
         if "error" in content:
             err = SnowErrorText().load(content["error"])
-            text = f"{err['message']({err['detail']})}" if err["detail"] else err["message"]
+            text = f"{err['message']} ({self.status}): {err['detail']}" if err["detail"] else err["message"]
             raise ErrorResponse(text)
 
         return content.get("result")
