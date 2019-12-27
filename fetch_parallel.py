@@ -6,9 +6,11 @@ from snowstorm import Snowstorm
 
 class Incident(Schema):
     __location__ = "/api/now/table/incident"
+    __related__ = True
 
     sys_id = Text()
     number = Text()
+    description = Text(required=True)
     short_description = Text(required=True)
 
 
@@ -22,12 +24,20 @@ async def main():
     snow = Snowstorm(config)
 
     async with snow.resource(Incident) as r:
-        #query = Incident.number.eq("INC0000060") | Incident.number.eq("INC0000059")
-        #async for item in r.select(query).stream(limit=5, offset=0, chunk_size=5):
-        #    print(item)
+        request = (
+            r.select(
+                Incident.number.eq("INC0000060") |
+                Incident.number.eq("INC0000059")
+            )
+            .order_desc([Incident.number, Incident.description])
+            .order_asc(Incident.description)
+        )
 
-        data = await r.create(short_description="asdf")
-        print(data)
+        async for item in request.stream(limit=5, offset=0, chunk_size=5):
+            print(item)
+
+        #data = await r.create(short_description="asdf", description="asdf123")
+        #print(data)
 
 
 if __name__ == "__main__":

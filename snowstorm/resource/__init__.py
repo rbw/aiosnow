@@ -27,8 +27,6 @@ class Resource:
 
         self.schema_cls = schema_cls
         self.fields = getattr(schema_cls, "_declared_fields")
-        self.writer = Writer(self)
-        self.reader = Reader(self)
 
         if not self.fields:
             raise NoSchemaFields(f"Schema {schema_cls} lacks fields definitions")
@@ -63,7 +61,7 @@ class Resource:
             raise UnexpectedQueryType(f"{self.name}.select() expects a root {Segment}")
 
         builder = QueryBuilder(segment)
-        return Reader(self).stream(query=builder.sysparms)
+        return Reader(self, builder.sysparms)
 
     def select_raw(self, query_string: str):
         if not isinstance(query_string, str):
@@ -72,4 +70,4 @@ class Resource:
         return Reader(self, query_string)
 
     async def create(self, **kwargs):
-        return await self.writer.create(**kwargs)
+        return await Writer(self).create(**kwargs)

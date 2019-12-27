@@ -13,7 +13,7 @@ class Request(ABC):
         self._resource_url = resource.get_url()
         self._resource = resource
         self.default_headers = {
-            "Content-type": "application/json"
+            "Content-type": CONTENT_TYPE
         }
 
     @property
@@ -32,11 +32,15 @@ class Request(ABC):
 
     async def _request(self, **kwargs):
         headers = self.default_headers
+        headers.update(kwargs.pop("headers", {}))
 
         obj = await self._connection.request(
             self.__http_method__,
             self.url,
-            headers=self.default_headers,
+            headers={
+                **self.default_headers,
+                **(headers or {})
+            },
             **kwargs
         )
 
