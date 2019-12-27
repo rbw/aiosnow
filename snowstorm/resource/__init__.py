@@ -5,7 +5,7 @@ from urllib.parse import urljoin, urlencode
 import aiohttp
 import marshmallow
 
-from snowstorm.selector import Selector
+from snowstorm.request import Selector
 from snowstorm.exceptions import NoSchemaFields, PayloadValidationError, UnexpectedSchema, UnexpectedQueryType
 from snowstorm.query import QueryBuilder, Segment
 

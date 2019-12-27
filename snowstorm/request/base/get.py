@@ -1,31 +1,19 @@
-from abc import ABC, abstractmethod
 from urllib.parse import urlencode
 
-from snowstorm.response import Response
-
-
-class Request(ABC):
-    def __init__(self, resource):
-        self._connection = resource.connection
-        self._resource_url = resource.get_url()
-        self._resource = resource
-
-    @property
-    @abstractmethod
-    def url(self):
-        pass
-
-    async def get(self, **kwargs):
-        obj = await self._connection.get(self.url, **kwargs)
-        return Response(obj)
+from .base import Request
 
 
 class GetRequest(Request):
+    __http_method__ = "GET"
+
     def __init__(self, resource, limit=30, offset=0, query=None):
         super(GetRequest, self).__init__(resource)
         self._limit = limit
         self._offset = offset
         self.query = query
+
+    async def send(self, **kwargs):
+        return await self._request(**kwargs)
 
     @property
     def _page_size(self):
@@ -46,4 +34,3 @@ class GetRequest(Request):
             params["sysparm_query"] = self.query
 
         return f"{self._resource_url}&{urlencode(params)}"
-

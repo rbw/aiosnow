@@ -16,6 +16,5 @@ class Selector:
                 for item in self.schema.load(content, many=True):
                     yield item
 
-    async def update(self, payload):
-        print(self.query)
-        print(payload)
+    async def get_one(self):
+        pass

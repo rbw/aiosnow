@@ -1,7 +1,8 @@
 from urllib.parse import parse_qs
 
 from snowstorm.exceptions import StreamExhausted
-from snowstorm.request import GetRequest
+
+from .base import GetRequest
 
 
 class PageStream(GetRequest):
@@ -32,7 +33,7 @@ class PageStream(GetRequest):
         self._offset = offset_next
 
     async def read(self, **kwargs):
-        response = await self.get(**kwargs)
+        response = await self.send(**kwargs)
 
         try:
             self._prepare_next(response.links)
@@ -40,4 +41,3 @@ class PageStream(GetRequest):
             self.exhausted = True
 
         yield await response.read()
-
