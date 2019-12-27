@@ -14,7 +14,3 @@ class PostRequest(Request):
     @property
     def url(self):
         return self._resource_url
-
-    @property
-    def body(self):
-        return

@@ -1,8 +1,8 @@
 import ujson
 
 from snowstorm.exceptions import UnexpectedContentType, ErrorResponse
+from snowstorm.consts import CONTENT_TYPE
 
-from .consts import CONTENT_TYPE_EXPECTED
 from .schemas import SnowErrorText
 
 
@@ -20,10 +20,10 @@ class Response:
 
     async def read(self):
         content_type = self.obj.headers["content-type"]
-        if not content_type.startswith(CONTENT_TYPE_EXPECTED):
+        if not content_type.startswith(CONTENT_TYPE):
             raise UnexpectedContentType(
                 f"Unexpected content-type in response: {content_type}"
-                f", expected: {CONTENT_TYPE_EXPECTED}"
+                f", expected: {CONTENT_TYPE}"
             )
 
         content = ujson.loads(await self.obj.text())

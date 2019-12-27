@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 from aiohttp import ClientSession
 from snowstorm.response import Response
+from snowstorm.consts import CONTENT_TYPE
 
 
 class Request(ABC):
@@ -11,6 +12,9 @@ class Request(ABC):
         self._connection = resource.connection
         self._resource_url = resource.get_url()
         self._resource = resource
+        self.default_headers = {
+            "Content-type": "application/json"
+        }
 
     @property
     @abstractmethod
@@ -27,5 +31,13 @@ class Request(ABC):
         pass
 
     async def _request(self, **kwargs):
-        obj = await self._connection.request(self.__http_method__, self.url, **kwargs)
+        headers = self.default_headers
+
+        obj = await self._connection.request(
+            self.__http_method__,
+            self.url,
+            headers=self.default_headers,
+            **kwargs
+        )
+
         return Response(obj)

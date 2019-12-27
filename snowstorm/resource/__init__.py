@@ -3,10 +3,9 @@ import re
 from urllib.parse import urljoin, urlencode
 
 import aiohttp
-import marshmallow
 
-from snowstorm.request import Selector
-from snowstorm.exceptions import NoSchemaFields, PayloadValidationError, UnexpectedSchema, UnexpectedQueryType
+from snowstorm.request.helpers import Reader, Writer
+from snowstorm.exceptions import NoSchemaFields, UnexpectedSchema, UnexpectedQueryType
 from snowstorm.query import QueryBuilder, Segment
 
 from .schema import Schema
@@ -28,6 +27,8 @@ class Resource:
 
         self.schema_cls = schema_cls
         self.fields = getattr(schema_cls, "_declared_fields")
+        self.writer = Writer(self)
+        self.reader = Reader(self)
 
         if not self.fields:
             raise NoSchemaFields(f"Schema {schema_cls} lacks fields definitions")
@@ -57,25 +58,18 @@ class Resource:
 
         return f"{self.url_base}{'?' + urlencode(params) if params else ''}"
 
-    def select(self, segment) -> Selector:
+    def select(self, segment: Segment) -> Reader:
         if not isinstance(segment, Segment):
             raise UnexpectedQueryType(f"{self.name}.select() expects a root {Segment}")
 
         builder = QueryBuilder(segment)
-        return Selector(self, builder.sysparms)
+        return Reader(self).stream(query=builder.sysparms)
 
-    def select_raw(self, query_string):
+    def select_raw(self, query_string: str):
         if not isinstance(query_string, str):
             raise UnexpectedQueryType(f"{self.name}.select_raw() expects a sysparm query {str} argument")
 
-        return Selector(self, query_string)
+        return Reader(self, query_string)
 
     async def create(self, **kwargs):
-        try:
-            payload = self.schema_cls(unknown=marshmallow.RAISE).load(kwargs)
-        except marshmallow.exceptions.ValidationError as e:
-            raise PayloadValidationError(e)
-
-        print(payload)
-
-        return
+        return await self.writer.create(**kwargs)
