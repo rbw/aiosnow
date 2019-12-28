@@ -15,4 +15,3 @@ class QueryBuilder:
     @property
     def sysparms(self):
         return "".join([c.__str__ for c in self.conditions])
-

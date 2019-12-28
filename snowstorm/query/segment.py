@@ -1,4 +1,4 @@
-from .operators import LogicalOperator
+from .operators import Logical
 
 
 class Segment:
@@ -10,25 +10,30 @@ class Segment:
         self.operand_right = value
         self.operator_conditional = operator
         self.operator_logical = None
+        self.inverted = False
         self.instances.append(self)
 
     @property
     def __str__(self):
         return (
             self.operand_left +
-            self.operator_conditional.value +
+            self.operator_conditional +
             self.operand_right +
-            (self.operator_logical.value if self.operator_logical else "")
+            (self.operator_logical or "")
         )
 
+    def __invert__(self):
+        self.inverted = True
+        return self
+
     def __and__(self, cond):
-        self.operator_logical = LogicalOperator.AND
+        self.operator_logical = Logical.AND
         return cond
 
     def __or__(self, cond):
-        self.operator_logical = LogicalOperator.OR
+        self.operator_logical = Logical.OR
         return cond
 
     def __xor__(self, cond):
-        self.operator_logical = LogicalOperator.NQ
+        self.operator_logical = Logical.NQ
         return cond

@@ -22,6 +22,10 @@ class UnexpectedSchema(SnowstormException):
     pass
 
 
+class UnexpectedValue(SnowstormException):
+    pass
+
+
 class UnexpectedQueryType(SnowstormException):
     pass
 

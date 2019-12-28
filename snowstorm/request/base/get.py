@@ -28,8 +28,6 @@ class GetRequest(Request):
             sysparm_offset=self._offset,
         )
 
-        print(self.query)
-
         if self._page_size:
             params["sysparm_limit"] = self._page_size
         if self.query:
