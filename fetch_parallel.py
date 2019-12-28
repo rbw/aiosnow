@@ -12,6 +12,8 @@ class Incident(Schema):
     number = Text()
     description = Text(required=True)
     short_description = Text(required=True)
+    impact = Text()
+    urgency = Text()
 
 
 async def main():
@@ -24,16 +26,18 @@ async def main():
     snow = Snowstorm(config)
 
     async with snow.resource(Incident) as r:
-        request = (
+        reader = (
             r.select(
-                Incident.number.eq("INC0000060") |
-                Incident.number.eq("INC0000059")
+                # Incident.number.equals("INC0000060") &
+                Incident.impact.equals(Incident.urgency)
             )
+            .order_desc(Incident.description)
             .order_desc([Incident.number, Incident.description])
-            .order_asc(Incident.description)
         )
 
-        async for item in request.stream(limit=5, offset=0, chunk_size=5):
+        print(reader.query)
+
+        async for item in reader.stream(limit=5, offset=0, chunk_size=5):
             print(item)
 
         #data = await r.create(short_description="asdf", description="asdf123")
