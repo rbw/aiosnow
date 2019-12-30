@@ -1,6 +1,6 @@
 import asyncio
 
-from snowstorm.resource import Schema, Text
+from snowstorm.resource import Schema, fields
 from snowstorm import Snowstorm
 
 
@@ -8,12 +8,13 @@ class Incident(Schema):
     __location__ = "/api/now/table/incident"
     __related__ = True
 
-    sys_id = Text()
-    number = Text()
-    description = Text(required=True)
-    short_description = Text(required=True)
-    impact = Text()
-    urgency = Text()
+    sys_id = fields.Text()
+    number = fields.Text()
+    description = fields.Text(required=True)
+    short_description = fields.Text(required=True)
+    impact = fields.Text()
+    urgency = fields.Text()
+    created_on = fields.Datetime()
 
 
 async def main():
@@ -29,7 +30,8 @@ async def main():
         reader = (
             r.select(
                 # Incident.number.equals("INC0000060") &
-                Incident.impact.equals(Incident.urgency)
+                # Incident.impact.equals(Incident.urgency)
+                Incident.created_on.before("2019-12-24 00:01:02")
             )
             .order_desc(Incident.description)
             .order_desc([Incident.number, Incident.description])

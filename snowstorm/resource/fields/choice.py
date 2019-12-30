@@ -1,14 +1,11 @@
 from snowstorm.query import BaseOperator
 
+from .base import BaseField
 from .text import Text
 from .numeric import Numeric
 
 
-class NumericChoice(Numeric):
-    pass
-
-
-class TextChoice(Text):
+class ChoiceBase(BaseField):
     def oneof(self, *values):
         """
         All records in which the field is populated by the given values
@@ -22,3 +19,11 @@ class TextChoice(Text):
         """
 
         return self._segment(BaseOperator.NOT_ONEOF, ",".join(values))
+
+
+class NumericChoice(ChoiceBase, Numeric):
+    pass
+
+
+class TextChoice(ChoiceBase, Text):
+    pass

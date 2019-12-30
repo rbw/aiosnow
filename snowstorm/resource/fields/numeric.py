@@ -6,35 +6,21 @@ from .base import BaseField
 class Numeric(BaseField):
     def equals(self, value):
         """
-        All records in which the value in the Impact field is nothing else but 1 - High.
+        Example: reassignment_count.equals(0)
+
+        All records in which the Reassignment count is nothing else but 0.
         """
 
         return self._segment(NumericOperator.EQUALS, value, field_operator=NumericOperator.SAME)
 
     def not_equals(self, value):
         """
-        All records in which the value in the Impact field is anything but 1 - High.
+        Example: reassignment_count.not_equals(0)
+
+        All records in which the value for the Reassignment count is any number but 0.
         """
 
         return self._segment(NumericOperator.NOT_EQUALS, value, field_operator=NumericOperator.DIFFERENT)
-
-    def oneof(self, *values):
-        """
-        All records in which the Impact field is populated by one of the following values:
-            1 - High
-            2 - Medium
-        """
-
-        return self._segment(NumericOperator.ONEOF, ",".join(values))
-
-    def not_oneof(self, *values):
-        """
-        All records in which the Impact field is populated by anything except the following values:
-            - High
-            - Medium
-        """
-
-        return self._segment(NumericOperator.NOT_ONEOF, ",".join(values))
 
     def less_than(self, value):
         """

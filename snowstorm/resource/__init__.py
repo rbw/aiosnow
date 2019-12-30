@@ -9,7 +9,7 @@ from snowstorm.exceptions import NoSchemaFields, UnexpectedSchema, UnexpectedQue
 from snowstorm.query import QueryBuilder, Segment
 
 from .schema import Schema
-from .fields.text import Text
+from . import fields
 
 
 class Resource:

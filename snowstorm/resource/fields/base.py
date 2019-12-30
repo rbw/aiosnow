@@ -6,7 +6,7 @@ from snowstorm.query import Segment, BaseOperator
 from snowstorm.exceptions import UnexpectedValue
 
 
-class BaseField(marshmallow.fields.String):
+class BaseField(marshmallow.fields.Field):
     def _segment(self, operator, value=None, field_operator=None):
         if isinstance(value, BaseField):
             if not field_operator:
