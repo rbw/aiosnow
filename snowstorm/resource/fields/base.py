@@ -2,7 +2,7 @@ from functools import partial
 
 import marshmallow
 
-from snowstorm.query import Segment, String
+from snowstorm.query import Segment, BaseOperator
 from snowstorm.exceptions import UnexpectedValue
 
 
@@ -17,23 +17,26 @@ class BaseField(marshmallow.fields.String):
 
         return Segment(self.name, operator, value)
 
-    def equals(self, value):
-        """
-        All records in which the Short description says nothing else but "Network storage is unavailable."
-        """
-
-        return self._segment(String.EQUALS, value, field_operator=String.SAME)
-
-    def not_equals(self, value):
-        """
-        All records in which the value for the Short description field says anything but "Network storage
-        is unavailable."
-        """
-
-        return self._segment(String.NOT_EQUALS, value, field_operator=String.DIFFERENT)
-
     def is_empty(self):
-        return self._segment(String.EMPTY)
+        """
+        All records in which there is no value in the given field
+        """
+
+        return self._segment(BaseOperator.EMPTY)
 
     def is_populated(self):
-        return self._segment(String.POPULATED)
+        """
+        All records in which there is any value in the given field
+        """
+
+        return self._segment(BaseOperator.POPULATED)
+
+    def is_anything(self):
+        """
+        All records in which the given field is one of the following:
+            - any value
+            - empty
+            - NULL
+        """
+
+        return self._segment(BaseOperator.ANYTHING)

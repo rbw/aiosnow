@@ -1,51 +1,49 @@
-class ConditionalBase:
+class BaseOperator:
     EQUALS = "="
     NOT_EQUALS = "!="
     LESS = "<"
-    LESS_EQUAL = "<="
+    LESS_EQUALS = "<="
     GREATER = ">"
-    GREATER_EQUAL = ">="
+    GREATER_EQUALS = ">="
     CONTAINS = "*"
     NOT_CONTAINS = "!*"
     EMPTY = "ISEMPTY"
     POPULATED = "ISNOTEMPTY"
+    BETWEEN = "BETWEEN"
+    ANYTHING = "ANYTHING"
     SAME = "SAMEAS"
     DIFFERENT = "NSAMEAS"
-    BETWEEN = "BETWEEN"
+    ONEOF = "IN"
+    NOT_ONEOF = "NOT IN"
 
 
-class String(ConditionalBase):
+class StringOperator(BaseOperator):
     EMPTYSTRING = "EMPTYSTRING"
     STARTSWITH = "STARTSWITH"
     ENDSWITH = "ENDSWITH"
-    ANYTHING = "ANYTHING"
 
 
-class Reference(ConditionalBase):
-    EMPTYSTRING = "EMPTYSTRING"
-
-
-class Numeric(ConditionalBase):
-    RELATED_GREATER = "GT_FIELD"
-    RELATED_LESS = "LT_FIELD"
-    RELATED_GREATER_EQUALS = "GT_OR_EQUALS_FIELD"
-    RELATED_LESS_EQUALS = "LE_OR_EQUALS_FIELD"
-
-
-class Choice:
-    ONEOF = "IN"
-    NOTONEOF = "NOT IN"
-
-
-class ChoiceNumeric(Choice, Numeric):
+class ReferenceField(StringOperator):
     pass
 
 
-class ChoiceString(Choice, String):
+class NumericOperator(BaseOperator):
+    class Related:
+        GREATER = "GT_FIELD"
+        LESS = "LT_FIELD"
+        GREATER_EQUALS = "GT_OR_EQUALS_FIELD"
+        LESS_EQUALS = "LE_OR_EQUALS_FIELD"
+
+
+class ChoiceNumeric(NumericOperator):
     pass
 
 
-class DateTime(ConditionalBase):
+class ChoiceString(StringOperator):
+    pass
+
+
+class DateTime(BaseOperator):
     TODAY = "ONToday"
     NOT_TODAY = "NOTONToday"
     TREND = "DATEPART"
@@ -56,7 +54,7 @@ class DateTime(ConditionalBase):
     RELATED_LESS = "LESSTHAN"
 
 
-class Boolean(ConditionalBase):
+class Boolean(BaseOperator):
     pass
 
 
