@@ -35,17 +35,9 @@ class NumericOperator(BaseOperator):
         LESS_EQUALS = "LE_OR_EQUALS_FIELD"
 
 
-class ChoiceNumeric(NumericOperator):
-    pass
-
-
-class ChoiceString(StringOperator):
-    pass
-
-
-class DateTime(BaseOperator):
-    TODAY = "ONToday"
-    NOT_TODAY = "NOTONToday"
+class DateTimeOperator(BaseOperator):
+    ON = "ON"
+    NOT_ON = "NOTON"
     TREND = "DATEPART"
     RELATIVE_GREATER = "RELATIVEGE"
     RELATIVE_LESS = "RELATIVELE"
@@ -54,17 +46,17 @@ class DateTime(BaseOperator):
     RELATED_LESS = "LESSTHAN"
 
 
-class Boolean(BaseOperator):
+class BooleanOperator(BaseOperator):
     pass
 
 
-class EmailNotification:
+class EmailNotificationOperator:
     CHANGES = "VALCHANGES"
     CHANGES_FROM = "CHANGESFROM"
     CHANGES_TO = "CHANGESTO"
 
 
-class Logical:
+class LogicalOperator:
     AND = "^"
     OR = "^OR"
     NQ = "^NQ"

@@ -1,4 +1,4 @@
-from .operators import Logical
+from .operators import LogicalOperator
 
 
 class Segment:
@@ -27,13 +27,13 @@ class Segment:
         return self
 
     def __and__(self, cond):
-        self.operator_logical = Logical.AND
+        self.operator_logical = LogicalOperator.AND
         return cond
 
     def __or__(self, cond):
-        self.operator_logical = Logical.OR
+        self.operator_logical = LogicalOperator.OR
         return cond
 
     def __xor__(self, cond):
-        self.operator_logical = Logical.NQ
+        self.operator_logical = LogicalOperator.NQ
         return cond
