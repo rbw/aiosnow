@@ -76,7 +76,6 @@ class Numeric(BaseField):
             field_operator=NumericOperator.Related.GREATER_EQUALS
         )
 
-
     def between(self, value1, value2):
         """
         Example: impact.between([1, 3])

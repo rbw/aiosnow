@@ -1,4 +1,4 @@
-from .string import Text
+from .text import Text
 
 
 class Reference(Text):
