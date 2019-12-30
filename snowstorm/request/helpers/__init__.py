@@ -1,3 +1,3 @@
-from .reader import Reader
-from .writer import Writer
-from .stream import PageStream
+from .reader import Reader, SyncReader, AsyncReader
+from .writer import Writer, SyncWriter, AsyncWriter
+from .stream import PageStream, SyncPageStream, AsyncPageStream

@@ -4,7 +4,14 @@ from urllib.parse import urljoin, urlencode
 
 import aiohttp
 
-from snowstorm.request.helpers import Reader, Writer
+from snowstorm.request.helpers import (
+    Writer,
+    Reader,
+    AsyncWriter,
+    AsyncReader,
+    SyncWriter,
+    SyncReader
+)
 from snowstorm.exceptions import NoSchemaFields, UnexpectedSchema, UnexpectedQueryType
 from snowstorm.query import QueryBuilder, Segment
 
@@ -14,6 +21,7 @@ from . import fields
 
 class Resource:
     connection = None
+    blocking = True
 
     def __init__(self, schema_cls, config):
         self.config = config
@@ -33,13 +41,20 @@ class Resource:
 
         self.url_base = urljoin(self.config["base_url"], str(schema_cls.__location__))
 
-    async def __aenter__(self):
+    def __enter__(self):
         config = self.config
         self.connection = aiohttp.ClientSession(
             auth=aiohttp.helpers.BasicAuth(config["username"], config["password"]),
         )
 
         return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.connection.close()
+
+    async def __aenter__(self):
+        self.blocking = False
+        return self.__enter__()
 
     async def __aexit__(self, exc_type, exc, tb):
         await self.connection.close()
@@ -56,12 +71,16 @@ class Resource:
 
         return f"{self.url_base}{'?' + urlencode(params) if params else ''}"
 
+    def _get_reader(self, sysparms):
+        args = [self, sysparms]
+        return SyncReader(*args) if self.blocking else AsyncReader(*args)
+
     def select(self, segment: Segment) -> Reader:
         if not isinstance(segment, Segment):
             raise UnexpectedQueryType(f"{self.name}.select() expects a root {Segment}")
 
         builder = QueryBuilder(segment)
-        return Reader(self, builder.sysparms)
+        return self._get_reader(builder.sysparms)
 
     def select_raw(self, query_string: str):
         if not isinstance(query_string, str):
@@ -69,5 +88,5 @@ class Resource:
 
         return Reader(self, query_string)
 
-    async def create(self, **kwargs):
-        return await Writer(self).create(**kwargs)
+    async def create(self, **kwargs) -> Writer:
+        return await AsyncWriter(self).create(**kwargs)

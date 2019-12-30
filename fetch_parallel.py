@@ -14,10 +14,10 @@ class Incident(Schema):
     short_description = fields.Text(required=True)
     impact = fields.Text()
     urgency = fields.Text()
-    created_on = fields.Datetime()
+    opened_at = fields.Datetime()
 
 
-async def main():
+def main():
     config = dict(
         base_url="https://dev49212.service-now.com",
         username="",
@@ -26,12 +26,31 @@ async def main():
 
     snow = Snowstorm(config)
 
-    async with snow.resource(Incident) as r:
+    with snow.resource(Incident) as r:
         reader = (
             r.select(
                 # Incident.number.equals("INC0000060") &
                 # Incident.impact.equals(Incident.urgency)
-                Incident.created_on.before("2019-12-24 00:01:02")
+                Incident.opened_at.after("2019-12-24 00:01:02")
+            )
+            .order_desc(Incident.description)
+            .order_desc([Incident.number, Incident.description])
+        )
+
+        print(reader.query)
+
+        for item in reader.stream(limit=5, offset=0, chunk_size=5):
+            print(item)
+
+        #data = await r.create(short_description="asdf", description="asdf123")
+        #print(data)
+
+    """async with snow.resource(Incident) as r:
+        reader = (
+            r.select(
+                # Incident.number.equals("INC0000060") &
+                # Incident.impact.equals(Incident.urgency)
+                Incident.opened_at.after("2019-12-24 00:01:02")
             )
             .order_desc(Incident.description)
             .order_desc([Incident.number, Incident.description])
@@ -43,9 +62,10 @@ async def main():
             print(item)
 
         #data = await r.create(short_description="asdf", description="asdf123")
-        #print(data)
+        #print(data)"""
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    # asyncio.run(main())
+    main()
 

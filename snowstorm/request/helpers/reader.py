@@ -2,7 +2,7 @@ from typing import Iterable
 
 from snowstorm.consts import SORT_ASCENDING, SORT_DESCENDING
 
-from .stream import PageStream
+from .stream import AsyncPageStream, SyncPageStream
 
 
 class Reader:
@@ -26,12 +26,26 @@ class Reader:
         self.query += self._order_by(value)
         return self
 
+    def stream(self, *args, **kwargs) -> Iterable:
+        raise NotImplementedError
+
+    def get_one(self):
+        raise NotImplementedError
+
+
+class SyncReader(Reader):
+    def stream(self, *args, **kwargs) -> Iterable:
+        stream = SyncPageStream(self.resource, *args, **kwargs, query=self.query)
+        while not stream.exhausted:
+            for content in stream.read():
+                for item in self.schema.load(content, many=True):
+                    yield item
+
+
+class AsyncReader(Reader):
     async def stream(self, *args, **kwargs) -> Iterable:
-        stream = PageStream(self.resource, *args, **kwargs, query=self.query)
+        stream = AsyncPageStream(self.resource, *args, **kwargs, query=self.query)
         while not stream.exhausted:
             async for content in stream.read():
                 for item in self.schema.load(content, many=True):
                     yield item
-
-    async def get_one(self):
-        pass

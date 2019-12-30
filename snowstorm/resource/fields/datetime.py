@@ -6,7 +6,7 @@ from .base import BaseField
 
 
 class Datetime(BaseField):
-    def _segment(self, *args, value=None, **kwargs):
+    def _segment(self, operator, value=None, **kwargs):
         if isinstance(value, datetime):
             dt_str = value.strftime("%Y-%m-%d")
         elif isinstance(value, str):
@@ -16,7 +16,7 @@ class Datetime(BaseField):
         else:
             raise TypeError(f"Expected a string or datetime.datetime in {self}, got: {value}")
 
-        super(Datetime, self)._segment(*args, value=dt_str, **kwargs)
+        return super(Datetime, self)._segment(operator, value=dt_str, **kwargs)
 
     def on(self, value):
         """
