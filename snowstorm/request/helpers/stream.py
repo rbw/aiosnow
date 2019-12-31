@@ -32,11 +32,6 @@ class PageStream(GetRequest):
 
         self._offset = offset_next
 
-    def read(self):
-        raise NotImplementedError
-
-
-class AsyncPageStream(PageStream):
     async def read(self, **kwargs):
         response = await self.send(**kwargs)
 
@@ -46,9 +41,3 @@ class AsyncPageStream(PageStream):
             self.exhausted = True
 
         yield await response.read()
-
-
-class SyncPageStream(PageStream):
-    def read(self, **kwargs):
-        return None
-
