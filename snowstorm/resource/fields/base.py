@@ -1,16 +1,19 @@
-from functools import partial
-
 import marshmallow
 
 from snowstorm.query import Segment, BaseOperator
 from snowstorm.exceptions import UnexpectedValue
+from snowstorm.consts import Target
 
 
 class BaseField(marshmallow.fields.Field):
+    def __init__(self, *args, target=Target.VALUE, **kwargs):
+        self.target = Target(target)
+        super(BaseField, self).__init__(*args, **kwargs)
+
     def _segment(self, operator, value=None, field_operator=None):
         if isinstance(value, BaseField):
             if not field_operator:
-                raise UnexpectedValue(f"{operator} does not support field comparison")
+                raise UnexpectedValue(f"{operator} does not support Field comparison")
 
             operator = field_operator
             value = value.name

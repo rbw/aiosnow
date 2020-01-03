@@ -1,9 +1,11 @@
+import marshmallow
+
 from snowstorm.query import StringOperator
 
 from .base import BaseField
 
 
-class Text(BaseField):
+class Text(BaseField, marshmallow.fields.String):
     def equals(self, value):
         """
         Example: short_description.equals("Network storage is unavailable")

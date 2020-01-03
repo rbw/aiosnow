@@ -7,6 +7,7 @@ import aiohttp
 from snowstorm.request.helpers import Writer, Reader
 from snowstorm.exceptions import NoSchemaFields, UnexpectedSchema, UnexpectedQueryType
 from snowstorm.query import QueryBuilder, Segment
+from snowstorm.consts import Target
 
 from .schema import Schema
 from . import fields
@@ -28,6 +29,8 @@ class Resource:
 
         self.schema_cls = schema_cls
         self.fields = getattr(schema_cls, "_declared_fields")
+
+        self._resolve = any([f for f in self.fields.values() if f.target != Target.VALUE])
 
         if not self.fields:
             raise NoSchemaFields(f"Schema {schema_cls} lacks fields definitions")
@@ -54,6 +57,7 @@ class Resource:
 
         if method == "GET":
             params["sysparm_fields"] = ",".join(self.fields)
+            params["sysparm_display_value"] = "all" if self._resolve else "false"
 
         return f"{self.url_base}{'?' + urlencode(params) if params else ''}"
 

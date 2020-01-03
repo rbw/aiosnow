@@ -1,5 +1,6 @@
-from .resource import Resource
+from .resource import Resource, Schema
 from .query import QueryBuilder
+from .consts import Target
 
 
 class Snowstorm:
