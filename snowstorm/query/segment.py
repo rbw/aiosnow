@@ -2,7 +2,6 @@ from .operators import LogicalOperator
 
 
 class Segment:
-    value = None
     instances = []
 
     def __init__(self, key, operator, value=None):
