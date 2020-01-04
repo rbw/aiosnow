@@ -28,14 +28,8 @@ class Resource:
             )
 
         self.schema_cls = schema_cls
-        self.fields = getattr(schema_cls, "_declared_fields")
-
-        self._resolve = any([f for f in self.fields.values() if f.target != Target.VALUE])
-
-        if not self.fields:
-            raise NoSchemaFields(f"Schema {schema_cls} lacks fields definitions")
-
         self.url_base = urljoin(self.config["base_url"], str(schema_cls.__location__))
+        self._resolve = any([f for f in self.fields.values() if f.target != Target.VALUE])
 
     async def __aenter__(self):
         config = self.config
@@ -47,6 +41,14 @@ class Resource:
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.connection.close()
+
+    @property
+    def fields(self):
+        schema_fields = getattr(self.schema_cls, "_declared_fields")
+        if not schema_fields:
+            raise NoSchemaFields(f"Schema {self.schema_cls} lacks fields definitions")
+
+        return schema_fields
 
     @property
     def name(self):
