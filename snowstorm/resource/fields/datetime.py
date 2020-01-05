@@ -1,21 +1,33 @@
 from datetime import datetime
 
+import marshmallow
+import pytz
+
 from snowstorm.query import DateTimeOperator
 
 from .base import BaseField
 
 
-class Datetime(BaseField):
-    def _segment(self, operator, value=None, **kwargs):
+class Datetime(BaseField, marshmallow.fields.DateTime):
+    def _get_datetime(self, value):
         if isinstance(value, datetime):
-            dt_str = value.strftime("%Y-%m-%d")
+            dt_obj = value.astimezone(pytz.UTC)
         elif isinstance(value, str):
-            dt_str = value
+            dt_obj = datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+            date = dt_obj.strftime("%Y-%m-%d")
+            time = dt_obj.strftime("%H:%M:%S")
+            dt_obj = f'javascript:gs.dateGenerate("{date}", "{time}")'
         elif value is None:
-            dt_str = None
+            dt_obj = None
         else:
             raise TypeError(f"Expected a string or datetime.datetime in {self}, got: {value}")
 
+        return dt_obj
+
+    def _segment(self, operator, value=None, **kwargs):
+        # dt_str = f'javascript:gs.dateGenerate("{dt_str}")'
+        dt_str = self._get_datetime(value)
+        print(dt_str)
         return super(Datetime, self)._segment(operator, value=dt_str, **kwargs)
 
     def on(self, value):

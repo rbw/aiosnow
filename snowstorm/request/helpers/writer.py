@@ -18,4 +18,5 @@ class Writer:
 
         request = PostRequest(self.resource, ujson.dumps(payload))
         response = await request.send()
-        return await response.read()
+        content = await response.read()
+        return self.schema(unknown=marshmallow.RAISE).load(content)

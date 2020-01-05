@@ -28,7 +28,7 @@ class Resource:
             )
 
         self.schema_cls = schema_cls
-        self.url_base = urljoin(self.config["base_url"], str(schema_cls.__location__))
+        self.url = urljoin(self.config["address"], str(schema_cls.__location__))
         self._resolve = any([f for f in self.fields.values() if f.target != Target.VALUE])
 
     async def __aenter__(self):
@@ -61,7 +61,7 @@ class Resource:
             params["sysparm_fields"] = ",".join(self.fields)
             params["sysparm_display_value"] = "all" if self._resolve else "false"
 
-        return f"{self.url_base}{'?' + urlencode(params) if params else ''}"
+        return f"{self.url}{'?' + urlencode(params) if params else ''}"
 
     def select(self, segment: Segment) -> Reader:
         if not isinstance(segment, Segment):
