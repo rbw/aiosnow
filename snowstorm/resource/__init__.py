@@ -4,18 +4,18 @@ from urllib.parse import urljoin, urlencode
 
 import aiohttp
 
-from snowstorm.request.helpers import Writer, Reader
 from snowstorm.exceptions import NoSchemaFields, UnexpectedSchema, UnexpectedQueryType
-from snowstorm.query import QueryBuilder, Segment
 from snowstorm.consts import Target
+from snowstorm.request import Reader, Creator, Updater
 
 from .schema import Schema
+from .query import QueryBuilder, Segment
+
 from . import fields
 
 
 class Resource:
     connection = None
-    blocking = True
 
     def __init__(self, schema_cls, config):
         self.config = config
@@ -76,5 +76,8 @@ class Resource:
 
         return Reader(self, query_string)
 
-    async def create(self, **kwargs) -> Writer:
-        return await Writer(self).create(**kwargs)
+    async def update(self, payload, selection=None, sys_id=None) -> Updater:
+        return await Updater(self).write(**payload)
+
+    async def create(self, data) -> Creator:
+        return await Creator(self).write(data)

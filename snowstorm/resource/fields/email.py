@@ -1,6 +1,6 @@
-from snowstorm.query.operators import EmailNotificationOperator
-
 from .base import BaseField
+
+from ..query import EmailNotificationOperator
 
 
 class EmailNotification(BaseField):

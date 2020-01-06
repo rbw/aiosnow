@@ -1,8 +1,9 @@
 import marshmallow
 
-from snowstorm.query import Segment, BaseOperator
 from snowstorm.exceptions import UnexpectedValue
 from snowstorm.consts import Target
+
+from ..query import Segment, BaseOperator
 
 
 class BaseField(marshmallow.fields.Field):

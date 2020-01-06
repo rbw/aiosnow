@@ -1,8 +1,8 @@
-from snowstorm.query import BaseOperator
-
-from .base import BaseField
 from .text import Text
 from .numeric import Numeric
+from .base import BaseField
+
+from ..query import BaseOperator
 
 
 class ChoiceBase(BaseField):

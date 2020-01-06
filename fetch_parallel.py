@@ -26,18 +26,19 @@ async def main():
     snow = Snowstorm(config)
 
     async with snow.resource(Incident) as r:
-        from datetime import datetime, timedelta
+        selection = r.select(
+            Incident.number.equals("INC0010045")
+            # Incident.opened_at.after("2020-01-05 22:35:50")
+        ).order_desc(Incident.number)
 
-        reader = (
-            r.select(
-                # Incident.number.equals("INC0010029") &
-                Incident.opened_at.after("2020-01-04 23:36:58")
-            )
-            .order_desc(Incident.number)
-        )
+        #async for item in selection.stream(limit=5, offset=0, chunk_size=5):
+        #    print(item)
 
-        async for item in reader.stream(limit=5, offset=0, chunk_size=5):
-            print(item)
+        await r.update(selection=selection, payload=dict(
+            short_description="asdf"
+        ))
+
+        print(selection.query)
 
         # data = await r.create(short_description="asdf", description="asdf123")
         # print(data)

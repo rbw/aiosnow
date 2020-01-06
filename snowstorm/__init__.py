@@ -1,5 +1,4 @@
-from .resource import Resource, Schema
-from .query import QueryBuilder
+from .resource import Resource, Schema, QueryBuilder
 from .consts import Target
 
 

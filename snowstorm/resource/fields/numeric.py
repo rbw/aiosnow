@@ -1,6 +1,6 @@
-from snowstorm.query import NumericOperator
-
 from .base import BaseField
+
+from ..query import NumericOperator
 
 
 class Numeric(BaseField):

@@ -3,8 +3,6 @@ import warnings
 import marshmallow
 import ujson
 
-from snowstorm.consts import Target
-
 from .fields import BaseField
 
 

@@ -1,8 +1,8 @@
 import marshmallow
 
-from snowstorm.query import StringOperator
-
 from .base import BaseField
+
+from ..query import StringOperator
 
 
 class Text(BaseField, marshmallow.fields.String):

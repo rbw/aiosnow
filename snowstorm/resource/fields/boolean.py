@@ -1,6 +1,6 @@
-from snowstorm.query import BooleanOperator
-
 from .base import BaseField
+
+from ..query import BooleanOperator
 
 
 class Boolean(BaseField):
