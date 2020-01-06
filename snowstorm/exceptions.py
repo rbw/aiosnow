@@ -26,15 +26,11 @@ class UnexpectedValue(SnowstormException):
     pass
 
 
-class UnexpectedQueryType(SnowstormException):
+class SelectError(SnowstormException):
     pass
 
 
 class NoLocationField(SnowstormException):
-    pass
-
-
-class InvalidSegment(SnowstormException):
     pass
 
 

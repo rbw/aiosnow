@@ -31,14 +31,17 @@ async def main():
             # Incident.opened_at.after("2020-01-05 22:35:50")
         ).order_desc(Incident.number)
 
-        #async for item in selection.stream(limit=5, offset=0, chunk_size=5):
+        #async for item in r.stream(selection, limit=5, offset=0, chunk_size=5):
         #    print(item)
 
-        await r.update(selection=selection, payload=dict(
-            short_description="asdf"
-        ))
+        result = await r.get(selection, limit=50)
+        print(result)
 
-        print(selection.query)
+        #await r.update(selection, data=dict(
+        #    short_description="asdf"
+        #))
+
+        # print(selection.query)
 
         # data = await r.create(short_description="asdf", description="asdf123")
         # print(data)

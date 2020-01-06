@@ -4,7 +4,7 @@ from urllib.parse import urljoin, urlencode
 
 import aiohttp
 
-from snowstorm.exceptions import NoSchemaFields, UnexpectedSchema, UnexpectedQueryType
+from snowstorm.exceptions import NoSchemaFields, UnexpectedSchema, SelectError
 from snowstorm.consts import Target
 from snowstorm.request import Reader, Creator, Updater
 
@@ -63,18 +63,26 @@ class Resource:
 
         return f"{self.url}{'?' + urlencode(params) if params else ''}"
 
-    def select(self, segment: Segment) -> Reader:
-        if not isinstance(segment, Segment):
-            raise UnexpectedQueryType(f"{self.name}.select() expects a root {Segment}")
+    def get_builder(self, value):
+        if isinstance(value, QueryBuilder):
+            return value
+        if isinstance(value, Segment):
+            return QueryBuilder.from_segments(value.instances)
+        elif isinstance(value, str):
+            return QueryBuilder.from_raw(value)
+        else:
+            raise SelectError(f"Can only query by type {Segment} or {str}")
 
-        builder = QueryBuilder(segment)
-        return Reader(self, builder.sysparms)
+    def select(self, root):
+        return self.get_builder(root)
 
-    def select_raw(self, query_string: str):
-        if not isinstance(query_string, str):
-            raise UnexpectedQueryType(f"{self.name}.select_raw() expects a sysparm query {str} argument")
+    def stream(self, selection, *args, **kwargs):
+        builder = self.get_builder(selection)
+        return Reader(self, builder).stream(*args, **kwargs)
 
-        return Reader(self, query_string)
+    def get(self, selection, *args, **kwargs):
+        builder = self.get_builder(selection)
+        return Reader(self, builder).collect(*args, **kwargs)
 
     async def update(self, payload, selection=None, sys_id=None) -> Updater:
         return await Updater(self).write(**payload)

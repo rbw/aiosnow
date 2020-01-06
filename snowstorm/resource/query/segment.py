@@ -9,7 +9,6 @@ class Segment:
         self.operand_right = value
         self.operator_conditional = operator
         self.operator_logical = None
-        self.inverted = False
         self.instances.append(self)
 
     @property
@@ -20,10 +19,6 @@ class Segment:
             self.operand_right +
             (self.operator_logical or "")
         )
-
-    def __invert__(self):
-        self.inverted = True
-        return self
 
     def __and__(self, cond):
         self.operator_logical = LogicalOperator.AND
