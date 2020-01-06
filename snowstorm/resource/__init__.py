@@ -4,12 +4,12 @@ from urllib.parse import urljoin, urlencode
 
 import aiohttp
 
-from snowstorm.exceptions import NoSchemaFields, UnexpectedSchema, SelectError
+from snowstorm.exceptions import NoSchemaFields, UnexpectedSchema
 from snowstorm.consts import Target
 from snowstorm.request import Reader, Creator, Updater
 
 from .schema import Schema
-from .query import QueryBuilder, Segment
+from .query import QueryBuilder, Segment, select
 
 from . import fields
 
@@ -63,26 +63,15 @@ class Resource:
 
         return f"{self.url}{'?' + urlencode(params) if params else ''}"
 
-    def get_builder(self, value):
-        if isinstance(value, QueryBuilder):
-            return value
-        if isinstance(value, Segment):
-            return QueryBuilder.from_segments(value.instances)
-        elif isinstance(value, str):
-            return QueryBuilder.from_raw(value)
-        else:
-            raise SelectError(f"Can only query by type {Segment} or {str}")
-
-    def select(self, root):
-        return self.get_builder(root)
+    def get_reader(self, selection):
+        builder = select(selection)
+        return Reader(self, builder)
 
     def stream(self, selection, *args, **kwargs):
-        builder = self.get_builder(selection)
-        return Reader(self, builder).stream(*args, **kwargs)
+        return self.get_reader(selection).stream(*args, **kwargs)
 
     def get(self, selection, *args, **kwargs):
-        builder = self.get_builder(selection)
-        return Reader(self, builder).collect(*args, **kwargs)
+        return self.get_reader(selection).collect(*args, **kwargs)
 
     async def update(self, payload, selection=None, sys_id=None) -> Updater:
         return await Updater(self).write(**payload)

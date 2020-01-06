@@ -18,6 +18,6 @@ class Reader:
                     yield item
 
     async def collect(self, *args, **kwargs):
-        response = await GetRequest(self.resource, *args, **kwargs).send()
+        response = await GetRequest(self.resource, *args, **kwargs, query=self.query).send()
         content = await response.read()
         return self.schema.load(content, many=True)
