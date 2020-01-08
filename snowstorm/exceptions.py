@@ -26,6 +26,10 @@ class UnexpectedValue(SnowstormException):
     pass
 
 
+class SchemaError(SnowstormException):
+    pass
+
+
 class SelectError(SnowstormException):
     pass
 
@@ -39,4 +43,12 @@ class NoSchemaFields(SnowstormException):
 
 
 class EmptyQuery(SnowstormException):
+    pass
+
+
+class TooManyResults(SnowstormException):
+    pass
+
+
+class NoResult(SnowstormException):
     pass

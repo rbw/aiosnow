@@ -7,8 +7,9 @@ from ..query import Segment, BaseOperator
 
 
 class BaseField(marshmallow.fields.Field):
-    def __init__(self, *args, target=Target.VALUE, **kwargs):
-        self.target = Target(target)
+    def __init__(self, *args, pluck=Target.VALUE, is_primary=False, **kwargs):
+        self.target = Target(pluck)
+        self.is_primary = is_primary
         super(BaseField, self).__init__(*args, **kwargs)
 
     def _segment(self, operator, value=None, field_operator=None):

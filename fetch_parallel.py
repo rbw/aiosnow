@@ -7,12 +7,13 @@ from snowstorm import Snowstorm, Target, select
 class Incident(Schema):
     __location__ = "/api/now/table/incident"
 
-    sys_id = fields.Text()
+    sys_id = fields.Text(is_primary=True)
     number = fields.Text()
     description = fields.Text()
     short_description = fields.Text()
-    impact = fields.Text(target=Target.DISPLAY_VALUE)
-    assignment_group = fields.Text(target=Target.DISPLAY_VALUE)
+    impact = fields.Numeric(pluck=Target.DISPLAY_VALUE)
+    priority = fields.Text()x
+    assignment_group = fields.Text(pluck=Target.DISPLAY_VALUE)
     opened_at = fields.Datetime()
 
 
@@ -31,20 +32,26 @@ async def main():
             # Incident.opened_at.after("2020-01-05 22:35:50")
         ).order_desc(Incident.number)
 
-        async for item in r.stream(selection, limit=5, offset=0, chunk_size=5):
-            print(item)
+        #async for item in r.stream(selection, limit=5, offset=0, chunk_size=5):
+        #    print(item)
 
         #result = await r.get(selection, limit=50)
         #print(result)
 
-        #await r.update(selection, data=dict(
-        #    short_description="asdf"
-        #))
-
         # print(selection.query)
 
-        # data = await r.create(short_description="asdf", description="asdf123")
-        # print(data)
+        #data = await r.create(short_description="asdf", description="asdf123")
+        #print(data["sys_id"])
+
+        data = await r.update(
+            Incident.number.equals("INC0010045"),
+            {
+                Incident.description: "hello",
+                Incident.impact: 2
+            }
+        )
+
+        print(data)
 
 
 if __name__ == "__main__":
