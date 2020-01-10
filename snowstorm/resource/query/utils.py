@@ -4,10 +4,10 @@ from .builder import QueryBuilder
 from .segment import Segment
 
 
-def select(value):
+def select(value=""):
     if isinstance(value, QueryBuilder):
         return value
-    if isinstance(value, Segment):
+    elif isinstance(value, Segment):
         return QueryBuilder.from_segments(value.instances)
     elif isinstance(value, str):
         return QueryBuilder.from_raw(value)

@@ -1,5 +1,5 @@
 from .resource import Resource, Schema, QueryBuilder, select
-from .consts import Target
+from .consts import Joined
 
 
 class Snowstorm:

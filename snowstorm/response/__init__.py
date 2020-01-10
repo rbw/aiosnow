@@ -22,8 +22,9 @@ class Response:
         content_type = self.obj.headers["content-type"]
         if not content_type.startswith(CONTENT_TYPE):
             raise UnexpectedContentType(
-                f"Unexpected content-type in response: {content_type}"
-                f", expected: {CONTENT_TYPE}"
+                f"Unexpected content-type in response: "
+                f"{content_type}, expected: {CONTENT_TYPE}, "
+                f"probable causes: instance down or REST API disabled"
             )
 
         content = ujson.loads(await self.obj.text())

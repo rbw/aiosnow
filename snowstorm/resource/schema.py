@@ -36,16 +36,17 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
     OPTIONS_CLASS = SchemaOpts
 
     def _link_fields(self, fields):
-        for name, record in fields.items():
+        for key, value in fields.items():
+            name = key.name if isinstance(key, BaseField) else key
             field = getattr(self, name, None)
             if not field:
                 warnings.warn(f"Unexpected field in response content: {name}, skipping...")
                 continue
 
-            if isinstance(record, dict):
-                yield name, record[field.target.value]
+            if isinstance(value, dict):
+                yield name, value[field.joined.value]
             else:
-                yield name, record
+                yield name, value
 
     @marshmallow.pre_load
     def pre_load(self, data, **kwargs):

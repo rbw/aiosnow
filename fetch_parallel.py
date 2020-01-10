@@ -1,7 +1,7 @@
 import asyncio
 
 from snowstorm.resource import Schema, fields
-from snowstorm import Snowstorm, Target, select
+from snowstorm import Snowstorm, Joined, select
 
 
 class Incident(Schema):
@@ -11,9 +11,9 @@ class Incident(Schema):
     number = fields.Text()
     description = fields.Text()
     short_description = fields.Text()
-    impact = fields.Numeric(pluck=Target.DISPLAY_VALUE)
-    priority = fields.Text()x
-    assignment_group = fields.Text(pluck=Target.DISPLAY_VALUE)
+    impact = fields.Numeric(pluck=Joined.DISPLAY_VALUE)
+    priority = fields.Numeric(pluck=Joined.DISPLAY_VALUE)
+    assignment_group = fields.Text(pluck=Joined.DISPLAY_VALUE)
     opened_at = fields.Datetime()
 
 
@@ -28,11 +28,11 @@ async def main():
 
     async with snow.resource(Incident) as r:
         selection = select(
-            Incident.number.equals("INC0010045")
+            # Incident.number.equals("INC0010045")
             # Incident.opened_at.after("2020-01-05 22:35:50")
         ).order_desc(Incident.number)
 
-        #async for item in r.stream(selection, limit=5, offset=0, chunk_size=5):
+        #async for item in r.stream(selection, limit=0, offset=0, chunk_size=5):
         #    print(item)
 
         #result = await r.get(selection, limit=50)
@@ -40,14 +40,19 @@ async def main():
 
         # print(selection.query)
 
-        #data = await r.create(short_description="asdf", description="asdf123")
-        #print(data["sys_id"])
+        data = await r.create({
+            Incident.short_description: "a",
+            Incident.description: "test"
+        })
+
+        print(data)
 
         data = await r.update(
-            Incident.number.equals("INC0010045"),
+            data["sys_id"],
             {
                 Incident.description: "hello",
-                Incident.impact: 2
+                Incident.impact: 2,
+                Incident.priority: 1
             }
         )
 

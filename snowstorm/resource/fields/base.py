@@ -1,14 +1,14 @@
 import marshmallow
 
 from snowstorm.exceptions import UnexpectedValue
-from snowstorm.consts import Target
+from snowstorm.consts import Joined
 
 from ..query import Segment, BaseOperator
 
 
 class BaseField(marshmallow.fields.Field):
-    def __init__(self, *args, pluck=Target.VALUE, is_primary=False, **kwargs):
-        self.target = Target(pluck)
+    def __init__(self, *args, pluck=Joined.VALUE, is_primary=False, **kwargs):
+        self.joined = Joined(pluck)
         self.is_primary = is_primary
         super(BaseField, self).__init__(*args, **kwargs)
 

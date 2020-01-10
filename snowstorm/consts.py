@@ -5,7 +5,7 @@ SORT_ASCENDING = "ORDERBY"
 SORT_DESCENDING = "ORDERBYDESC"
 
 
-class Target(Enum):
+class Joined(Enum):
     DISPLAY_VALUE = "display_value"
     VALUE = "value"
     LINK = "link"
