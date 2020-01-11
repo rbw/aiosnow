@@ -1,20 +1,17 @@
 import marshmallow
 import ujson
 
-from urllib.parse import urljoin
-
 from snowstorm.exceptions import PayloadValidationError
 
-from .base import PatchRequest
+from ..core import PatchRequest
 
 
 class Updater:
-    def __init__(self, resource, object_id):
+    def __init__(self, resource):
         self.resource = resource
         self.schema = resource.schema_cls
-        self.object_id = object_id
 
-    async def write(self, data):
+    async def patch(self, object_id, data):
         if not isinstance(data, dict):
             raise PayloadValidationError(
                 f"Expected payload as a {dict}, got: {type(data)}"
@@ -27,7 +24,10 @@ class Updater:
         except marshmallow.exceptions.ValidationError as e:
             raise PayloadValidationError(e)
 
-        request = PatchRequest(self.resource, self.object_id, ujson.dumps(payload))
+        request = PatchRequest(self.resource, object_id, ujson.dumps(payload))
         response = await request.send()
         content = await response.read()
         return self.schema(unknown=marshmallow.RAISE).load(content)
+
+    async def replace(self, data):
+        pass

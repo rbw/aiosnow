@@ -2,7 +2,7 @@ from urllib.parse import parse_qs
 
 from snowstorm.exceptions import StreamExhausted
 
-from .base.get import GetRequest
+from ..core import GetRequest
 
 
 class PageStream(GetRequest):

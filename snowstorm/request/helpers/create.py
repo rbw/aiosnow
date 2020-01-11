@@ -3,7 +3,7 @@ import ujson
 
 from snowstorm.exceptions import PayloadValidationError
 
-from .base.post import PostRequest
+from ..core import PostRequest
 
 
 class Creator:

@@ -15,10 +15,10 @@ from snowstorm.exceptions import (
 )
 
 from snowstorm.consts import Joined
-from snowstorm.request import Reader, Creator, Updater
+from snowstorm.request import Reader, Creator, Updater, Deleter
 
 from .schema import Schema
-from .query import QueryBuilder, Segment, select
+from .query import QueryBuilder, Segment, builder
 
 from . import fields
 
@@ -40,6 +40,11 @@ class Resource:
         self.primary_key = self._get_primary_key()
         self.url = urljoin(self.config["address"], str(schema_cls.__location__))
         self._resolve = any([f for f in self.fields.values() if f.joined != Joined.VALUE])
+
+        self.reader = Reader(self)
+        self.updater = Updater(self)
+        self.creator = Creator(self)
+        self.deleter = Deleter(self)
 
     async def __aenter__(self):
         config = self.config
@@ -93,15 +98,11 @@ class Resource:
 
         return f"{url}{'?' + urlencode(params) if params else ''}"
 
-    def get_reader(self, selection) -> Reader:
-        builder = select(selection)
-        return Reader(self, builder)
-
     def stream(self, selection, *args, **kwargs) -> Iterable:
-        return self.get_reader(selection).stream(*args, **kwargs)
+        return self.reader.stream(*args, query=builder(selection).sysparms, **kwargs)
 
     async def get(self, selection, *args, **kwargs) -> dict:
-        return await self.get_reader(selection).collect(*args, **kwargs)
+        return await self.reader.collect(*args, query=builder(selection).sysparms, **kwargs)
 
     async def get_one(self, value):
         if not isinstance(value, Segment):
@@ -121,19 +122,25 @@ class Resource:
 
         return items[0]
 
-    async def get_object_id(self, value):
-        record = await self.get_one(value)
+    async def get_pk_value(self, selection):
+        record = await self.get_one(selection)
         return record[self.primary_key]
 
-    async def update(self, selection, payload) -> dict:
-        if isinstance(selection, str):
-            object_id = selection
-        elif isinstance(selection, Segment):
-            object_id = await self.get_object_id(selection)
+    async def get_target_id(self, target):
+        if isinstance(target, str):
+            return target
+        elif isinstance(target, Segment):
+            return await self.get_pk_value(target)
         else:
             raise SelectError(f"Selection must be of type {Segment} or {str}")
 
-        return await Updater(self, object_id).write(payload)
+    async def update(self, selection, payload) -> dict:
+        object_id = await self.get_target_id(selection)
+        return await self.updater.patch(object_id, payload)
 
-    async def create(self, payload) -> Creator:
-        return await Creator(self).write(payload)
+    async def create(self, payload):
+        return await self.creator.write(payload)
+
+    async def delete(self, selection):
+        object_id = await self.get_target_id(selection)
+        return await self.deleter.delete(object_id)

@@ -19,7 +19,11 @@ class Response:
         return self.obj.links
 
     async def read(self):
-        content_type = self.obj.headers["content-type"]
+        if self.obj.method == "DELETE":
+            return dict(result="success")
+
+        content_type = self.obj.headers.get("content-type", None)
+
         if not content_type.startswith(CONTENT_TYPE):
             raise UnexpectedContentType(
                 f"Unexpected content-type in response: "

@@ -2,7 +2,7 @@ from .base import Request
 
 
 class PatchRequest(Request):
-    __http_method__ = "PATCH"
+    __verb__ = "PATCH"
 
     def __init__(self, resource, object_id, payload):
         super(PatchRequest, self).__init__(resource)

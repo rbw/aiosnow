@@ -2,7 +2,7 @@ from .base import Request
 
 
 class PostRequest(Request):
-    __http_method__ = "POST"
+    __verb__ = "POST"
 
     def __init__(self, resource, payload):
         super(PostRequest, self).__init__(resource)

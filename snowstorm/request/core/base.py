@@ -27,7 +27,7 @@ class Request(ABC):
 
     @property
     @abstractmethod
-    def __http_method__(self):
+    def __verb__(self):
         pass
 
     async def _request(self, **kwargs):
@@ -35,7 +35,7 @@ class Request(ABC):
         headers.update(kwargs.pop("headers", {}))
 
         obj = await self._connection.request(
-            self.__http_method__,
+            self.__verb__,
             self.url,
             headers={
                 **self.default_headers,

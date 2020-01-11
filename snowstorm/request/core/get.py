@@ -4,7 +4,7 @@ from .base import Request
 
 
 class GetRequest(Request):
-    __http_method__ = "GET"
+    __verb__ = "GET"
 
     def __init__(self, resource, limit=30, offset=0, query=None):
         super(GetRequest, self).__init__(resource)
