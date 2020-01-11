@@ -32,23 +32,23 @@ async def main():
             # Incident.opened_at.after("2020-01-05 22:35:50")
         ).order_desc(Incident.number)
 
-        #async for item in r.stream(selection, limit=0, offset=0, chunk_size=5):
-        #    print(item)
+        async for item in r.stream(selection, limit=0, offset=0, chunk_size=5):
+            print(item)
 
         #result = await r.get(selection, limit=50)
         #print(result)
 
-        # print(selection.query)
+        #print(selection.query)
 
-        data = await r.create({
+        """data = await r.create({
             Incident.short_description: "a",
             Incident.description: "test"
         })
 
-        print(data)
+        print(data)"""
 
-        data = await r.update(
-            data["sys_id"],
+        """data = await r.update(
+            "fac68f4d4fd200105d6e704ca310c793",
             {
                 Incident.description: "hello",
                 Incident.impact: 2,
@@ -56,7 +56,7 @@ async def main():
             }
         )
 
-        print(data)
+        print(data)"""
 
 
 if __name__ == "__main__":

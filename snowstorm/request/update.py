@@ -13,7 +13,6 @@ class Updater:
         self.resource = resource
         self.schema = resource.schema_cls
         self.object_id = object_id
-        self.url = urljoin(self.resource.url, object_id)
 
     async def write(self, data):
         if not isinstance(data, dict):
@@ -28,7 +27,7 @@ class Updater:
         except marshmallow.exceptions.ValidationError as e:
             raise PayloadValidationError(e)
 
-        request = PatchRequest(self.resource, ujson.dumps(payload))
+        request = PatchRequest(self.resource, self.object_id, ujson.dumps(payload))
         response = await request.send()
         content = await response.read()
         return self.schema(unknown=marshmallow.RAISE).load(content)

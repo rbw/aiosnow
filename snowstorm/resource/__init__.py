@@ -5,6 +5,7 @@ from typing import Iterable
 import aiohttp
 
 from snowstorm.exceptions import (
+    SnowstormException,
     NoSchemaFields,
     UnexpectedSchema,
     TooManyResults,
@@ -76,14 +77,21 @@ class Resource:
     def name(self):
         return self.schema_cls.__name__
 
-    def get_url(self, method="GET"):
-        params = {}
+    def get_url(self, fragments=None):
+        if fragments and not isinstance(fragments, list):
+            raise SnowstormException(f"Expected a list of path fragments, got: {fragments}")
 
-        if method == "GET":
-            params["sysparm_fields"] = ",".join(self.fields)
-            params["sysparm_display_value"] = "all" if self._resolve else "false"
+        params = dict(
+            sysparm_fields=",".join(self.fields),
+            sysparm_display_value="all" if self._resolve else "false"
+        )
 
-        return f"{self.url}{'?' + urlencode(params) if params else ''}"
+        url = self.url
+
+        if fragments:
+            url += "/" + "/".join(fragments)
+
+        return f"{url}{'?' + urlencode(params) if params else ''}"
 
     def get_reader(self, selection) -> Reader:
         builder = select(selection)
