@@ -18,7 +18,7 @@ from snowstorm.consts import Joined
 from snowstorm.request import Reader, Creator, Updater, Deleter
 
 from .schema import Schema
-from .query import QueryBuilder, Segment, builder
+from .query import QueryBuilder, Segment, select
 
 from . import fields
 
@@ -99,10 +99,10 @@ class Resource:
         return f"{url}{'?' + urlencode(params) if params else ''}"
 
     def stream(self, selection, *args, **kwargs) -> Iterable:
-        return self.reader.stream(*args, query=builder(selection).sysparms, **kwargs)
+        return self.reader.stream(*args, query=select(selection).sysparms, **kwargs)
 
     async def get(self, selection, *args, **kwargs) -> dict:
-        return await self.reader.collect(*args, query=builder(selection).sysparms, **kwargs)
+        return await self.reader.collect(*args, query=select(selection).sysparms, **kwargs)
 
     async def get_one(self, value):
         if not isinstance(value, Segment):

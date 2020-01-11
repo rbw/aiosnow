@@ -4,7 +4,7 @@ from .builder import QueryBuilder
 from .segment import Segment
 
 
-def builder(value=""):
+def select(value=""):
     if isinstance(value, QueryBuilder):
         return value
     elif isinstance(value, Segment):

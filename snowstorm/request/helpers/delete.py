@@ -10,10 +10,8 @@ class Deleter:
 
     async def delete(self, object_id):
         request = DeleteRequest(self.resource, object_id)
-        print(request.url)
         response = await request.send()
-        content = await response.read()
-        return content
+        return await response.read()
 
     async def replace(self, data):
         pass

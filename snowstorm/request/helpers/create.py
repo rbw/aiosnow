@@ -17,7 +17,6 @@ class Creator:
         except marshmallow.exceptions.ValidationError as e:
             raise PayloadValidationError(e)
 
-        request = PostRequest(self.resource, ujson.dumps(payload))
-        response = await request.send()
+        response = await PostRequest(self.resource, ujson.dumps(payload)).send()
         content = await response.read()
         return self.schema(unknown=marshmallow.RAISE).load(content)

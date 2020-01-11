@@ -1,4 +1,4 @@
-from .resource import Resource, Schema, QueryBuilder, builder
+from .resource import Resource, Schema, QueryBuilder, select
 from .consts import Joined
 
 
