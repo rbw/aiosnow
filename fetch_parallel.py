@@ -28,15 +28,15 @@ async def main():
 
     async with snow.resource(Incident) as r:
         selection = select(
-            # Incident.number.equals("INC0010045")
+            # Incident.number.equals("INC0010120")
             # Incident.opened_at.after("2020-01-05 22:35:50")
         ).order_desc(Incident.number)
 
+        # Get the
+        await r.get(limit=50)
+
         async for item in r.stream(selection, limit=0, offset=0, chunk_size=5):
             print(item)
-
-        result = await r.get(selection, limit=50)
-        print(result)
 
         data = await r.create({
             Incident.short_description: "a",

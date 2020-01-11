@@ -98,11 +98,17 @@ class Resource:
 
         return f"{url}{'?' + urlencode(params) if params else ''}"
 
-    def stream(self, selection, *args, **kwargs) -> Iterable:
-        return self.reader.stream(*args, query=select(selection).sysparms, **kwargs)
+    def stream(self, selection=None, **kwargs) -> Iterable:
+        return self.reader.stream(
+            select(selection).sysparms,
+            **kwargs
+        )
 
-    async def get(self, selection, *args, **kwargs) -> dict:
-        return await self.reader.collect(*args, query=select(selection).sysparms, **kwargs)
+    async def get(self, selection=None, **kwargs) -> dict:
+        return await self.reader.collect(
+            select(selection).sysparms,
+            **kwargs
+        )
 
     async def get_one(self, value):
         if not isinstance(value, Segment):

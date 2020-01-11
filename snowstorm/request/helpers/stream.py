@@ -5,11 +5,11 @@ from snowstorm.exceptions import StreamExhausted
 from ..core import GetRequest
 
 
-class PageStream(GetRequest):
+class StreamLike(GetRequest):
     exhausted = False
 
     def __init__(self, *args, chunk_size=500, **kwargs):
-        super(PageStream, self).__init__(*args, **kwargs)
+        super(StreamLike, self).__init__(*args, **kwargs)
         self._chunk_size = chunk_size
         self._fields = None
 
