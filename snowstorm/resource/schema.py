@@ -1,21 +1,9 @@
-from abc import abstractmethod
+import warnings
 
 import marshmallow
 import ujson
 
-from .operators import StringOperator
-from .query import Condition
-
-_fields = marshmallow.fields
-
-
-class BaseField(marshmallow.fields.String):
-    pass
-
-
-class Text(BaseField):
-    def eq(self, value):
-        return Condition(self.name, StringOperator.EQUALS, value)
+from .fields import BaseField
 
 
 class SchemaOpts(marshmallow.schema.SchemaOpts):
@@ -30,21 +18,40 @@ class SchemaOpts(marshmallow.schema.SchemaOpts):
 
 class SchemaMeta(marshmallow.schema.SchemaMeta):
     def __new__(mcs, name, bases, attrs):
-        fields = [item for item in attrs.items() if isinstance(item[1], BaseField)]
-        klass = super().__new__(mcs, name, bases, attrs)
+        fields = {}
+        for key, value in attrs.items():
+            if isinstance(value, BaseField):
+                fields[key] = value
 
-        for name, field in fields:
+        cls = super().__new__(mcs, name, bases, attrs)
+
+        for name, field in fields.items():
             field.name = name
-            setattr(klass, name, field)
+            setattr(cls, name, field)
 
-        return klass
+        return cls
 
 
 class Schema(marshmallow.Schema, metaclass=SchemaMeta):
     OPTIONS_CLASS = SchemaOpts
 
+    def _link_fields(self, fields):
+        for key, value in fields.items():
+            name = key.name if isinstance(key, BaseField) else key
+            field = getattr(self, name, None)
+            if not field:
+                warnings.warn(f"Unexpected field in response content: {name}, skipping...")
+                continue
+
+            if isinstance(value, dict):
+                yield name, value[field.joined.value]
+            else:
+                yield name, value
+
+    @marshmallow.pre_load
+    def pre_load(self, data, **kwargs):
+        return dict(self._link_fields(data))
+
     @property
     def __location__(self):
         raise NotImplementedError
-
-    __resolve__ = True

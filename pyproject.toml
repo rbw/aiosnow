@@ -15,7 +15,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.7"
 aiohttp = "^3.6.2"
 marshmallow = "^3.2.2"
 ujson = "^1.35"

@@ -1,14 +1,15 @@
 from urllib.parse import parse_qs
 
 from snowstorm.exceptions import StreamExhausted
-from snowstorm.request import GetRequest
+
+from ..core import GetRequest
 
 
-class PageStream(GetRequest):
+class StreamLike(GetRequest):
     exhausted = False
 
     def __init__(self, *args, chunk_size=500, **kwargs):
-        super(PageStream, self).__init__(*args, **kwargs)
+        super(StreamLike, self).__init__(*args, **kwargs)
         self._chunk_size = chunk_size
         self._fields = None
 
@@ -32,7 +33,7 @@ class PageStream(GetRequest):
         self._offset = offset_next
 
     async def read(self, **kwargs):
-        response = await self.get(**kwargs)
+        response = await self.send(**kwargs)
 
         try:
             self._prepare_next(response.links)
@@ -40,4 +41,3 @@ class PageStream(GetRequest):
             self.exhausted = True
 
         yield await response.read()
-

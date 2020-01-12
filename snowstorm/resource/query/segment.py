@@ -1,19 +1,7 @@
-from marshmallow import fields
-
 from .operators import LogicalOperator
 
 
-class QueryBuilder:
-    def __init__(self, root):
-        self.conditions = root.instances
-
-    @property
-    def sysparms(self):
-        return "".join([c.__str__ for c in self.conditions])
-
-
-class Condition:
-    value = None
+class Segment:
     instances = []
 
     def __init__(self, key, operator, value=None):
@@ -27,9 +15,9 @@ class Condition:
     def __str__(self):
         return (
             self.operand_left +
-            self.operator_conditional.value +
+            self.operator_conditional +
             self.operand_right +
-            (self.operator_logical.value if self.operator_logical else "")
+            (self.operator_logical or "")
         )
 
     def __and__(self, cond):
@@ -43,6 +31,3 @@ class Condition:
     def __xor__(self, cond):
         self.operator_logical = LogicalOperator.NQ
         return cond
-
-    def eq(self, value):
-        raise NotImplementedError

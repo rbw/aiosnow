@@ -1,21 +1,25 @@
 import asyncio
 
-from snowstorm.resource import Schema, Text
-from snowstorm import Snowstorm
+from snowstorm.resource import Schema, fields
+from snowstorm import Snowstorm, Joined, select
 
 
 class Incident(Schema):
     __location__ = "/api/now/table/incident"
-    __resolve__ = True
 
-    sys_id = Text(required=False)
-    number = Text(required=False)
-    short_description = Text()
+    sys_id = fields.Text(is_primary=True)
+    number = fields.Text()
+    description = fields.Text()
+    short_description = fields.Text()
+    impact = fields.Numeric(pluck=Joined.DISPLAY_VALUE)
+    priority = fields.Numeric(pluck=Joined.DISPLAY_VALUE)
+    assignment_group = fields.Text(pluck=Joined.DISPLAY_VALUE)
+    opened_at = fields.Datetime()
 
 
 async def main():
     config = dict(
-        base_url="https://dev49212.service-now.com",
+        address="https://dev49212.service-now.com",
         username="",
         password=""
     )
@@ -23,17 +27,37 @@ async def main():
     snow = Snowstorm(config)
 
     async with snow.resource(Incident) as r:
-        query = r.build_query(Incident.number.eq("INC0000001") & Incident.sys_id.eq("INC0000002") | Incident.sys_id.eq("INC0000003"))
-        print(query.sysparms)
+        selection = select(
+            # Incident.number.equals("INC0010120")
+            # Incident.opened_at.after("2020-01-05 22:35:50")
+        ).order_desc(Incident.number)
 
-        #async for item in r.select(query).all(limit=1, offset=0, chunk_size=5):
-        #    print(item)
+        # Get the
+        await r.get(limit=50)
 
-        # await r.select_native({"test": "asdf"}).update({"test": "bajs"})
+        async for item in r.stream(selection, limit=0, offset=0, chunk_size=5):
+            print(item)
 
-        #await r.create(
-        #    short_description="test"
-        #)
+        data = await r.create({
+            Incident.short_description: "a",
+            Incident.description: "test"
+        })
+
+        print(data)
+
+        #deleted = await r.delete(data["sys_id"])
+        #print(deleted)
+
+        data = await r.update(
+            data["sys_id"],
+            {
+                Incident.description: "hello",
+                Incident.impact: 2,
+                Incident.priority: 1
+            }
+        )
+
+        print(data)
 
 
 if __name__ == "__main__":
