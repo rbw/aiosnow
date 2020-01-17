@@ -1,7 +1,7 @@
 import asyncio
 
 from snowstorm.resource import Schema, fields
-from snowstorm import Snowstorm, Joined, select
+from snowstorm import Client, Joined, select
 
 
 class Incident(Schema):
@@ -24,7 +24,7 @@ async def main():
         password=""
     )
 
-    snow = Snowstorm(config)
+    snow = Client(config)
 
     async with snow.resource(Incident) as r:
         selection = select(
