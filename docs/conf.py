@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.abspath(".."))
 
 now = datetime.now()
 
-project = "Snowstorm"
+project = "Snow"
 copyright = f"{now.year} Robert Wikman"
 author = u"Robert Wikman <rbw@vault13.org>"
 
@@ -40,7 +40,7 @@ html_favicon = "_static/favicon.png"
 
 html_context = {
     "maintainer": "Robert Wikman <rbw@vault13.org>",
-    "project_pretty_name": "Snowstorm",
+    "project_pretty_name": "Snow",
 }
 
 html_theme = "alabaster"
@@ -56,20 +56,20 @@ html_theme_options = {
     "logo_name": None,
     "logo": "logo2.png",
     "font_family": "arial",
-    "github_repo": "rbw/snowstorm",
+    "github_repo": "rbw/snow",
     "github_banner": True,
     "show_powered_by": False
 }
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "snowstormdoc"
+htmlhelp_basename = "snowdoc"
 
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, "snowstorm.tex", "Snowstorm Documentation",
+    (master_doc, "snow.tex", "Snow Documentation",
      "Robert Wikman \\textless{}rbw@vault13.org\\textgreater{}", "manual"),
 ]
 
@@ -79,7 +79,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, "snowstorm", "Snowstorm Documentation",
+    (master_doc, "snow", "Snow Documentation",
      [author], 1)
 ]
 
@@ -90,7 +90,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, "snowstorm", "Snowstorm Documentation",
-     author, "snowstorm", "Snowstorm library",
+    (master_doc, "snow", "Snow Documentation",
+     author, "snow", "Snow library",
      "Miscellaneous"),
 ]

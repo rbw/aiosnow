@@ -4,8 +4,8 @@ from urllib.parse import urljoin, urlencode
 from typing import Iterable
 import aiohttp
 
-from snowstorm.exceptions import (
-    SnowstormException,
+from snow.exceptions import (
+    SnowException,
     NoSchemaFields,
     UnexpectedSchema,
     TooManyResults,
@@ -14,8 +14,8 @@ from snowstorm.exceptions import (
     SelectError
 )
 
-from snowstorm.consts import Joined
-from snowstorm.request import Reader, Creator, Updater, Deleter
+from snow.consts import Joined
+from snow.request import Reader, Creator, Updater, Deleter
 
 from .schema import Schema
 from .query import QueryBuilder, Segment, select
@@ -84,7 +84,7 @@ class Resource:
 
     def get_url(self, fragments=None):
         if fragments and not isinstance(fragments, list):
-            raise SnowstormException(f"Expected a list of path fragments, got: {fragments}")
+            raise SnowException(f"Expected a list of path fragments, got: {fragments}")
 
         params = dict(
             sysparm_fields=",".join(self.fields),

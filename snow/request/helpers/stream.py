@@ -1,6 +1,6 @@
 from urllib.parse import parse_qs
 
-from snowstorm.exceptions import StreamExhausted
+from snow.exceptions import StreamExhausted
 
 from ..core import GetRequest
 

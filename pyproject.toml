@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "snowstorm"
+name = "snow"
 version = "0.0.1"
 description = "ServiceNow library and UI"
 authors = ["Robert Wikman <rbw@vault13.org>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/rbw/snowstorm"
+homepage = "https://github.com/rbw/snow"
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Environment :: Web Environment",

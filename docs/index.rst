@@ -1,7 +1,7 @@
 Introduction
 ============
 
-Snowstorm is a simple and lightweight yet powerful library for interacting with ServiceNow. It works
+Snow is a simple and lightweight yet powerful library for interacting with ServiceNow. It works
 with modern versions of Python and utilizes `asyncio <https://docs.python.org/3/library/asyncio.html>`_.
 
 Requirements
@@ -13,17 +13,17 @@ Requirements
 Installation
 ------------
 
-Snowstorm is on PyPI and can be installed using pip.
+Snow is on PyPI and can be installed using pip.
 
 .. code-block:: shell
 
-   $ pip install snowstorm
+   $ pip install snow
 
 
 Dependencies
 ------------
 
-Snowstorm depends on a small set of stable and permissively licensed libraries.
+Snow depends on a small set of stable and permissively licensed libraries.
 
 
 - `aiohttp <https://github.com/aio-libs/aiohttp>`_: Communication
