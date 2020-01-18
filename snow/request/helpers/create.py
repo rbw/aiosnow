@@ -1,7 +1,7 @@
 import marshmallow
 import ujson
 
-from snowstorm.exceptions import PayloadValidationError
+from snow.exceptions import PayloadValidationError
 
 from ..core import PostRequest
 

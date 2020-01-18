@@ -1,4 +1,4 @@
-from snowstorm.exceptions import SelectError
+from snow.exceptions import SelectError
 
 from .builder import QueryBuilder
 from .segment import Segment

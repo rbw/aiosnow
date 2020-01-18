@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 
 from aiohttp import ClientSession
-from snowstorm.response import Response
-from snowstorm.consts import CONTENT_TYPE
+from snow.response import Response
+from snow.consts import CONTENT_TYPE
 
 
 class Request(ABC):

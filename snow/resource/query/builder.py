@@ -1,4 +1,4 @@
-from snowstorm.consts import SORT_ASCENDING, SORT_DESCENDING
+from snow.consts import SORT_ASCENDING, SORT_DESCENDING
 
 
 class QueryBuilder:

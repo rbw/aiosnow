@@ -1,0 +1,66 @@
+pre {
+    background-color: #f6f7e2;
+    border: 1px solid #a8bd0b;
+}
+
+body {
+    overflow-y: scroll !important;
+}
+
+.section h2 {
+    border-bottom: 1px dashed #d0d0d0;
+}
+
+div.document {
+    margin: 25px auto 0 auto;
+}
+
+div.body {
+    max-width: 1024px !important;
+}
+
+p.logo {
+    border-bottom: 1px dotted #d0d0d0;
+}
+
+h1.logo {
+    display: none;
+    padding: 20px;
+}
+
+img.logo {
+    text-align: left;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+}
+
+.sphinxsidebarwrapper {
+    padding: 0 !important;
+    font-size: 17px;
+}
+
+.sphinxsidebarwrapper > p {
+    font-style: italic;
+    font-size: 18px;
+}
+
+.sphinxsidebarwrapper .toctree-l1 {
+    padding-left: 5px !important;
+}
+
+.sphinxsidebarwrapper > h3 {
+    display: none;
+}
+
+.note {
+    background-color: #fffeeb !important;
+    padding: 20px 20px 10px 30px !important;
+}
+
+.class .field-odd {
+    padding-bottom: 20px;
+}
+
+.class dt, .function dt {
+    padding-top: 3px !important;
+}

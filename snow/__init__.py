@@ -2,7 +2,7 @@ from .resource import Resource, Schema, QueryBuilder, select
 from .consts import Joined
 
 
-class Snowstorm:
+class Client:
     def __init__(self, config):
         self.config = config
 

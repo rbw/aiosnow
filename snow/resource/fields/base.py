@@ -1,7 +1,7 @@
 import marshmallow
 
-from snowstorm.exceptions import UnexpectedValue
-from snowstorm.consts import Joined
+from snow.exceptions import UnexpectedValue
+from snow.consts import Joined
 
 from ..query import Segment, BaseOperator
 

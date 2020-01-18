@@ -1,7 +1,7 @@
 import ujson
 
-from snowstorm.exceptions import UnexpectedContentType, ErrorResponse
-from snowstorm.consts import CONTENT_TYPE
+from snow.exceptions import UnexpectedContentType, ErrorResponse
+from snow.consts import CONTENT_TYPE
 
 from .schemas import SnowErrorText
 
