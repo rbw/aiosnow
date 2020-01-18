@@ -28,6 +28,8 @@ master_doc = "index"
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
 
+html_show_copyright = True
+html_show_sphinx = False
 
 # -- Options for HTML output -------------------------------------------------
 # templates_path = ["_templates"]
@@ -56,6 +58,7 @@ html_theme_options = {
     "font_family": "arial",
     "github_repo": "rbw/snowstorm",
     "github_banner": True,
+    "show_powered_by": False
 }
 
 # Output file base name for HTML help builder.
