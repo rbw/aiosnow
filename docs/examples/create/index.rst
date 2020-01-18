@@ -1,7 +1,7 @@
 Create
 ======
 
-Check out :ref:`reference/documentation/create <setup-configure-docs>` for details about this method.
+Check out :ref:`reference/resource/create <api-create>` for details about this method.
 
 .. toctree::
 

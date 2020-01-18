@@ -44,6 +44,7 @@ Table of Contents
    :caption: Reference
 
    reference/client
+   reference/resource
 
 .. toctree::
    :caption: Examples

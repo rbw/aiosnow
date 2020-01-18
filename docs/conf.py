@@ -36,7 +36,7 @@ html_show_sphinx = False
 
 html_static_path = ["_static"]
 
-html_favicon = "_static/favicon.png"
+# html_favicon = "_static/favicon.png"
 
 html_context = {
     "maintainer": "Robert Wikman <rbw@vault13.org>",
