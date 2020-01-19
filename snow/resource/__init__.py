@@ -8,8 +8,8 @@ from snow.exceptions import (
     SnowException,
     NoSchemaFields,
     UnexpectedSchema,
-    TooManyResults,
-    NoResult,
+    TooManyItems,
+    NoItems,
     SchemaError,
     SelectError
 )
@@ -122,9 +122,9 @@ class Resource:
 
         items = await self.get(QueryBuilder.from_segments([value]), limit=2)
         if len(items) > 1:
-            raise TooManyResults("Too many results: expected one, got at least 2")
+            raise TooManyItems("Too many results: expected one, got at least 2")
         elif len(items) == 0:
-            raise NoResult("Expected a single object in response, got none")
+            raise NoItems("Expected a single object in response, got none")
 
         return items[0]
 
