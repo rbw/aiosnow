@@ -3,52 +3,48 @@ class SnowException(Exception):
 
 
 class StreamExhausted(SnowException):
-    pass
+    """Signals there are no further items produced by the iterator"""
 
 
 class PayloadValidationError(SnowException):
-    pass
+    """Local payload validation against a Resource Schema failed"""
 
 
 class UnexpectedContentType(SnowException):
-    pass
+    """Unexpected content type from server"""
 
 
 class ErrorResponse(SnowException):
-    pass
+    """An error was returned from server"""
 
 
 class UnexpectedSchema(SnowException):
-    pass
+    """Schema not of snow.resource.schema.Schema type"""
 
 
 class UnexpectedValue(SnowException):
-    pass
+    """Typically raised when a Snow method receives unexpected input"""
 
 
 class SchemaError(SnowException):
-    pass
+    """Generic exception raised on schema issues, e.g. integrity errors"""
+
+
+class NoLocationField(SchemaError):
+    """The schema lacks a __location__ field"""
 
 
 class SelectError(SnowException):
-    pass
-
-
-class NoLocationField(SnowException):
-    pass
+    """Raised on query builder issues"""
 
 
 class NoSchemaFields(SnowException):
-    pass
+    """The schema lacks fields definitions"""
 
 
-class EmptyQuery(SnowException):
-    pass
+class TooManyItems(SnowException):
+    """The request yielded too many results"""
 
 
-class TooManyResults(SnowException):
-    pass
-
-
-class NoResult(SnowException):
-    pass
+class NoItems(SnowException):
+    """The request yielded no results"""
