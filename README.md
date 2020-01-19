@@ -1,4 +1,4 @@
-Snow: Python ServiceNow Client Library
+Snow: Python library for ServiceNow
 ---
 
 [![image](https://img.shields.io/github/license/rbw/snow?style=flat-square)](https://raw.githubusercontent.com/rbw/snow/master/LICENSE)
@@ -19,7 +19,6 @@ Development status
 ---
 
 Pre-alpha
-
 
 Author
 ------

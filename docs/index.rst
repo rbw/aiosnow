@@ -1,7 +1,7 @@
 Introduction
 ============
 
-Snow is a simple and lightweight yet powerful library for interacting with ServiceNow. It works
+Snow is a simple and lightweight yet powerful and extensible library for interacting with ServiceNow. It works
 with modern versions of Python and utilizes `asyncio <https://docs.python.org/3/library/asyncio.html>`_.
 
 Requirements
