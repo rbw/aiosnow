@@ -1,5 +1,7 @@
 import warnings
 
+from typing import Tuple, Iterable
+
 import marshmallow
 import ujson
 
@@ -27,30 +29,54 @@ class SchemaMeta(marshmallow.schema.SchemaMeta):
 
         for name, field in fields.items():
             field.name = name
+
+            # Register queryable BaseField with the class.
             setattr(cls, name, field)
 
         return cls
 
 
 class Schema(marshmallow.Schema, metaclass=SchemaMeta):
+    """Resource schema
+
+    Defines a Resource's entities and the relationship among them.
+
+    Attributes:
+        __location__ (str): API path
+    """
+
     OPTIONS_CLASS = SchemaOpts
 
-    def _link_fields(self, fields):
-        for key, value in fields.items():
+    def _consume(self, data: dict) -> Iterable[Tuple[str, str]]:
+        """Consumes the to-be-loaded items
+
+        - Plucks joined targets
+        - Warns if an unexpected field was encountered
+
+        Args:
+            data: Dictionary of fields to load
+
+        Yields:
+            (field_name, field_value)
+
+        """
+
+        for key, value in data.items():
             name = key.name if isinstance(key, BaseField) else key
-            field = getattr(self, name, None)
-            if not field:
-                warnings.warn(f"Unexpected field in response content: {name}, skipping...")
-                continue
 
             if isinstance(value, dict):
+                field = getattr(self, name, None)
+                if not field:
+                    warnings.warn(f"Unexpected field in response content: {name}, skipping...")
+                    continue
+
                 yield name, value[field.joined.value]
             else:
                 yield name, value
 
     @marshmallow.pre_load
-    def pre_load(self, data, **kwargs):
-        return dict(self._link_fields(data))
+    def transform(self, data, **_):
+        return dict(self._consume(data))
 
     @property
     def __location__(self):
