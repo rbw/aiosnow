@@ -13,7 +13,7 @@ Requirements
 Installation
 ------------
 
-Snow is on PyPI and can be installed using pip.
+The library available is on PyPI and can be installed using pip.
 
 .. code-block:: shell
 
