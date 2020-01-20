@@ -42,9 +42,11 @@ Table of Contents
 
 .. toctree::
    :caption: Reference
+   :maxdepth: 3
 
+   reference/resource/index
+   reference/exceptions
    reference/client
-   reference/resource
 
 .. toctree::
    :caption: Examples

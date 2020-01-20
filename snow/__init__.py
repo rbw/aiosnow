@@ -3,7 +3,13 @@ from .consts import Joined
 
 
 class Client:
-    def __init__(self, config):
+    def __init__(self, config: dict):
+        """
+
+        Args:
+            config:
+        """
+
         self.config = config
 
     def resource(self, schema) -> Resource:

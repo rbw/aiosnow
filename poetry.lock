@@ -280,6 +280,17 @@ version = ">=0.12"
 
 [[package]]
 category = "dev"
+description = "A collection of helpful Python tools!"
+name = "pockets"
+optional = false
+python-versions = "*"
+version = "0.9.1"
+
+[package.dependencies]
+six = ">=1.5.2"
+
+[[package]]
+category = "dev"
 description = "library with cross-python path, ini-parsing, io, code, log facilities"
 name = "py"
 optional = false
@@ -483,6 +494,18 @@ version = "1.0.1"
 
 [[package]]
 category = "dev"
+description = "Sphinx \"napoleon\" extension."
+name = "sphinxcontrib-napoleon"
+optional = false
+python-versions = "*"
+version = "0.7"
+
+[package.dependencies]
+pockets = ">=0.3"
+six = ">=1.5.2"
+
+[[package]]
+category = "dev"
 description = ""
 name = "sphinxcontrib-qthelp"
 optional = false
@@ -587,14 +610,14 @@ description = "Backport of pathlib-compatible object wrapper for zip files"
 marker = "python_version < \"3.8\""
 name = "zipp"
 optional = false
-python-versions = ">=2.7"
-version = "1.0.0"
+python-versions = ">=3.6"
+version = "2.0.0"
 
 [package.dependencies]
 more-itertools = "*"
 
 [metadata]
-content-hash = "d614eb4a7601a0da2d9a9d956c137d7126f303388715e57df2d82694fcc253d5"
+content-hash = "d8663b26bb960f987d6e9b3b2266b7841060a111b4f257712cec756cd4a3485e"
 python-versions = "^3.7"
 
 [metadata.hashes]
@@ -627,6 +650,7 @@ packaging = ["aec3fdbb8bc9e4bb65f0634b9f551ced63983a529d6a8931817d52fdd0816ddb",
 pathspec = ["163b0632d4e31cef212976cf57b43d9fd6b0bac6e67c26015d611a647d5e7424", "562aa70af2e0d434367d9790ad37aed893de47f1693e4201fd1d3dca15d19b96"]
 pkginfo = ["7424f2c8511c186cd5424bbf31045b77435b37a8d604990b79d4e70d741148bb", "a6d9e40ca61ad3ebd0b72fbadd4fba16e4c0e4df0428c041e01e06eb6ee71f32"]
 pluggy = ["15b2acde666561e1298d71b523007ed7364de07029219b604cf808bfa1c765b0", "966c145cd83c96502c3c3868f50408687b38434af77734af1e9ca461a4081d2d"]
+pockets = ["68597934193c08a08eb2bf6a1d85593f627c22f9b065cc727a4f03f669d96d86", "9320f1a3c6f7a9133fe3b571f283bcf3353cd70249025ae8d618e40e9f7e92b3"]
 py = ["5e27081401262157467ad6e7f851b7aa402c5852dbcb3dae06768434de5752aa", "c20fdd83a5dbc0af9efd622bee9a5564e278f6380fffcacc43ba6f43db2813b0"]
 pyflakes = ["17dbeb2e3f4d772725c777fabc446d5634d1038f234e77343108ce445ea69ce0", "d976835886f8c5b31d47970ed689944a0262b5f3afa00a5a7b4dc81e5449f8a2"]
 pygments = ["2a3fe295e54a20164a9df49c75fa58526d3be48e14aceba6d6b1e8ac0bfd6f1b", "98c8aa5a9f778fcd1026a17361ddaf7330d1b7c62ae97c3bb0ae73e0b9b6b0fe"]
@@ -645,6 +669,7 @@ sphinxcontrib-applehelp = ["edaa0ab2b2bc74403149cb0209d6775c96de797dfd5b5e2a7198
 sphinxcontrib-devhelp = ["6c64b077937330a9128a4da74586e8c2130262f014689b4b89e2d08ee7294a34", "9512ecb00a2b0821a146736b39f7aeb90759834b07e81e8cc23a9c70bacb9981"]
 sphinxcontrib-htmlhelp = ["4670f99f8951bd78cd4ad2ab962f798f5618b17675c35c5ac3b2132a14ea8422", "d4fd39a65a625c9df86d7fa8a2d9f3cd8299a3a4b15db63b50aac9e161d8eff7"]
 sphinxcontrib-jsmath = ["2ec2eaebfb78f3f2078e73666b1415417a116cc848b72e5172e596c871103178", "a9925e4a4587247ed2191a22df5f6970656cb8ca2bd6284309578f2153e0c4b8"]
+sphinxcontrib-napoleon = ["407382beed396e9f2d7f3043fad6afda95719204a1e1a231ac865f40abcbfcf8", "711e41a3974bdf110a484aec4c1a556799eb0b3f3b897521a018ad7e2db13fef"]
 sphinxcontrib-qthelp = ["513049b93031beb1f57d4daea74068a4feb77aa5630f856fcff2e50de14e9a20", "79465ce11ae5694ff165becda529a600c754f4bc459778778c7017374d4d406f"]
 sphinxcontrib-serializinghtml = ["c0efb33f8052c04fd7a26c0a07f1678e8512e0faec19f4aa8f2473a8b81d5227", "db6615af393650bf1151a6cd39120c29abaf93cc60db8c48eb2dddbfdc3a9768"]
 toml = ["229f81c57791a41d65e399fc06bf0848bab550a9dfd5ed66df18ce5f05e73d5c", "235682dd292d5899d361a811df37e04a8828a5b1da3115886b73cf81ebc9100e", "f1db651f9657708513243e61e6cc67d101a39bad662eaa9b5546f789338e07a3"]
@@ -656,4 +681,4 @@ urllib3 = ["a8a318824cc77d1fd4b2bec2ded92646630d7fe8619497b142c84a9e6f5a7293", "
 wcwidth = ["8fd29383f539be45b20bd4df0dc29c20ba48654a41e661925e612311e9f3c603", "f28b3e8a6483e5d49e7f8949ac1a78314e740333ae305b4ba5defd3e74fb37a8"]
 webencodings = ["a0af1213f3c2226497a97e2b3aa01a7e4bee4f403f95be16fc9acd2947514a78", "b36a1c245f2d304965eb4e0a82848379241dc04b865afcc4aab16748587e1923"]
 yarl = ["0c2ab325d33f1b824734b3ef51d4d54a54e0e7a23d13b86974507602334c2cce", "0ca2f395591bbd85ddd50a82eb1fde9c1066fafe888c5c7cc1d810cf03fd3cc6", "2098a4b4b9d75ee352807a95cdf5f10180db903bc5b7270715c6bbe2551f64ce", "25e66e5e2007c7a39541ca13b559cd8ebc2ad8fe00ea94a2aad28a9b1e44e5ae", "26d7c90cb04dee1665282a5d1a998defc1a9e012fdca0f33396f81508f49696d", "308b98b0c8cd1dfef1a0311dc5e38ae8f9b58349226aa0533f15a16717ad702f", "3ce3d4f7c6b69c4e4f0704b32eca8123b9c58ae91af740481aa57d7857b5e41b", "58cd9c469eced558cd81aa3f484b2924e8897049e06889e8ff2510435b7ef74b", "5b10eb0e7f044cf0b035112446b26a3a2946bca9d7d7edb5e54a2ad2f6652abb", "6faa19d3824c21bcbfdfce5171e193c8b4ddafdf0ac3f129ccf0cdfcb083e462", "944494be42fa630134bf907714d40207e646fd5a94423c90d5b514f7b0713fea", "a161de7e50224e8e3de6e184707476b5a989037dcb24292b391a3d66ff158e70", "a4844ebb2be14768f7994f2017f70aca39d658a96c786211be5ddbe1c68794c1", "c2b509ac3d4b988ae8769901c66345425e361d518aecbe4acbfc2567e416626a", "c9959d49a77b0e07559e579f38b2f3711c2b8716b8410b320bf9713013215a1b", "d8cdee92bc930d8b09d8bd2043cedd544d9c8bd7436a77678dd602467a993080", "e15199cdb423316e15f108f51249e44eb156ae5dba232cb73be555324a1d49c2"]
-zipp = ["8dda78f06bd1674bd8720df8a50bb47b6e1233c503a4eed8e7810686bde37656", "d38fbe01bbf7a3593a32bc35a9c4453c32bc42b98c377f9bff7e9f8da157786c"]
+zipp = ["57147f6b0403b59f33fd357f169f860e031303415aeb7d04ede4839d23905ab8", "7ae5ccaca427bafa9760ac3cd8f8c244bfc259794b5b6bb9db4dda2241575d09"]

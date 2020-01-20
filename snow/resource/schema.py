@@ -39,13 +39,20 @@ class SchemaMeta(marshmallow.schema.SchemaMeta):
 class Schema(marshmallow.Schema, metaclass=SchemaMeta):
     """Resource schema
 
-    Defines a Resource's entities and the relationship among them.
+    Schemas has a central role in Snow:
+        - Required for producing a resource
+        - Used when building queries
+        - Used in data serialization
+        - And more
 
     Attributes:
         __location__ (str): API path
     """
 
     OPTIONS_CLASS = SchemaOpts
+
+    def __init__(self, *args, **kwargs):
+        super(Schema, self).__init__(*args, **kwargs)
 
     def _consume(self, data: dict) -> Iterable[Tuple[str, str]]:
         """Consumes the to-be-loaded items
@@ -75,7 +82,7 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
                 yield name, value
 
     @marshmallow.pre_load
-    def transform(self, data, **_):
+    def _normalize(self, data, **_):
         return dict(self._consume(data))
 
     @property

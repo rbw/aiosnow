@@ -1,0 +1,7 @@
+Resource
+========
+
+.. toctree::
+
+    schema
+    fields

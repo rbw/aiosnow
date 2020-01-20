@@ -19,6 +19,11 @@ div.body {
     max-width: 1024px !important;
 }
 
+div.body p, div.body dd, div.body li {
+    padding-top: 1.2px;
+}
+
+
 p.logo {
     border-bottom: 1px dotted #d0d0d0;
 }
