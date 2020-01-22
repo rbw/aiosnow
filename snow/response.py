@@ -3,7 +3,7 @@ import ujson
 from snow.exceptions import UnexpectedContentType, ErrorResponse
 from snow.consts import CONTENT_TYPE
 
-from .schemas import SnowErrorText
+from .schemas import ResponseErrorSchema
 
 
 class Response:
@@ -34,7 +34,7 @@ class Response:
         content = ujson.loads(await self.obj.text())
 
         if "error" in content:
-            err = SnowErrorText().load(content["error"])
+            err = ResponseErrorSchema().load(content["error"])
             text = f"{err['message']} ({self.status}): {err['detail']}" if err["detail"] else err["message"]
             raise ErrorResponse(text)
 
