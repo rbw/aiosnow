@@ -1,9 +1,9 @@
 from .base import BaseField
 
-from ..query import EmailNotificationOperator
+from ..query import EmailOperator
 
 
-class EmailNotification(BaseField):
+class Email(BaseField):
     def changes(self):
         """
         Example: state.changes()
@@ -11,7 +11,7 @@ class EmailNotification(BaseField):
         All records in which the State field is updated.
         """
 
-        return self._segment(EmailNotificationOperator.CHANGES)
+        return self._segment(EmailOperator.CHANGES)
 
     def changes_from(self, value):
         """
@@ -20,7 +20,7 @@ class EmailNotification(BaseField):
         All records in which the State field is updated to another value after previously being Awaiting User Info.
         """
 
-        return self._segment(EmailNotificationOperator.CHANGES_FROM, value)
+        return self._segment(EmailOperator.CHANGES_FROM, value)
 
     def changes_to(self, value):
         """
@@ -29,4 +29,4 @@ class EmailNotification(BaseField):
         All records in which the State field is updated to Awaiting User Info after previously being any other value.
         """
 
-        return self._segment(EmailNotificationOperator.CHANGES_TO, value)
+        return self._segment(EmailOperator.CHANGES_TO, value)
