@@ -2,6 +2,10 @@ class SnowException(Exception):
     pass
 
 
+class ConfigurationException(SnowException):
+    """Configuration error"""
+
+
 class StreamExhausted(SnowException):
     """Signals there are no further items produced by the iterator"""
 
