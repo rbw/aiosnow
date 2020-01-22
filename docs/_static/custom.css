@@ -66,6 +66,10 @@ img.logo {
     padding-bottom: 20px;
 }
 
+dl.field-list > dt {
+    padding-top: 2px !important;
+}
+
 .class dt, .function dt {
     padding-top: 3px !important;
 }

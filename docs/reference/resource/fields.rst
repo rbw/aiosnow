@@ -1,5 +1,9 @@
+.. _reference-fields:
+
 Fields
 ======
+
+Fields are used when defining :ref:`Resource Schemas <reference-schema>` and comes with type-specific query builders.
 
 
 Text
@@ -23,12 +27,13 @@ Boolean
    :members:
    :undoc-members:
 
-Nested
-------
+..
+    Nested
+    ------
 
-.. automodule:: snow.resource.fields.nested
-   :members:
-   :undoc-members:
+    .. automodule:: snow.resource.fields.nested
+       :members:
+       :undoc-members:
 
 Datetime
 --------
@@ -38,23 +43,16 @@ Datetime
    :undoc-members:
 
 
-BaseField
----------
-
-.. automodule:: snow.resource.fields.base
-   :members:
-   :undoc-members:
-
-
-ChoiceBase
-----------
+Choice
+------
 
 .. automodule:: snow.resource.fields.choice
    :members:
    :undoc-members:
 
-EmailNotification
------------------
+
+Email
+-----
 
 .. automodule:: snow.resource.fields.email
    :members:
