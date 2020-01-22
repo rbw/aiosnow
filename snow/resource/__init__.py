@@ -38,7 +38,7 @@ class Resource:
 
         self.schema_cls = schema_cls
         self.primary_key = self._get_primary_key()
-        self.url = urljoin(self.config["address"], str(schema_cls.__location__))
+        self.url = urljoin(self.config.address, str(schema_cls.__location__))
         self._resolve = any([f for f in self.fields.values() if f.joined != Joined.VALUE])
 
         self.reader = Reader(self)
@@ -49,7 +49,7 @@ class Resource:
     async def __aenter__(self):
         config = self.config
         self.connection = aiohttp.ClientSession(
-            auth=aiohttp.helpers.BasicAuth(config["username"], config["password"]),
+            auth=aiohttp.helpers.BasicAuth(config.username, config.password),
         )
 
         return self
