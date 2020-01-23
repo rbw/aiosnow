@@ -4,4 +4,3 @@ Resource
 .. toctree::
 
     schema
-    fields

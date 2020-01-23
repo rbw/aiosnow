@@ -35,3 +35,14 @@ Schemas are used for:
         priority = fields.Numeric()
         assignment_group = fields.Text(pluck=Joined.DISPLAY_VALUE)
         opened_at = fields.Datetime()
+
+
+Fields
+------
+
+Schema Fields are classes used when defining a Schema, which is used in (de)serialization, validation,
+selection and more. Also, once instantiated, the field becomes compatible with the Snow query system.
+
+.. toctree::
+
+    fields

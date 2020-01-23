@@ -44,7 +44,7 @@ Table of Contents
    :caption: Reference
    :maxdepth: 3
 
-   reference/client
+   reference/application/index
    reference/resource/index
    reference/exceptions
 

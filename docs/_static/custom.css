@@ -20,7 +20,7 @@ div.body {
 }
 
 div.body p, div.body dd, div.body li {
-    padding-top: 1.2px;
+    padding-top: 1px;
 }
 
 
@@ -71,5 +71,5 @@ dl.field-list > dt {
 }
 
 .class dt, .function dt {
-    padding-top: 3px !important;
+    padding-top: 2px !important;
 }

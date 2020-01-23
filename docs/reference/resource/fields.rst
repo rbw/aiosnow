@@ -5,7 +5,6 @@ Fields
 
 Fields are used when defining :ref:`Resource Schemas <reference-schema>` and comes with type-specific query builders.
 
-
 Text
 ----
 

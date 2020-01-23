@@ -1,0 +1,7 @@
+Config
+======
+
+.. toctree::
+
+    core
+    secrets
