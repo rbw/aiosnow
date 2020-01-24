@@ -2,7 +2,6 @@ import re
 
 from urllib.parse import urljoin, urlencode
 from typing import Iterable
-import aiohttp
 
 from snow.exceptions import (
     SnowException,
@@ -24,10 +23,16 @@ from . import fields
 
 
 class Resource:
-    connection = None
+    """
 
-    def __init__(self, schema_cls, config):
-        self.config = config
+    Args:
+        schema_cls:
+        app:
+    """
+
+    def __init__(self, schema_cls, app):
+        self.app = app
+        self.config = app.config
 
         if not issubclass(schema_cls, Schema):
             raise UnexpectedSchema(f"Invalid schema class: {schema_cls}, must be of type {Schema}")
@@ -38,32 +43,29 @@ class Resource:
 
         self.schema_cls = schema_cls
         self.primary_key = self._get_primary_key()
-        self.url = urljoin(self.config.address, str(schema_cls.__location__))
+        self.url = urljoin(self.config["address"], str(schema_cls.__location__))
         self._resolve = any([f for f in self.fields.values() if f.joined != Joined.VALUE])
 
+        # Create helpers
         self.reader = Reader(self)
         self.updater = Updater(self)
         self.creator = Creator(self)
         self.deleter = Deleter(self)
 
     async def __aenter__(self):
-        config = self.config
-        self.connection = aiohttp.ClientSession(
-            auth=aiohttp.helpers.BasicAuth(config.username, config.password),
-        )
-
+        self.session = self.app.get_session()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        await self.connection.close()
+        await self.session.close()
 
     def _get_primary_key(self):
         primary_keys = [n for n, f in self.fields.items() if f.is_primary is True]
 
         if len(primary_keys) > 1:
             raise SchemaError(
-                f"Multiple primary keys (is_primary) provided "
-                f"for {self.name}. Maximum allowed is 1."
+                f"Multiple primary keys (is_primary) supplied "
+                f"in {self.name}. Maximum allowed is 1."
             )
         elif len(primary_keys) == 0:
             return None

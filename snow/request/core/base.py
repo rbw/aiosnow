@@ -6,10 +6,10 @@ from snow.consts import CONTENT_TYPE
 
 
 class Request(ABC):
-    _connection: ClientSession
+    _session: ClientSession
 
     def __init__(self, resource):
-        self._connection = resource.connection
+        self._session = resource.session
         self._resource_url = resource.get_url()
         self._resource = resource
         self.default_headers = {
@@ -34,7 +34,7 @@ class Request(ABC):
         headers = self.default_headers
         headers.update(kwargs.pop("headers", {}))
 
-        obj = await self._connection.request(
+        obj = await self._session.request(
             self.__verb__,
             self.url,
             headers={

@@ -63,6 +63,7 @@ img.logo {
 }
 
 .class .field-odd {
+    padding-left: 0;
     padding-bottom: 20px;
 }
 

@@ -38,27 +38,31 @@ class Config(ConfigBase):
         secrets (ConfigSecrets): Authentication secrets
     """
 
-    @pre_load
-    def transform(self, data, **_):
-        if {"basic_auth", "oauth"} <= set(data):
-            raise ValidationError("Cannot use multiple authentication methods")
-        elif "basic_auth" in data:
-            if not isinstance(data["basic_auth"], tuple):
-                raise ValidationError("basic_auth must be a tuple: (<username>, <password>)")
-
-            data["username"], data["password"] = data.pop("credentials")
-        else:
-            raise ValidationError("No authentication methods were provided")
-
-        return data
-
-    @post_load
-    def objectify(self, data, **_):
-        for k, v in self.declared_fields.items():
-            Config = namedtuple("Config", self.declared_fields.keys())
-
-        return Config(**data)
-
     address = fields.Url(required=True)
     secrets = fields.Nested(ConfigSecrets)
 
+    def _basic_secret(self, username, password):
+        return dict(
+            basic=dict(
+                username=username,
+                password=password
+            )
+        )
+
+    @pre_load
+    def transform(self, data, **_):
+        data["secrets"] = {}
+
+        if {"basic_auth", "oauth"} <= set(data):
+            raise ValidationError("Cannot use multiple authentication methods")
+        elif "basic_auth" in data:
+            credentials = data.pop("basic_auth")
+            if not isinstance(credentials, tuple):
+                raise ValidationError("basic_auth must be a tuple: (<username>, <password>)")
+
+            secret = self._basic_secret(*credentials)
+            data["secrets"].update(secret)
+        else:
+            raise ValidationError("No authentication method provided")
+
+        return data

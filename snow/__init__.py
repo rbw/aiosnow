@@ -1,13 +1,11 @@
+import aiohttp
+
 from marshmallow import ValidationError
 
 from .resource import Resource, Schema, QueryBuilder, select
 from .consts import Joined
 from .config import Config
 from .exceptions import ConfigurationException
-
-
-def config_load(data) -> Config:
-    return Config().load(data)
 
 
 class Application:
@@ -18,14 +16,22 @@ class Application:
         basic_auth (tuple): (<username>, <password>)
 
     Attributes:
-        config (snow.schemas.ConfigSchema): config object
+        config: config dictionary
     """
 
     def __init__(self, **config_data):
         try:
-            self.config = config_load(config_data)
+            self.config = Config().load(config_data)
         except ValidationError as e:
             raise ConfigurationException(e)
+
+        self.secrets = self.config["secrets"]
+
+    def get_session(self):
+        secrets = self.secrets["basic"]
+        return aiohttp.ClientSession(
+            auth=aiohttp.helpers.BasicAuth(secrets["username"], secrets["password"]),
+        )
 
     def resource(self, schema) -> Resource:
         """Snow Resource factory
@@ -33,5 +39,7 @@ class Application:
         Args:
             schema: Resource Schema
 
+        Returns:
+            Resource
         """
-        return Resource(schema, self.config)
+        return Resource(schema, self)

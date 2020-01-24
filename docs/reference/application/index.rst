@@ -3,7 +3,7 @@ Application
 
 .. automodule:: snow
    :members: Application
-   :undoc-members:
+   :exclude-members: get_session
 
 
 .. toctree::
