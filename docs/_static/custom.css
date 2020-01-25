@@ -62,11 +62,6 @@ img.logo {
     padding: 20px 20px 10px 30px !important;
 }
 
-.class .field-odd {
-    padding-left: 0;
-    padding-bottom: 20px;
-}
-
 dl.field-list > dt {
     padding-top: 2px !important;
 }
