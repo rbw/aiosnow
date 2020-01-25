@@ -20,11 +20,16 @@ from . import fields
 
 
 class Resource:
-    """Interface for interacting with an API resource
+    """Interface for interacting with a ServiceNow API
 
     Args:
         schema_cls (Schema): Schema class
-        app:
+        app (Application): Application instance
+
+    Attributes:
+        config: Configuration dictionary
+        url: API URL
+        fields: Schema fields
     """
 
     def __init__(self, schema_cls, app):
@@ -33,6 +38,7 @@ class Resource:
 
         # Read Resource schema
         self.schema_cls = schema_cls
+        self.fields = self._get_fields()
         self.primary_key = self._get_primary_key()
         self.url = urljoin(self.config["address"], str(schema_cls.__location__))
         self._resolve = any([f for f in self.fields.values() if f.joined != Joined.VALUE])
@@ -63,8 +69,7 @@ class Resource:
 
         return primary_keys[0]
 
-    @property
-    def fields(self):
+    def _get_fields(self):
         schema_fields = getattr(self.schema_cls, "_declared_fields")
         if not schema_fields:
             raise NoSchemaFields(f"Schema {self.schema_cls} lacks fields definitions")
@@ -92,12 +97,45 @@ class Resource:
         return f"{url}{'?' + urlencode(params) if params else ''}"
 
     def stream(self, selection=None, **kwargs) -> Iterable:
+        """Stream-like async generator
+
+        Fetches data in chunks using the ServiceNow pagination system.
+
+        Chunk size determines the number of records to fetch in one go, and can be
+        tweaked to
+
+        Keyword Args:
+            selection: Snow compatible query
+            limit (int): Maximum number of records to return
+            offset (int): Starting record index
+            chunk_size (int): Number of records to fetch in one go
+
+        Yields:
+            list: Chunk of records
+        """
+
         return self.reader.stream(
             select(selection).sysparms,
             **kwargs
         )
 
     async def get(self, selection=None, **kwargs) -> dict:
+        """Buffered get
+
+        Fetches data and stores in buffer.
+
+        Note: It's recommended to use the stream method when dealing with large
+        number of records.
+
+        Keyword Args:
+            selection: Snow compatible query
+            limit (int): Maximum number of records to return
+            offset (int): Starting record index
+
+        Returns:
+            list: Records
+        """
+
         return await self.reader.collect(
             select(selection).sysparms,
             **kwargs
