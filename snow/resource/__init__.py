@@ -1,12 +1,9 @@
-import re
-
 from urllib.parse import urljoin, urlencode
 from typing import Iterable
 
 from snow.exceptions import (
     SnowException,
     NoSchemaFields,
-    UnexpectedSchema,
     TooManyItems,
     NoItems,
     SchemaError,
@@ -23,10 +20,10 @@ from . import fields
 
 
 class Resource:
-    """
+    """Interface for interacting with an API resource
 
     Args:
-        schema_cls:
+        schema_cls (Schema): Schema class
         app:
     """
 
@@ -34,13 +31,7 @@ class Resource:
         self.app = app
         self.config = app.config
 
-        if not issubclass(schema_cls, Schema):
-            raise UnexpectedSchema(f"Invalid schema class: {schema_cls}, must be of type {Schema}")
-        if not re.match(r"^/.*", str(schema_cls.__location__)):
-            raise UnexpectedSchema(
-                f"Unexpected path in {schema_cls.__name__}.__location__: {schema_cls.__location__}"
-            )
-
+        # Read Resource schema
         self.schema_cls = schema_cls
         self.primary_key = self._get_primary_key()
         self.url = urljoin(self.config["address"], str(schema_cls.__location__))

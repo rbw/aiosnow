@@ -1,3 +1,7 @@
+import re
+
+from typing import Type
+
 import aiohttp
 
 from marshmallow import ValidationError
@@ -5,7 +9,7 @@ from marshmallow import ValidationError
 from .resource import Resource, Schema, QueryBuilder, select
 from .consts import Joined
 from .config import Config
-from .exceptions import ConfigurationException
+from .exceptions import ConfigurationException, UnexpectedSchema
 
 
 class Application:
@@ -33,13 +37,21 @@ class Application:
             auth=aiohttp.helpers.BasicAuth(secrets["username"], secrets["password"]),
         )
 
-    def resource(self, schema) -> Resource:
+    def resource(self, schema: Type[Schema]) -> Resource:
         """Snow Resource factory
 
         Args:
-            schema: Resource Schema
+            schema (Schema): Resource Schema
 
         Returns:
-            Resource
+            Resource: Resource object
         """
+
+        if not isinstance(schema, Schema):
+            raise UnexpectedSchema(f"Invalid schema class: {schema}, must be of type {Schema}")
+        if not re.match(r"^/.*", str(schema.__location__)):
+            raise UnexpectedSchema(
+                f"Unexpected path in {schema.__name__}.__location__: {schema.__location__}"
+            )
+
         return Resource(schema, self)

@@ -40,7 +40,7 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
     """Resource schema
 
     Attributes:
-        __location__ (str): API path
+        __location__: API path
     """
 
     OPTIONS_CLASS = SchemaOpts
@@ -49,15 +49,6 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
         super(Schema, self).__init__(*args, **kwargs)
 
     def __transform(self, data: dict) -> Iterable[Tuple[str, str]]:
-        """Normalize the given data
-
-        Args:
-            data: Dictionary of fields to load
-
-        Yields:
-            (field_name, field_value)
-        """
-
         for key, value in data.items():
             name = key.name if isinstance(key, BaseField) else key
 
@@ -73,6 +64,15 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
 
     @marshmallow.pre_load
     def _transform(self, data, **_):
+        """Normalize the given data
+
+        Args:
+            data: Dictionary of fields to load
+
+        Returns:
+            dict(field_name=field_value, ...)
+        """
+
         return dict(self.__transform(data))
 
     @property
