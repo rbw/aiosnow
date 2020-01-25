@@ -63,9 +63,13 @@ img.logo {
 }
 
 dl.field-list > dt {
-    padding-top: 2px !important;
+    padding: 2px 0 1px 0 !important;
 }
 
 .class dt, .function dt {
     padding-top: 2px !important;
+}
+
+dl.attribute {
+    padding-top: 10px;
 }

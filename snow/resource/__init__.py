@@ -1,5 +1,5 @@
 from urllib.parse import urljoin, urlencode
-from typing import Iterable
+from typing import Iterable, Type, Union
 
 from snow.exceptions import (
     SnowException,
@@ -14,7 +14,7 @@ from snow.consts import Joined
 from snow.request import Reader, Creator, Updater, Deleter
 
 from .schema import Schema
-from .query import QueryBuilder, Segment, select
+from .query import QueryBuilder, Condition, select
 
 from . import fields
 
@@ -32,7 +32,7 @@ class Resource:
         fields: Schema fields
     """
 
-    def __init__(self, schema_cls, app):
+    def __init__(self, schema_cls: Union[Type[Schema], Schema], app):
         self.app = app
         self.config = app.config
 
@@ -120,7 +120,7 @@ class Resource:
         )
 
     async def get(self, selection=None, **kwargs) -> dict:
-        """Buffered get
+        """Buffered many
 
         Fetches data and stores in buffer.
 
@@ -141,9 +141,15 @@ class Resource:
             **kwargs
         )
 
-    async def get_one(self, value):
-        if not isinstance(value, Segment):
-            raise SelectError(f"Expected a {self.name} field query, got {value}")
+    async def get_one(self, selection=None):
+        """Get one record
+
+        Args:
+            selection: Snow compatible query
+
+        Returns:
+            dict: Record
+        """
 
         if not self.primary_key:
             raise SchemaError(
@@ -151,7 +157,7 @@ class Resource:
                 f'be queried: this schema lacks a field with "is_primary" set'
             )
 
-        items = await self.get(QueryBuilder.from_segments([value]), limit=2)
+        items = await self.get(selection, limit=2)
         if len(items) > 1:
             raise TooManyItems("Too many results: expected one, got at least 2")
         elif len(items) == 0:
@@ -160,24 +166,71 @@ class Resource:
         return items[0]
 
     async def get_pk_value(self, selection):
+        """Given a selection, return the resulting record's PK field's value
+
+        Args:
+            selection: Snow compatible query
+
+        Returns:
+            str: PK field's value
+        """
+
         record = await self.get_one(selection)
         return record[self.primary_key]
 
-    async def get_target_id(self, target):
-        if isinstance(target, str):
-            return target
-        elif isinstance(target, Segment):
-            return await self.get_pk_value(target)
+    async def get_object_id(self, value):
+        """Get object id by str or Condition
+
+        Immediately return if value is str.
+
+        Args:
+            value: Condition or str
+
+        Returns:
+            str: Object id
+        """
+
+        if isinstance(value, str):
+            return value
+        elif isinstance(value, Condition):
+            return await self.get_pk_value(value)
         else:
-            raise SelectError(f"Selection must be of type {Segment} or {str}")
+            raise SelectError(f"Selection must be of type {Condition} or {str}")
 
     async def update(self, selection, payload) -> dict:
-        object_id = await self.get_target_id(selection)
+        """Update matching record
+
+        Args:
+            selection: Condition or ID
+            payload (dict): Update payload
+
+        Returns:
+            dict: Updated record
+        """
+
+        object_id = await self.get_object_id(selection)
         return await self.updater.patch(object_id, payload)
 
     async def create(self, payload):
+        """Create a new record
+
+        Args:
+            payload (dict): New record payload
+
+        Returns:
+            dict: Created record
+        """
+
         return await self.creator.write(payload)
 
     async def delete(self, selection):
-        object_id = await self.get_target_id(selection)
+        """Delete matching record
+
+        Args:
+            selection: Condition or ID
+
+        Returns:
+            dict: {"result": <status>}
+        """
+        object_id = await self.get_object_id(selection)
         return await self.deleter.delete(object_id)

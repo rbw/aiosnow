@@ -3,11 +3,10 @@ Resource
 
 Resources lies at the core of Snow and are normally created by the :meth:`snow.Application.resource` factory.
 
-.. automodule:: snow.resource
-   :members: Resource
-
+**Contents**
 
 .. toctree::
-    :hidden:
+   :maxdepth: 1
 
-    schema
+   interface
+   schema

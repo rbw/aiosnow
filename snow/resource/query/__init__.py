@@ -1,4 +1,4 @@
 from .builder import QueryBuilder
-from .segment import Segment
+from .condition import Condition
 from .utils import select
 from .operators import *

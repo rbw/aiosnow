@@ -1,7 +1,7 @@
 from .operators import LogicalOperator
 
 
-class Segment:
+class Condition:
     instances = []
 
     def __init__(self, key, operator, value=None):

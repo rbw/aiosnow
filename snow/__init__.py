@@ -16,14 +16,13 @@ class Application:
     """Validates the config and provides a factory for producing resources
 
     Args:
-        address (str): Instance address, e.g. https://my_instance.service-now.com
-        basic_auth (tuple): (<username>, <password>)
+        config_data: Config dictionary
 
     Attributes:
-        config: config dictionary
+        config: Application config
     """
 
-    def __init__(self, **config_data):
+    def __init__(self, config_data):
         try:
             self.config = Config().load(config_data)
         except ValidationError as e:
@@ -47,7 +46,7 @@ class Application:
             Resource: Resource object
         """
 
-        if not isinstance(schema, Schema):
+        if not issubclass(schema, Schema):
             raise UnexpectedSchema(f"Invalid schema class: {schema}, must be of type {Schema}")
         if not re.match(r"^/.*", str(schema.__location__)):
             raise UnexpectedSchema(
