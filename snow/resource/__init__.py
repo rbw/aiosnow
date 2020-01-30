@@ -12,6 +12,7 @@ from snow.exceptions import (
 
 from snow.consts import Joined
 from snow.request import Reader, Creator, Updater, Deleter
+from snow.config import ConfigSchema
 
 from .schema import Schema
 from .query import QueryBuilder, Condition, select
@@ -20,27 +21,29 @@ from . import fields
 
 
 class Resource:
-    """Interface for interacting with a ServiceNow API
+    """ServiceNow API Resource Model
 
     Args:
         schema_cls (Schema): Schema class
         app (Application): Application instance
 
     Attributes:
-        config: Configuration dictionary
+        config (ConfigSchema): Application config
         url: API URL
         fields: Schema fields
     """
 
     def __init__(self, schema_cls: Union[Type[Schema], Schema], app):
         self.app = app
-        self.config = app.config
 
         # Read Resource schema
         self.schema_cls = schema_cls
         self.fields = self._get_fields()
         self.primary_key = self._get_primary_key()
-        self.url = urljoin(self.config["address"], str(schema_cls.__location__))
+
+        # Configure self
+        self.config = self.app.config
+        self.url = urljoin(self.config.address, str(schema_cls.__location__))
         self._resolve = any([f for f in self.fields.values() if f.joined != Joined.VALUE])
 
         # Create helpers

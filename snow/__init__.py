@@ -8,33 +8,49 @@ from marshmallow import ValidationError
 
 from .resource import Resource, Schema, QueryBuilder, select
 from .consts import Joined
-from .config import Config
-from .exceptions import ConfigurationException, UnexpectedSchema
+from .config import ConfigSchema
+from .exceptions import ConfigurationException, UnexpectedSchema, NoAuthenticationMethod
+
+
+def load_config(config_data):
+    return ConfigSchema().load(config_data)
 
 
 class Application:
-    """Validates the config and provides a factory for producing resources
+    """Snow Application
+
+    The Application class serves a number of purposes:
+        - Config validation and transformation
+        - Resource factory
+        - ClientSession factory
 
     Args:
         config_data: Config dictionary
 
     Attributes:
-        config: Application config
+        config (ConfigSchema): Application configuration object
     """
 
     def __init__(self, config_data):
         try:
-            self.config = Config().load(config_data)
+            self.config = load_config(config_data)
         except ValidationError as e:
             raise ConfigurationException(e)
 
-        self.secrets = self.config["secrets"]
-
     def get_session(self):
-        secrets = self.secrets["basic"]
-        return aiohttp.ClientSession(
-            auth=aiohttp.helpers.BasicAuth(secrets["username"], secrets["password"]),
-        )
+        """New client session
+
+        Returns:
+            aiohttp.ClientSession:  HTTP client session
+
+        Raises:
+            NoAuthenticationMethod
+        """
+
+        if self.config.basic_auth:
+            return aiohttp.ClientSession(auth=aiohttp.BasicAuth(*self.config.basic_auth))
+        else:
+            raise NoAuthenticationMethod("No known authentication methods was provided")
 
     def resource(self, schema: Type[Schema]) -> Resource:
         """Snow Resource factory
@@ -44,6 +60,9 @@ class Application:
 
         Returns:
             Resource: Resource object
+
+        Raises:
+            UnexpectedSchema
         """
 
         if not issubclass(schema, Schema):

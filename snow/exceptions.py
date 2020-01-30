@@ -14,6 +14,10 @@ class PayloadValidationError(SnowException):
     """Local payload validation against a Resource Schema failed"""
 
 
+class NoAuthenticationMethod(SnowException):
+    """No authentication method was provided"""
+
+
 class UnexpectedContentType(SnowException):
     """Unexpected content type from server"""
 
