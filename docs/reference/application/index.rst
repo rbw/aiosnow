@@ -1,8 +1,7 @@
 Application
 ===========
 
-The :class:`snow.Application` functions as an entry point for the Snow library.
-Given a configuration, it provides a factory for producing :class:`~snow.resource.Resource` objects.
+The :class:`snow.Application` expects a configuration dictionary and provides a factory for producing resources.
 
 *Example – Simple Application*
 
@@ -12,14 +11,14 @@ Given a configuration, it provides a factory for producing :class:`~snow.resourc
 
     config = dict(
         address="https://my-instance.service-now.com",
-        basic_auth=("my_user", "my_password")
+        basic_auth=("<username>", "<password>")
     )
 
-    snow = Application(config)
+    app = Application(config)
 
-**Contents**
 
 .. toctree::
+    :hidden:
 
-    interface
-    config/index
+    model
+    config

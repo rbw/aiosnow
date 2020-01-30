@@ -1,5 +1,5 @@
-Interface
-=========
+Class
+=====
 
 .. automodule:: snow
    :members: Application

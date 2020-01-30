@@ -50,6 +50,9 @@ Table of Contents
 
 .. toctree::
    :caption: Examples
-   :maxdepth: 1
+   :maxdepth: 2
 
-   examples/create/index
+   examples/full
+   examples/app
+   examples/actions/index
+

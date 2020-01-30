@@ -14,7 +14,6 @@ Schemas are used for:
 
 .. automodule:: snow.resource.schema
    :members: Schema
-   :undoc-members:
    :exclude-members: opts, OPTIONS_CLASS
 
 
