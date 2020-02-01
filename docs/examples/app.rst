@@ -3,7 +3,7 @@
 Application
 ===========
 
-The :class:`snow.Application` expects a configuration dictionary that conforms to the :ref:`Application Configuration Schema <config>`.
+At the core of Snow lies :class:`snow.Application`, which expects a configuration dictionary that conforms to the :ref:`Application Configuration Schema <config>`.
 Once created, an interface for producing :class:`~snow.resource.Resource` models is provided.
 
 
