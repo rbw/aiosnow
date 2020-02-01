@@ -1,2 +1,4 @@
 sphinxcontrib-napoleon>=0.7
 aiohttp>=3.6.2
+marshmallow>=3.2.2
+ujson>=1.35
