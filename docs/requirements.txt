@@ -1,2 +1,2 @@
 sphinxcontrib-napoleon>=0.7
-
+aiohttp>=3.6.2
