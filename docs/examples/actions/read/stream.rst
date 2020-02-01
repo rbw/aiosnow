@@ -1,6 +1,8 @@
 Stream
 ======
 
+*Example – Using the Snow stream-like for reading memory friendly chunks*
+
 .. code-block:: python
 
     async with app.resource(Incident) as r:

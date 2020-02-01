@@ -1,6 +1,8 @@
 Single
 ======
 
+*Example – Fetching of exactly one record*
+
 .. code-block:: python
 
     async with app.resource(Incident) as r:

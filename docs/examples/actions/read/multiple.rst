@@ -1,6 +1,8 @@
 Multiple
 ========
 
+*Example – Buffered read-many*
+
 .. code-block:: python
 
     async with app.resource(Incident) as r:

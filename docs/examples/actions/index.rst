@@ -1,7 +1,7 @@
 Actions
 =======
 
-These examples assumes an :class:`snow.Application` has been created: :ref:`Application Example <app-example>`.
+These examples assumes an :class:`~snow.Application` have been created.
 
 Check out the :ref:`Resource Reference documentation <resource>` for details about the various actions
 available in Snow.
