@@ -39,28 +39,16 @@ class SchemaMeta(marshmallow.schema.SchemaMeta):
 class Schema(marshmallow.Schema, metaclass=SchemaMeta):
     """Resource schema
 
-    Defines a Resource's entities and the relationship among them.
-
     Attributes:
-        __location__ (str): API path
+        __location__: API path
     """
 
     OPTIONS_CLASS = SchemaOpts
 
-    def _consume(self, data: dict) -> Iterable[Tuple[str, str]]:
-        """Consumes the to-be-loaded items
+    def __init__(self, *args, **kwargs):
+        super(Schema, self).__init__(*args, **kwargs)
 
-        - Plucks joined targets
-        - Warns if an unexpected field was encountered
-
-        Args:
-            data: Dictionary of fields to load
-
-        Yields:
-            (field_name, field_value)
-
-        """
-
+    def __transform(self, data: dict) -> Iterable[Tuple[str, str]]:
         for key, value in data.items():
             name = key.name if isinstance(key, BaseField) else key
 
@@ -75,8 +63,17 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
                 yield name, value
 
     @marshmallow.pre_load
-    def transform(self, data, **_):
-        return dict(self._consume(data))
+    def _transform(self, data, **_):
+        """Normalize the given data
+
+        Args:
+            data: Dictionary of fields to load
+
+        Returns:
+            dict(field_name=field_value, ...)
+        """
+
+        return dict(self.__transform(data))
 
     @property
     def __location__(self):

@@ -19,6 +19,11 @@ div.body {
     max-width: 1024px !important;
 }
 
+div.body p, div.body dd, div.body li {
+    padding-top: 1px;
+}
+
+
 p.logo {
     border-bottom: 1px dotted #d0d0d0;
 }
@@ -57,10 +62,14 @@ img.logo {
     padding: 20px 20px 10px 30px !important;
 }
 
-.class .field-odd {
-    padding-bottom: 20px;
+dl.field-list > dt {
+    padding: 2px 0 1px 0 !important;
 }
 
 .class dt, .function dt {
-    padding-top: 3px !important;
+    padding-top: 2px !important;
+}
+
+dl.attribute {
+    padding-top: 10px;
 }

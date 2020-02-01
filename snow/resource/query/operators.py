@@ -50,7 +50,7 @@ class BooleanOperator(BaseOperator):
     pass
 
 
-class EmailNotificationOperator:
+class EmailOperator:
     CHANGES = "VALCHANGES"
     CHANGES_FROM = "CHANGESFROM"
     CHANGES_TO = "CHANGESTO"

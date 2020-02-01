@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "snow"
 version = "0.0.1"
-description = "ServiceNow library and UI"
+description = "Python library for ServiceNow"
 authors = ["Robert Wikman <rbw@vault13.org>"]
 license = "MIT"
 readme = "README.md"
@@ -23,6 +23,7 @@ ujson = "^1.35"
 [tool.poetry.dev-dependencies]
 twine = "^1.13"
 sphinx = "^2.1.1"
+sphinxcontrib-napoleon = "^0.7"
 pytest = "^4.4.0"
 pytest-cov = "^2.7.1"
 autoflake = "^1.3"

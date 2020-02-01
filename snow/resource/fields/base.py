@@ -3,7 +3,7 @@ import marshmallow
 from snow.exceptions import UnexpectedValue
 from snow.consts import Joined
 
-from ..query import Segment, BaseOperator
+from ..query import Condition, BaseOperator
 
 
 class BaseField(marshmallow.fields.Field):
@@ -20,7 +20,7 @@ class BaseField(marshmallow.fields.Field):
             operator = field_operator
             value = value.name
 
-        return Segment(self.name, operator, value)
+        return Condition(self.name, operator, value)
 
     def is_empty(self):
         """
