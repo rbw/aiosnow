@@ -23,4 +23,4 @@ Pre-alpha
 Author
 ------
 
-Robert Wikman <rbw@vault13.org>
+Robert Wikman \<rbw@vault13.org\>

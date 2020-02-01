@@ -1,9 +1,14 @@
 import ujson
 
+from marshmallow import Schema, fields
+
 from snow.exceptions import UnexpectedContentType, ErrorResponse
 from snow.consts import CONTENT_TYPE
 
-from .schemas import SnowErrorText
+
+class ErrorSchema(Schema):
+    message = fields.String()
+    detail = fields.String(allow_none=True)
 
 
 class Response:
@@ -34,7 +39,7 @@ class Response:
         content = ujson.loads(await self.obj.text())
 
         if "error" in content:
-            err = SnowErrorText().load(content["error"])
+            err = ErrorSchema().load(content["error"])
             text = f"{err['message']} ({self.status}): {err['detail']}" if err["detail"] else err["message"]
             raise ErrorResponse(text)
 

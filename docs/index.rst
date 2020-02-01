@@ -13,7 +13,7 @@ Requirements
 Installation
 ------------
 
-The library available is on PyPI and can be installed using pip.
+The library is available on PyPI and can be installed using pip.
 
 .. code-block:: shell
 
@@ -42,12 +42,17 @@ Table of Contents
 
 .. toctree::
    :caption: Reference
+   :maxdepth: 3
 
-   reference/client
-   reference/resource
+   reference/application/index
+   reference/resource/index
+   reference/exceptions
 
 .. toctree::
    :caption: Examples
-   :maxdepth: 1
+   :maxdepth: 2
 
-   examples/create/index
+   examples/full
+   examples/app
+   examples/actions/index
+

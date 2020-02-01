@@ -6,6 +6,8 @@ SORT_DESCENDING = "ORDERBYDESC"
 
 
 class Joined(Enum):
+    """Pluck-targets of "joined" fields"""
+
     DISPLAY_VALUE = "display_value"
     VALUE = "value"
     LINK = "link"

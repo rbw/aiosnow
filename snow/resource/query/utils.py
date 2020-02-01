@@ -1,7 +1,7 @@
 from snow.exceptions import SelectError
 
 from .builder import QueryBuilder
-from .segment import Segment
+from .condition import Condition
 
 
 def select(value=None):
@@ -9,7 +9,7 @@ def select(value=None):
         return QueryBuilder.from_raw(value or "")
     elif isinstance(value, QueryBuilder):
         return value
-    elif isinstance(value, Segment):
+    elif isinstance(value, Condition):
         return QueryBuilder.from_segments(value.instances)
     else:
-        raise SelectError(f"Can only query by type {Segment} or {str}")
+        raise SelectError(f"Can only query by type {Condition} or {str}")
