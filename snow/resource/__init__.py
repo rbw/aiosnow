@@ -84,6 +84,15 @@ class Resource:
         return self.schema_cls.__name__
 
     def get_url(self, fragments=None):
+        """Get request URL
+
+        Args:
+            fragments (list): Path fragments
+
+        Returns:
+            str: URL
+        """
+
         if fragments and not isinstance(fragments, list):
             raise SnowException(f"Expected a list of path fragments, got: {fragments}")
 
@@ -104,8 +113,9 @@ class Resource:
 
         Fetches data in chunks using the ServiceNow pagination system.
 
-        Chunk size determines the number of records to fetch in one go, and can be
-        tweaked to
+        Chunk size determines the number of records to fetch in one go.
+        Setting a lower chunk size decreases memory usage, but increases the
+        number of requests sent to the server.
 
         Keyword Args:
             selection: Snow compatible query

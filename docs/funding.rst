@@ -1,11 +1,16 @@
 Funding
 =======
 
-Software development is time-consuming business.
+The Snow code is permissively licensed, and may be incorporated into any type of application--commercial or otherwise--without costs or limitations.
 
-The author of Snow is not affiliated with ServiceNow and works on this project in his spare time.
+The author firmly believes it is in the commercial best-interest for users of the project to invest in its ongoing development.
 
-The code is permissively licensed (under MIT) and can be incorporated into any type of application--commercial or otherwise--without any
-costs or limitations.
+Sign up as a Backer to:
 
-<TBA>
+- Directly contribute to faster releases, more features, and higher quality software.
+- Allow more time to be invested in documentation, issue triage, and community support.
+- Safeguard the future development of Snow.
+
+**Links**
+
+- `Donate with Paypal <https://paypal.vault13.org>`_
