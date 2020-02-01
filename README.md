@@ -5,6 +5,7 @@ Snow: Python library for ServiceNow
 [![image](https://img.shields.io/pypi/v/snowstorm?style=flat-square)](https://pypi.org/project/snowstorm)
 [![image](https://img.shields.io/travis/rbw/snow?style=flat-square)](https://travis-ci.org/rbw/snow)
 [![image](https://img.shields.io/pypi/pyversions/snow?style=flat-square)](https://pypi.org/project/snowstorm)
+[![image](https://pepy.tech/badge/snow/month)](https://pepy.tech/project/snow)
 
 
 Snow is a simple and lightweight yet powerful and extensible library for interacting with ServiceNow. It works
