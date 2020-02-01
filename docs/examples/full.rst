@@ -5,7 +5,7 @@ The purpose of this example is to demonstrate how an actual script, rather than 
 
 - Create an event loop for running the `main()` coroutine
 - Define a Resource Schema
-- Show common Snow CRUD operations
+- Use common Snow CRUD operations
 
 
 *Full example – Schema definition, invocation, operations*
