@@ -2,9 +2,9 @@ Snow: Python library for ServiceNow
 ---
 
 [![image](https://img.shields.io/github/license/rbw/snow?style=flat-square)](https://raw.githubusercontent.com/rbw/snow/master/LICENSE)
-[![image](https://img.shields.io/pypi/v/snowstorm?style=flat-square)](https://pypi.org/project/snowstorm)
+[![image](https://img.shields.io/pypi/v/snow?style=flat-square)](https://pypi.org/project/snow)
 [![image](https://img.shields.io/travis/rbw/snow?style=flat-square)](https://travis-ci.org/rbw/snow)
-[![image](https://img.shields.io/pypi/pyversions/snow?style=flat-square)](https://pypi.org/project/snowstorm)
+[![image](https://img.shields.io/pypi/pyversions/snow?style=flat-square)](https://pypi.org/project/snow)
 [![image](https://pepy.tech/badge/snow/month)](https://pepy.tech/project/snow)
 
 
