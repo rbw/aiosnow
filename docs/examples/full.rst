@@ -18,7 +18,7 @@ The purpose of this example is to demonstrate how an actual script, rather than 
     from snow import Application, Joined, select
 
 
-    class Incident(Schema):
+    class IncidentSchema(Schema):
         __location__ = "/api/now/table/incident"
 
         sys_id = fields.Text(is_primary=True)
@@ -38,40 +38,40 @@ The purpose of this example is to demonstrate how an actual script, rather than 
             )
         )
 
-        async with app.resource(Incident) as r:
-            created = await r.create({
-                Incident.short_description: "Test incident",
-                Incident.description: "This is just a test.",
+        async with app.resource(IncidentSchema) as Incident:
+            created = await Incident.create({
+                IncidentSchema.short_description: "Test incident",
+                IncidentSchema.description: "This is just a test.",
             })
 
             print(f"[>>>] Created: {created}")
 
-            updated = await r.update(
+            updated = await Incident.update(
                 created["sys_id"],
                 {
-                    Incident.description: "Still just a test",
-                    Incident.impact: 2,
+                    IncidentSchema.description: "Still just a test",
+                    IncidentSchema.impact: 2,
                 }
             )
 
             print(f"[>>>] Updated: {updated}")
 
             selection = select(
-                Incident.impact.equals(updated["impact"]) &
-                Incident.opened_at.after("2020-01-01")
-            ).order_desc(Incident.number)
+                IncidentSchema.impact.equals(updated["impact"]) &
+                IncidentSchema.opened_at.after("2020-01-01")
+            ).order_desc(IncidentSchema.number)
 
             print(
                 f"[>>>] Fetching last 5 records with the same impact "
                 f"as {updated['number']}, created after 2020-01-01..."
             )
 
-            async for record in r.stream(selection, limit=5):
+            async for record in Incident.stream(selection, limit=5):
                 print(record)
 
             print(f"[>>>] Cleaning up...")
 
-            result = await r.delete(created["sys_id"])
+            result = await Incident.delete(created["sys_id"])
 
             print(result)
 
