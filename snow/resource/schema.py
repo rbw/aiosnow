@@ -22,16 +22,20 @@ class SchemaMeta(marshmallow.schema.SchemaMeta):
     def __new__(mcs, name, bases, attrs):
         fields = {}
         for key, value in attrs.items():
-            if isinstance(value, BaseField):
+            if isinstance(value, (BaseField, SchemaMeta)):
                 fields[key] = value
 
         cls = super().__new__(mcs, name, bases, attrs)
 
         for name, field in fields.items():
-            field.name = name
+            if isinstance(field, SchemaMeta):
+                # Register nested Schema
+                value = field(joined_with=name)
+            else:  # Register queryable BaseField with the class.
+                value = field
+                value.name = name
 
-            # Register queryable BaseField with the class.
-            setattr(cls, name, field)
+            setattr(cls, name, value)
 
         return cls
 
@@ -45,10 +49,14 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
 
     OPTIONS_CLASS = SchemaOpts
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, joined_with: str = None, **kwargs):
+        if joined_with:
+            for field in self._declared_fields.values():
+                field.name = f"{joined_with}.{field.name}"
+
         super(Schema, self).__init__(*args, **kwargs)
 
-    def __transform(self, data: dict) -> Iterable[Tuple[str, str]]:
+    def __transform_response(self, data: dict) -> Iterable[Tuple[str, str]]:
         for key, value in data.items():
             name = key.name if isinstance(key, BaseField) else key
 
@@ -73,7 +81,7 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
             dict(field_name=field_value, ...)
         """
 
-        return dict(self.__transform(data))
+        return dict(self.__transform_response(data))
 
     @property
     def __location__(self):
