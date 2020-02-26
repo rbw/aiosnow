@@ -38,15 +38,15 @@ The purpose of this example is to demonstrate how an actual script, rather than 
             )
         )
 
-        async with app.resource(IncidentSchema) as Incident:
-            created = await Incident.create({
+        async with app.resource(IncidentSchema) as incident:
+            created = await incident.create({
                 IncidentSchema.short_description: "Test incident",
                 IncidentSchema.description: "This is just a test.",
             })
 
             print(f"[>>>] Created: {created}")
 
-            updated = await Incident.update(
+            updated = await incident.update(
                 created["sys_id"],
                 {
                     IncidentSchema.description: "Still just a test",
@@ -66,12 +66,12 @@ The purpose of this example is to demonstrate how an actual script, rather than 
                 f"as {updated['number']}, created after 2020-01-01..."
             )
 
-            async for record in Incident.stream(selection, limit=5):
+            async for record in incident.stream(selection, limit=5):
                 print(record)
 
             print(f"[>>>] Cleaning up...")
 
-            result = await Incident.delete(created["sys_id"])
+            result = await incident.delete(created["sys_id"])
 
             print(result)
 
