@@ -1,11 +1,9 @@
-import warnings
-
-from typing import Tuple, Iterable
-
 import marshmallow
 import ujson
 
-from .fields import BaseField
+from snow.exceptions import NoSchemaFields
+
+from .fields import BaseField, Nested
 
 
 class SchemaOpts(marshmallow.schema.SchemaOpts):
@@ -22,18 +20,16 @@ class SchemaMeta(marshmallow.schema.SchemaMeta):
     def __new__(mcs, name, bases, attrs):
         fields = {}
         for key, value in attrs.items():
-            if isinstance(value, (BaseField, SchemaMeta)):
+            if isinstance(value, BaseField):
                 fields[key] = value
+            elif isinstance(value, SchemaMeta):
+                fields[key] = Nested(value)
 
         cls = super().__new__(mcs, name, bases, attrs)
 
         for name, field in fields.items():
-            if isinstance(field, SchemaMeta):
-                # Register nested Schema
-                value = field(joined_with=name)
-            else:  # Register queryable BaseField with the class.
-                value = field
-                value.name = name
+            value = field
+            value.name = name
 
             setattr(cls, name, value)
 
@@ -48,27 +44,32 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
     """
 
     OPTIONS_CLASS = SchemaOpts
+    joined_with: str = None
+    resource = None
 
     def __init__(self, *args, joined_with: str = None, **kwargs):
         if joined_with:
-            for field in self._declared_fields.values():
+            self.joined_with = joined_with
+
+            for field in self.get_fields().values():
+                # Refer to field as a child of `joined_with` when querying
                 field.name = f"{joined_with}.{field.name}"
 
         super(Schema, self).__init__(*args, **kwargs)
 
-    def __transform_response(self, data: dict) -> Iterable[Tuple[str, str]]:
-        for key, value in data.items():
-            name = key.name if isinstance(key, BaseField) else key
+    @classmethod
+    def get_fields(cls):
+        fields = {}
+        for name, field in cls.__dict__.items():
+            if name.startswith("_") or name == "opts":
+                continue
 
-            if isinstance(value, dict):
-                field = getattr(self, name, None)
-                if not field:
-                    warnings.warn(f"Unexpected field in response content: {name}, skipping...")
-                    continue
+            fields[name] = field
 
-                yield name, value[field.joined.value]
-            else:
-                yield name, value
+        if not fields:
+            raise NoSchemaFields(f"Schema {cls} lacks fields definitions")
+
+        return fields
 
     @marshmallow.pre_load
     def _transform(self, data, **_):
@@ -81,7 +82,8 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
             dict(field_name=field_value, ...)
         """
 
-        return dict(self.__transform_response(data))
+        # return dict(self.__transform_response(data))
+        return data
 
     @property
     def __location__(self):
