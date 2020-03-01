@@ -6,9 +6,3 @@ from .choice import NumericChoice, TextChoice
 from .datetime import Datetime
 from .email import Email
 from .reference import Reference
-
-from marshmallow.fields import Nested as MarshmallowNested
-
-
-class Nested(MarshmallowNested):
-    pass

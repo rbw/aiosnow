@@ -1,9 +1,12 @@
 import marshmallow
 import ujson
+import warnings
+
+from typing import Iterable, Tuple
 
 from snow.exceptions import NoSchemaFields
 
-from .fields import BaseField, Nested
+from .fields import BaseField
 
 
 class SchemaOpts(marshmallow.schema.SchemaOpts):
@@ -23,17 +26,30 @@ class SchemaMeta(marshmallow.schema.SchemaMeta):
             if isinstance(value, BaseField):
                 fields[key] = value
             elif isinstance(value, SchemaMeta):
-                fields[key] = Nested(value)
+                fields[key] = Nested(key, value, allow_none=True, required=False)
 
+        attrs.update(fields)
         cls = super().__new__(mcs, name, bases, attrs)
 
         for name, field in fields.items():
             value = field
-            value.name = name
+
+            if not isinstance(value, Nested):
+                value.name = name
 
             setattr(cls, name, value)
 
         return cls
+
+
+class Nested(marshmallow.fields.Nested):
+    def __init__(self, parent_name, nested_cls, *args, **kwargs):
+        # Set namespace to support nested queries
+        for name, field in getattr(nested_cls, "_declared_fields").items():
+            field.name = f"{parent_name}.{name}"
+            setattr(self, name, field)
+
+        super(Nested, self).__init__(nested_cls, *args, **kwargs)
 
 
 class Schema(marshmallow.Schema, metaclass=SchemaMeta):
@@ -45,14 +61,16 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
 
     OPTIONS_CLASS = SchemaOpts
     joined_with: str = None
-    resource = None
 
     def __init__(self, *args, joined_with: str = None, **kwargs):
+        self.registered_fields = self.get_fields()
+        self.nested_fields = [k for k, v in self.registered_fields.items() if isinstance(v, Nested)]
+
         if joined_with:
             self.joined_with = joined_with
 
+            # Enable automatic dot-walking of joined fields
             for field in self.get_fields().values():
-                # Refer to field as a child of `joined_with` when querying
                 field.name = f"{joined_with}.{field.name}"
 
         super(Schema, self).__init__(*args, **kwargs)
@@ -71,6 +89,23 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
 
         return fields
 
+    def __transform_response(self, data) -> Iterable[Tuple[str, str]]:
+        for key, value in data.items():
+            if issubclass(self.__class__, PartialSchema):
+                yield key, value
+                continue
+
+            field = self.registered_fields[key]
+            if isinstance(field, BaseField) and isinstance(value, dict):
+                name = field.name
+                if not getattr(self, name, None):
+                    warnings.warn(f"Unexpected field in response content: {name}, skipping...")
+                    continue
+
+                yield name, value[field.joined.value]
+            else:
+                yield key, value
+
     @marshmallow.pre_load
     def _transform(self, data, **_):
         """Normalize the given data
@@ -82,9 +117,14 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
             dict(field_name=field_value, ...)
         """
 
-        # return dict(self.__transform_response(data))
-        return data
+        return dict(self.__transform_response(data))
 
     @property
     def __location__(self):
         raise NotImplementedError
+
+
+class PartialSchema(Schema):
+    @property
+    def __location__(self):
+        return None

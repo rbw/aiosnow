@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from functools import lru_cache
 
 import ujson
 
@@ -52,16 +51,20 @@ class Request(ABC):
     def __verb__(self):
         pass
 
-    async def _resolve_nested(self, content):
-        for record in content:
-            for name in self._resource.nested_fields:
-                item = record[name]
-                if not item or "link" not in item:
-                    continue
+    async def _resolve_nested(self, record):
+        nested = {}
 
-                response = await self._resource.get_cached(item["link"])
-                content = await self._get_content(response)
-                print(content)
+        for name in self._resource.nested_fields:
+            item = record[name]
+            if not item or "link" not in item:
+                nested[name] = None
+                continue
+
+            response = await self._resource.get_cached(item["link"])
+            content = await self._get_content(response)
+            nested[name] = content
+
+        return nested
 
     async def _get_content(self, response):
         content_type = response.headers["content-type"]
@@ -103,6 +106,8 @@ class Request(ABC):
         content = await self._get_content(response)
 
         if self._resource.nested_fields:
-            await self._resolve_nested(content)
+            for idx, record in enumerate(content):
+                nested = await self._resolve_nested(record)
+                content[idx].update(nested)
 
         return content, response

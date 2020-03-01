@@ -1,5 +1,4 @@
 from typing import Iterable, Type, Union
-from functools import lru_cache
 from urllib.parse import urljoin, urlencode
 
 from snow.exceptions import (
@@ -10,11 +9,13 @@ from snow.exceptions import (
     SelectError
 )
 
+from marshmallow.fields import Nested
+
 from snow.consts import Joined
 from snow.request import Reader, Creator, Updater, Deleter
 from snow.config import ConfigSchema
 
-from .schema import Schema, SchemaMeta
+from .schema import Schema, PartialSchema, SchemaMeta
 from .query import QueryBuilder, Condition, select
 
 from . import fields
@@ -33,13 +34,15 @@ class Resource:
         fields: Schema fields
     """
 
+    _object_cache = {}
+
     def __init__(self, schema_cls: Union[Type[Schema], Schema], app):
         self.app = app
 
         # Read Resource schema
         self.schema_cls = schema_cls
         self.fields = schema_cls.get_fields()
-        self.nested_fields = [k for k, v in self.fields.items() if isinstance(v, fields.Nested)]
+        self.nested_fields = [k for k, v in self.fields.items() if isinstance(v, Nested)]
         self.primary_key = self._get_primary_key()
 
         # Configure self
@@ -137,8 +140,11 @@ class Resource:
             **kwargs
         )
 
-    async def get_cached(self, url): <<
-        return await self.session.request("GET", url)
+    async def get_cached(self, url):
+        if url not in self._object_cache:
+            self._object_cache[url] = await self.session.request("GET", url)
+
+        return self._object_cache[url]
 
     async def get(self, selection=None, **kwargs) -> dict:
         """Buffered many
