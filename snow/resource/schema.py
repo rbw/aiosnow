@@ -4,7 +4,7 @@ import warnings
 
 from typing import Iterable, Tuple
 
-from snow.exceptions import NoSchemaFields
+from snow.exceptions import NoSchemaFields, UnexpectedResponse
 
 from .fields import BaseField
 
@@ -91,20 +91,27 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
 
     def __transform_response(self, data) -> Iterable[Tuple[str, str]]:
         for key, value in data.items():
-            if issubclass(self.__class__, PartialSchema):
-                yield key, value
+            field = self.registered_fields.get(key, None)
+
+            if isinstance(field, BaseField):
+                name = field.name
+
+                if isinstance(value, str):
+                    pass
+                elif isinstance(value, dict) and {"value", "display_value", "link"} == value.keys():
+                    if not getattr(self, name, None):
+                        warnings.warn(f"Unexpected field in response content: {name}, skipping...")
+                        continue
+
+                    yield name, value[field.joined.value]
+                else:
+                    raise UnexpectedResponse(f"Unexpected value in field {name}: {value}")
+            elif isinstance(field, Nested):
+                pass
+            else:  # Unknown field
                 continue
 
-            field = self.registered_fields[key]
-            if isinstance(field, BaseField) and isinstance(value, dict):
-                name = field.name
-                if not getattr(self, name, None):
-                    warnings.warn(f"Unexpected field in response content: {name}, skipping...")
-                    continue
-
-                yield name, value[field.joined.value]
-            else:
-                yield key, value
+            yield key, value
 
     @marshmallow.pre_load
     def _transform(self, data, **_):
