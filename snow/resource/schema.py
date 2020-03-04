@@ -90,6 +90,14 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
         return fields
 
     def __transform_response(self, data) -> Iterable[Tuple[str, str]]:
+        """Transform the response after ensuring its sanity
+
+        Args:
+            data: Response content
+
+        Yields: <name>, <value>
+        """
+
         for key, value in data.items():
             field = self.registered_fields.get(key, None)
 
@@ -98,12 +106,13 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
 
                 if isinstance(value, str):
                     pass
-                elif isinstance(value, dict) and {"value", "display_value", "link"} == value.keys():
+                elif isinstance(value, dict) and {"value", "display_value"} <= set(value.keys()):
                     if not getattr(self, name, None):
                         warnings.warn(f"Unexpected field in response content: {name}, skipping...")
                         continue
 
-                    yield name, value[field.joined.value]
+                    yield name, value.get(field.joined.value, "")
+                    continue
                 else:
                     raise UnexpectedResponse(f"Unexpected value in field {name}: {value}")
             elif isinstance(field, Nested):
