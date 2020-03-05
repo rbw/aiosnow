@@ -8,8 +8,8 @@ class DeleteRequest(Request):
         super(DeleteRequest, self).__init__(resource)
         self._resource_url = resource.get_url(fragments=[object_id])
 
-    async def send(self):
-        return await self._request()
+    async def send(self, **kwargs):
+        return await self._send(**kwargs)
 
     @property
     def url(self):

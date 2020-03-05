@@ -13,7 +13,7 @@ class GetRequest(Request):
         self.query = query
 
     async def send(self, **kwargs):
-        return await self._request(**kwargs)
+        return await self._send(**kwargs)
 
     @property
     def _page_size(self):

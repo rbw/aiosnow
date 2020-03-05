@@ -9,8 +9,8 @@ class PatchRequest(Request):
         self.payload = payload
         self._resource_url = resource.get_url(fragments=[object_id])
 
-    async def send(self):
-        return await self._request(data=self.payload)
+    async def send(self, **kwargs):
+        return await self._send(data=self.payload, **kwargs)
 
     @property
     def url(self):
