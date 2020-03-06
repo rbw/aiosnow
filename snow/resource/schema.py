@@ -113,8 +113,6 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
 
                     yield name, value.get(field.joined.value, "")
                     continue
-                else:
-                    raise UnexpectedResponse(f"Unexpected value in field {name}: {value}")
             elif isinstance(field, Nested):
                 pass
             else:  # Unknown field
@@ -133,7 +131,7 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
             dict(field_name=field_value, ...)
         """
 
-        return dict(self.__transform_response(data))
+        return dict(self.__transform_response(data or {}))
 
     @property
     def __location__(self):

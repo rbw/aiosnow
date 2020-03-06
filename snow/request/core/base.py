@@ -17,13 +17,28 @@ class Response:
     def __init__(self, obj):
         self.obj = obj
 
-    @property
-    def status(self):
-        return self.obj.status
+    def __getattr__(self, item):
+        return getattr(self.obj, item)
 
-    @property
-    def links(self):
-        return self.obj.links
+    async def get_content(self):
+        content_type = self.headers["content-type"]
+
+        if not content_type.startswith(CONTENT_TYPE):
+            raise UnexpectedContentType(
+                f"Unexpected content-type in response: "
+                f"{content_type}, expected: {CONTENT_TYPE}, "
+                f"probable causes: instance down or REST API disabled"
+            )
+
+        body = await self.text()
+        content = ujson.loads(body).get("result")
+
+        if "error" in body:
+            err = ErrorSchema().load(content["error"])
+            text = f"{err['message']} ({self.status}): {err['detail']}" if err["detail"] else err["message"]
+            raise ErrorResponse(text)
+
+        return content
 
 
 class Request(ABC):
@@ -60,54 +75,39 @@ class Request(ABC):
                 nested[name] = None
                 continue
 
-            response = await self._resource.get_cached(item["link"])
-            content = await self._get_content(response)
-            nested[name] = content
+            response = Response(await self._resource.get_cached(item["link"]))
+            nested[name] = await response.get_content()
 
         return nested
-
-    async def _get_content(self, response):
-        content_type = response.headers["content-type"]
-
-        if not content_type.startswith(CONTENT_TYPE):
-            raise UnexpectedContentType(
-                f"Unexpected content-type in response: "
-                f"{content_type}, expected: {CONTENT_TYPE}, "
-                f"probable causes: instance down or REST API disabled"
-            )
-
-        body = await response.text()
-        content = ujson.loads(body).get("result")
-
-        if "error" in body:
-            err = ErrorSchema().load(content["error"])
-            text = f"{err['message']} ({response.status}): {err['detail']}" if err["detail"] else err["message"]
-            raise ErrorResponse(text)
-
-        return content
 
     async def _send(self, **kwargs):
         headers = self.default_headers
         headers.update(kwargs.pop("headers", {}))
 
-        response = await self._session.request(
-            self.__verb__,
-            kwargs.pop("url", self.url),
-            headers={
-                **self.default_headers,
-                **(headers or {})
-            },
-            **kwargs
+        response = Response(
+            await self._session.request(
+                self.__verb__,
+                kwargs.pop("url", self.url),
+                headers={
+                    **self.default_headers,
+                    **(headers or {})
+                },
+                **kwargs
+            )
         )
 
-        if response.method == "DELETE" and response.status == 204:
-            return dict(result="success")
+        if response.status == 204:
+            return response, {}
 
-        content = await self._get_content(response)
+        content = await response.get_content()
 
         if self._resource.nested_fields:
-            for idx, record in enumerate(content):
-                nested = await self._resolve_nested(record)
-                content[idx].update(nested)
+            if isinstance(content, dict):
+                nested = await self._resolve_nested(content)
+                content.update(nested)
+            elif isinstance(content, list):
+                for idx, record in enumerate(content):
+                    nested = await self._resolve_nested(record)
+                    content[idx].update(nested)
 
-        return content, response
+        return response, content

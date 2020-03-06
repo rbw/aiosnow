@@ -24,8 +24,7 @@ class Updater:
         except marshmallow.exceptions.ValidationError as e:
             raise PayloadValidationError(e)
 
-        response = await PatchRequest(self.resource, object_id, ujson.dumps(payload)).send()
-        content = await response.read()
+        _, content = await PatchRequest(self.resource, object_id, ujson.dumps(payload)).send()
         return self.schema(unknown=marshmallow.RAISE).load(content)
 
     async def replace(self, data):
