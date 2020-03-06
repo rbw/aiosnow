@@ -44,6 +44,7 @@ class Resource:
         self.fields = schema_cls.get_fields()
         self.nested_fields = [k for k, v in self.fields.items() if isinstance(v, Nested)]
         self.primary_key = self._get_primary_key()
+        self._should_resolve = self.__should_resolve
 
         # Configure self
         self.config = self.app.config
@@ -56,9 +57,9 @@ class Resource:
         self.deleter = Deleter(self)
 
     @property
-    def _should_resolve(self) -> bool:
+    def __should_resolve(self) -> bool:
         for f in self.fields.values():
-            if isinstance(f, fields.BaseField) and f.joined != Joined.VALUE:
+            if (isinstance(f, fields.BaseField) and f.joined != Joined.VALUE) or isinstance(f, Nested):
                 return True
 
         return False
@@ -143,6 +144,9 @@ class Resource:
     async def get_cached(self, url):
         if url not in self._object_cache:
             self._object_cache[url] = await self.session.request("GET", url)
+        else:
+            # @TODO: write debug log about cache hit
+            pass
 
         return self._object_cache[url]
 
