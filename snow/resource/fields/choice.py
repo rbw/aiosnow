@@ -11,14 +11,14 @@ class ChoiceBase(BaseField):
         All records in which the field is populated by the given values
         """
 
-        return self._segment(BaseOperator.ONEOF, ",".join(values))
+        return self._condition(BaseOperator.ONEOF, ",".join(values))
 
     def not_oneof(self, *values):
         """
         All records in which the field is not populated by the given values
         """
 
-        return self._segment(BaseOperator.NOT_ONEOF, ",".join(values))
+        return self._condition(BaseOperator.NOT_ONEOF, ",".join(values))
 
 
 class NumericChoice(ChoiceBase, Numeric):

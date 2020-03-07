@@ -33,7 +33,7 @@ class Response:
         body = await self.text()
         content = ujson.loads(body).get("result")
 
-        if "error" in body:
+        if "error" in content:
             err = ErrorSchema().load(content["error"])
             text = f"{err['message']} ({self.status}): {err['detail']}" if err["detail"] else err["message"]
             raise ErrorResponse(text)

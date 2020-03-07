@@ -2,14 +2,12 @@ from .operators import LogicalOperator
 
 
 class Condition:
-    instances = []
-
     def __init__(self, key, operator, value=None):
         self.operand_left = key
         self.operand_right = value
         self.operator_conditional = operator
         self.operator_logical = None
-        self.instances.append(self)
+        self.selection = [self]
 
     @property
     def __str__(self):
@@ -20,14 +18,16 @@ class Condition:
             (self.operator_logical or "")
         )
 
-    def __and__(self, cond):
-        self.operator_logical = LogicalOperator.AND
-        return cond
+    def _set_next(self, next_cond, operator):
+        self.selection.append(next_cond)
+        self.operator_logical = operator
+        return self
 
-    def __or__(self, cond):
-        self.operator_logical = LogicalOperator.OR
-        return cond
+    def __and__(self, next_cond):
+        return self._set_next(next_cond, LogicalOperator.AND)
 
-    def __xor__(self, cond):
-        self.operator_logical = LogicalOperator.NQ
-        return cond
+    def __or__(self, next_cond):
+        return self._set_next(next_cond, LogicalOperator.OR)
+
+    def __xor__(self, next_cond):
+        return self._set_next(next_cond, LogicalOperator.NQ)

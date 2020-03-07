@@ -6,9 +6,9 @@ from ..query import DateTimeOperator
 
 
 class Datetime(BaseField, marshmallow.fields.DateTime):
-    def _segment(self, operator, value=None, **kwargs):
+    def _condition(self, operator, value=None, **kwargs):
         # @TODO - add support for "DatetimeHelper" and serialize here.
-        return super(Datetime, self)._segment(operator, value, **kwargs)
+        return super(Datetime, self)._condition(operator, value, **kwargs)
 
     def on(self, value):
         """
@@ -17,7 +17,7 @@ class Datetime(BaseField, marshmallow.fields.DateTime):
         All records in which the value for the SLA due field matches the given date
         """
 
-        return self._segment(DateTimeOperator.ON, value)
+        return self._condition(DateTimeOperator.ON, value)
 
     def not_on(self, value):
         """
@@ -26,7 +26,7 @@ class Datetime(BaseField, marshmallow.fields.DateTime):
         All records in which the value for the SLA due field is any other but the given date
         """
 
-        return self._segment(DateTimeOperator.NOT_ON, value)
+        return self._condition(DateTimeOperator.NOT_ON, value)
 
     def before(self, value):
         """
@@ -35,7 +35,7 @@ class Datetime(BaseField, marshmallow.fields.DateTime):
         All records in which the value for the SLA due field is any date previous to the given date.
         """
 
-        return self._segment(DateTimeOperator.LESS, value)
+        return self._condition(DateTimeOperator.LESS, value)
 
     def after(self, value):
         """
@@ -44,7 +44,7 @@ class Datetime(BaseField, marshmallow.fields.DateTime):
         All records in which the value for the SLA due field is any date after the given date.
         """
 
-        return self._segment(DateTimeOperator.GREATER, value)
+        return self._condition(DateTimeOperator.GREATER, value)
 
     def until(self, value):
         """
@@ -55,7 +55,7 @@ class Datetime(BaseField, marshmallow.fields.DateTime):
             - today
         """
 
-        return self._segment(DateTimeOperator.LESS_EQUALS, value)
+        return self._condition(DateTimeOperator.LESS_EQUALS, value)
 
     def as_of(self, value):
         """
@@ -66,7 +66,7 @@ class Datetime(BaseField, marshmallow.fields.DateTime):
             - any date after today
         """
 
-        return self._segment(DateTimeOperator.GREATER_EQUALS, value)
+        return self._condition(DateTimeOperator.GREATER_EQUALS, value)
 
     def between(self, value1, value2):
         """
@@ -75,4 +75,4 @@ class Datetime(BaseField, marshmallow.fields.DateTime):
         All records in which the value for the SLA due field is between the given dates
         """
 
-        return self._segment(DateTimeOperator.BETWEEN, f"{value1}@{value2}")
+        return self._condition(DateTimeOperator.BETWEEN, f"{value1}@{value2}")

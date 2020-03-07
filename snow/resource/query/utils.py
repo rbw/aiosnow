@@ -10,6 +10,6 @@ def select(value=None):
     elif isinstance(value, QueryBuilder):
         return value
     elif isinstance(value, Condition):
-        return QueryBuilder.from_segments(value.instances)
+        return QueryBuilder.from_segments(value.selection)
     else:
         raise SelectError(f"Can only query by type {Condition} or {str}")

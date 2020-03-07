@@ -11,7 +11,7 @@ class Email(BaseField):
         All records in which the State field is updated.
         """
 
-        return self._segment(EmailOperator.CHANGES)
+        return self._condition(EmailOperator.CHANGES)
 
     def changes_from(self, value):
         """
@@ -20,7 +20,7 @@ class Email(BaseField):
         All records in which the State field is updated to another value after previously being Awaiting User Info.
         """
 
-        return self._segment(EmailOperator.CHANGES_FROM, value)
+        return self._condition(EmailOperator.CHANGES_FROM, value)
 
     def changes_to(self, value):
         """
@@ -29,4 +29,4 @@ class Email(BaseField):
         All records in which the State field is updated to Awaiting User Info after previously being any other value.
         """
 
-        return self._segment(EmailOperator.CHANGES_TO, value)
+        return self._condition(EmailOperator.CHANGES_TO, value)
