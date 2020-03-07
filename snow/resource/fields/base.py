@@ -12,7 +12,7 @@ class BaseField(marshmallow.fields.Field):
         self.is_primary = is_primary
         super(BaseField, self).__init__(*args, **kwargs)
 
-    def _segment(self, operator, value=None, field_operator=None):
+    def _condition(self, operator, value=None, field_operator=None):
         if isinstance(value, BaseField):
             if not field_operator:
                 raise UnexpectedValue(f"{operator} does not support Field comparison")
@@ -27,14 +27,14 @@ class BaseField(marshmallow.fields.Field):
         All records in which there is no value in the given field
         """
 
-        return self._segment(BaseOperator.EMPTY)
+        return self._condition(BaseOperator.EMPTY)
 
     def is_populated(self):
         """
         All records in which there is any value in the given field
         """
 
-        return self._segment(BaseOperator.POPULATED)
+        return self._condition(BaseOperator.POPULATED)
 
     def is_anything(self):
         """
@@ -44,4 +44,4 @@ class BaseField(marshmallow.fields.Field):
             - NULL
         """
 
-        return self._segment(BaseOperator.ANYTHING)
+        return self._condition(BaseOperator.ANYTHING)
