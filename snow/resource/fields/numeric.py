@@ -11,7 +11,7 @@ class Numeric(BaseField):
         All records in which the Reassignment count is nothing else but 0.
         """
 
-        return self._segment(NumericOperator.EQUALS, value, field_operator=NumericOperator.SAME)
+        return self._condition(NumericOperator.EQUALS, value, field_operator=NumericOperator.SAME)
 
     def not_equals(self, value):
         """
@@ -20,7 +20,7 @@ class Numeric(BaseField):
         All records in which the value for the Reassignment count is any number but 0.
         """
 
-        return self._segment(NumericOperator.NOT_EQUALS, value, field_operator=NumericOperator.DIFFERENT)
+        return self._condition(NumericOperator.NOT_EQUALS, value, field_operator=NumericOperator.DIFFERENT)
 
     def less_than(self, value):
         """
@@ -29,7 +29,7 @@ class Numeric(BaseField):
         All records in which the Impact field has a value of 1 - High.
         """
 
-        return self._segment(NumericOperator.LESS, value, field_operator=NumericOperator.Related.LESS)
+        return self._condition(NumericOperator.LESS, value, field_operator=NumericOperator.Related.LESS)
 
     def greater_than(self, value):
         """
@@ -38,7 +38,7 @@ class Numeric(BaseField):
         All records in which the Impact field has a value of 3 - Low
         """
 
-        return self._segment(NumericOperator.LESS, value, field_operator=NumericOperator.Related.GREATER)
+        return self._condition(NumericOperator.LESS, value, field_operator=NumericOperator.Related.GREATER)
 
     def less_or_equals(self, value):
         """
@@ -47,7 +47,7 @@ class Numeric(BaseField):
         All records in which the Impact field has a value of 1 - High or 2 - Medium.
         """
 
-        return self._segment(NumericOperator.LESS, value, field_operator=NumericOperator.Related.LESS_EQUALS)
+        return self._condition(NumericOperator.LESS, value, field_operator=NumericOperator.Related.LESS_EQUALS)
 
     def greater_or_equals(self, value):
         """
@@ -56,7 +56,7 @@ class Numeric(BaseField):
         All records in which the Impact field has a value of 2 - Medium or 3 - Low.
         """
 
-        return self._segment(
+        return self._condition(
             NumericOperator.GREATER_EQUALS,
             value,
             field_operator=NumericOperator.Related.GREATER_EQUALS
@@ -73,4 +73,4 @@ class Numeric(BaseField):
         """
 
         value = f"{value1}@{value2}"
-        return self._segment(NumericOperator.BETWEEN, value)
+        return self._condition(NumericOperator.BETWEEN, value)

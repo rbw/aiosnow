@@ -30,6 +30,10 @@ class UnexpectedSchema(SnowException):
     """Schema not of snow.resource.schema.Schema type"""
 
 
+class UnexpectedResponse(SnowException):
+    """An unexpected response was received"""
+
+
 class UnexpectedValue(SnowException):
     """Typically raised when a Snow method receives unexpected input"""
 

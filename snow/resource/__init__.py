@@ -1,20 +1,21 @@
-from urllib.parse import urljoin, urlencode
 from typing import Iterable, Type, Union
+from urllib.parse import urljoin, urlencode
 
 from snow.exceptions import (
     SnowException,
-    NoSchemaFields,
     TooManyItems,
     NoItems,
     SchemaError,
     SelectError
 )
 
+from marshmallow.fields import Nested
+
 from snow.consts import Joined
 from snow.request import Reader, Creator, Updater, Deleter
 from snow.config import ConfigSchema
 
-from .schema import Schema
+from .schema import Schema, PartialSchema, SchemaMeta
 from .query import QueryBuilder, Condition, select
 
 from . import fields
@@ -33,24 +34,35 @@ class Resource:
         fields: Schema fields
     """
 
+    _object_cache = {}
+
     def __init__(self, schema_cls: Union[Type[Schema], Schema], app):
         self.app = app
 
         # Read Resource schema
         self.schema_cls = schema_cls
-        self.fields = self._get_fields()
+        self.fields = schema_cls.get_fields()
+        self.nested_fields = [k for k, v in self.fields.items() if isinstance(v, Nested)]
         self.primary_key = self._get_primary_key()
+        self._should_resolve = self.__should_resolve
 
         # Configure self
         self.config = self.app.config
         self.url = urljoin(self.config.address, str(schema_cls.__location__))
-        self._resolve = any([f for f in self.fields.values() if f.joined != Joined.VALUE])
 
         # Create helpers
         self.reader = Reader(self)
         self.updater = Updater(self)
         self.creator = Creator(self)
         self.deleter = Deleter(self)
+
+    @property
+    def __should_resolve(self) -> bool:
+        for f in self.fields.values():
+            if (isinstance(f, fields.BaseField) and f.joined != Joined.VALUE) or isinstance(f, Nested):
+                return True
+
+        return False
 
     async def __aenter__(self):
         self.session = self.app.get_session()
@@ -59,25 +71,22 @@ class Resource:
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.session.close()
 
-    def _get_primary_key(self):
-        primary_keys = [n for n, f in self.fields.items() if f.is_primary is True]
+    @property
+    def _pk_candidates(self):
+        return [n for n, f in self.fields.items() if isinstance(f, fields.BaseField) and f.is_primary is True]
 
-        if len(primary_keys) > 1:
+    def _get_primary_key(self):
+        pks = self._pk_candidates
+
+        if len(pks) > 1:
             raise SchemaError(
                 f"Multiple primary keys (is_primary) supplied "
                 f"in {self.name}. Maximum allowed is 1."
             )
-        elif len(primary_keys) == 0:
+        elif len(pks) == 0:
             return None
 
-        return primary_keys[0]
-
-    def _get_fields(self):
-        schema_fields = getattr(self.schema_cls, "_declared_fields")
-        if not schema_fields:
-            raise NoSchemaFields(f"Schema {self.schema_cls} lacks fields definitions")
-
-        return schema_fields
+        return pks[0]
 
     @property
     def name(self):
@@ -97,8 +106,8 @@ class Resource:
             raise SnowException(f"Expected a list of path fragments, got: {fragments}")
 
         params = dict(
-            sysparm_fields=",".join(self.fields),
-            sysparm_display_value="all" if self._resolve else "false"
+            sysparm_fields=",".join(self.fields.keys()),
+            sysparm_display_value="all" if self._should_resolve else "false"
         )
 
         url = self.url
@@ -131,6 +140,15 @@ class Resource:
             select(selection).sysparms,
             **kwargs
         )
+
+    async def get_cached(self, url):
+        if url not in self._object_cache:
+            self._object_cache[url] = await self.session.request("GET", url)
+        else:
+            # @TODO: write debug log about cache hit
+            pass
+
+        return self._object_cache[url]
 
     async def get(self, selection=None, **kwargs) -> dict:
         """Buffered many

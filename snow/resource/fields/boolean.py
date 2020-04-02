@@ -11,7 +11,7 @@ class Boolean(BaseField):
         All records in which the Active field is True.
         """
 
-        return self._segment(BooleanOperator.EQUALS, "true")
+        return self._condition(BooleanOperator.EQUALS, "true")
 
     def is_falsy(self):
         """
@@ -20,4 +20,4 @@ class Boolean(BaseField):
         All records in which the Active field is False, empty, or NULL.
         """
 
-        return self._segment(BooleanOperator.NOT_EQUALS, "true")
+        return self._condition(BooleanOperator.NOT_EQUALS, "true")

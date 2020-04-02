@@ -13,7 +13,7 @@ class Text(BaseField, marshmallow.fields.String):
         All records in which the Short description says nothing else but "Network storage is unavailable."
         """
 
-        return self._segment(StringOperator.EQUALS, value, field_operator=StringOperator.SAME)
+        return self._condition(StringOperator.EQUALS, value, field_operator=StringOperator.SAME)
 
     def not_equals(self, value):
         """
@@ -23,7 +23,7 @@ class Text(BaseField, marshmallow.fields.String):
         is unavailable."
         """
 
-        return self._segment(StringOperator.NOT_EQUALS, value, field_operator=StringOperator.DIFFERENT)
+        return self._condition(StringOperator.NOT_EQUALS, value, field_operator=StringOperator.DIFFERENT)
 
     def starts_with(self, value):
         """
@@ -32,7 +32,7 @@ class Text(BaseField, marshmallow.fields.String):
         All records in which the characters "SAP" appear at the beginning of the value for the Short description field.
         """
 
-        return self._segment(StringOperator.STARTSWITH, value)
+        return self._condition(StringOperator.STARTSWITH, value)
 
     def ends_with(self, value):
         """
@@ -41,7 +41,7 @@ class Text(BaseField, marshmallow.fields.String):
         All records in which the string "outage" appears at the end of the value for the Short description field.
         """
 
-        return self._segment(StringOperator.ENDSWITH, value)
+        return self._condition(StringOperator.ENDSWITH, value)
 
     def contains(self, value):
         """
@@ -50,7 +50,7 @@ class Text(BaseField, marshmallow.fields.String):
         All records in which the characters "SAP" appear anywhere in the value for the Short description field.
         """
 
-        return self._segment(StringOperator.CONTAINS, value)
+        return self._condition(StringOperator.CONTAINS, value)
 
     def not_contains(self, value):
         """
@@ -59,7 +59,7 @@ class Text(BaseField, marshmallow.fields.String):
         All records in which the characters "SAP" do not appear anywhere in the value for the Short description field.
         """
 
-        return self._segment(StringOperator.NOT_CONTAINS, value)
+        return self._condition(StringOperator.NOT_CONTAINS, value)
 
     def less_or_equals(self, value):
         """
@@ -70,7 +70,7 @@ class Text(BaseField, marshmallow.fields.String):
             - the exact value is "s"
         """
 
-        return self._segment(StringOperator.LESS_EQUALS, value)
+        return self._condition(StringOperator.LESS_EQUALS, value)
 
     def greater_or_equals(self, value):
         """
@@ -81,7 +81,7 @@ class Text(BaseField, marshmallow.fields.String):
             - the exact value is "s"
         """
 
-        return self._segment(StringOperator.GREATER_EQUALS, value)
+        return self._condition(StringOperator.GREATER_EQUALS, value)
 
     def between(self, value1, value2):
         """
@@ -91,4 +91,4 @@ class Text(BaseField, marshmallow.fields.String):
         """
 
         value = f"{value1}@{value2}"
-        return self._segment(StringOperator.BETWEEN, value)
+        return self._condition(StringOperator.BETWEEN, value)

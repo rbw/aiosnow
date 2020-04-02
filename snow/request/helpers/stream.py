@@ -33,11 +33,11 @@ class StreamLike(GetRequest):
         self._offset = offset_next
 
     async def read(self, **kwargs):
-        response = await self.send(**kwargs)
+        response, content = await self.send(**kwargs)
 
         try:
             self._prepare_next(response.links)
         except StreamExhausted:
             self.exhausted = True
 
-        yield await response.read()
+        yield content
