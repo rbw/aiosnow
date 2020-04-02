@@ -1,9 +1,13 @@
-Snow: Python library for ServiceNow
----
+<p align="center">
+  <img width="256" height="256" src="extras/images/logo-gh.png">
+  <br><br>
+  <b>Python library for ServiceNow</b><br>
+</p>
 
-[![image](https://badgen.net/pypi/license/snow)](https://raw.githubusercontent.com/rbw/snow/master/LICENSE)
 [![image](https://badgen.net/pypi/v/snow)](https://pypi.org/project/snow)
+[![image](https://badgen.net/badge/python/3.7+?color=purple)](https://pypi.org/project/snow)
 [![image](https://badgen.net/travis/rbw/snow)](https://travis-ci.org/rbw/snow)
+[![image](https://badgen.net/pypi/license/snow)](https://raw.githubusercontent.com/rbw/snow/master/LICENSE)
 [![image](https://pepy.tech/badge/snow/month)](https://pepy.tech/project/snow)
 
 
