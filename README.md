@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="256" height="256" src="extras/logo-gh.png">
+  <img width="256" height="256" src="extras/images/logo-gh.png">
   <br><br>
   <b>Python library for ServiceNow</b><br>
 </p>
