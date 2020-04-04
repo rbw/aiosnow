@@ -52,14 +52,7 @@ class Application:
 
     @property
     def _connector(self) -> aiohttp.TCPConnector:
-        """Get a TCP connector
-
-        Returns a custom TCPConnector if provided, otherwise one is created
-        here using the app config.
-
-        Returns:
-            aiohttp.TCPConnector object
-        """
+        """Produces and returns a TCPConnector object"""
 
         return aiohttp.TCPConnector(
             verify_ssl=self.config.verify_ssl
