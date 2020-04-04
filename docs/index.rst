@@ -52,7 +52,5 @@ Table of Contents
    :caption: Examples
    :maxdepth: 2
 
-   examples/full
    examples/app
-   examples/actions/index
-
+   examples/operations/index

@@ -1,5 +1,5 @@
-Actions
-=======
+Operations
+==========
 
 These examples assumes an :class:`~snow.Application` have been created.
 
