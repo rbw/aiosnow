@@ -50,14 +50,6 @@ class Application:
         else:
             raise NoAuthenticationMethod("No known authentication methods was provided")
 
-    @property
-    def _connector(self) -> aiohttp.TCPConnector:
-        """Produces and returns a TCPConnector object"""
-
-        return aiohttp.TCPConnector(
-            verify_ssl=self.config.verify_ssl
-        )
-
     def get_session(self):
         """New client session
 
@@ -70,7 +62,9 @@ class Application:
 
         return aiohttp.ClientSession(
             auth=self._auth,
-            connector=self._connector,
+            connector=aiohttp.TCPConnector(
+                verify_ssl=self.config.verify_ssl
+            )
         )
 
     def resource(self, schema: Type[Schema]) -> Resource:
