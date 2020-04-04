@@ -26,15 +26,12 @@ class Application:
 
     Args:
         config_data: Config dictionary
-        tcp_connector: Custom aiohttp.TCPConnector object
 
     Attributes:
         config (ConfigSchema): Application configuration object
     """
 
-    def __init__(self, config_data, tcp_connector: aiohttp.TCPConnector = None):
-        self._tcp_connector = tcp_connector
-
+    def __init__(self, config_data):
         try:
             self.config = load_config(config_data)
         except ValidationError as e:
@@ -64,7 +61,7 @@ class Application:
             aiohttp.TCPConnector object
         """
 
-        return self._tcp_connector or aiohttp.TCPConnector(
+        return aiohttp.TCPConnector(
             verify_ssl=self.config.verify_ssl
         )
 
