@@ -26,16 +26,47 @@ class Application:
 
     Args:
         config_data: Config dictionary
+        tcp_connector: Custom aiohttp.TCPConnector object
 
     Attributes:
         config (ConfigSchema): Application configuration object
     """
 
-    def __init__(self, config_data):
+    def __init__(self, config_data, tcp_connector: aiohttp.TCPConnector = None):
+        self._tcp_connector = tcp_connector
+
         try:
             self.config = load_config(config_data)
         except ValidationError as e:
             raise ConfigurationException(e)
+
+    @property
+    def _auth(self):
+        """Get authentication object built using config
+
+        Returns:
+            aiohttp-compatible authentication object
+        """
+
+        if self.config.basic_auth:
+            return aiohttp.BasicAuth(*self.config.basic_auth)
+        else:
+            raise NoAuthenticationMethod("No known authentication methods was provided")
+
+    @property
+    def _connector(self) -> aiohttp.TCPConnector:
+        """Get a TCP connector
+
+        Returns a custom TCPConnector if provided, otherwise one is created
+        here using the app config.
+
+        Returns:
+            aiohttp.TCPConnector object
+        """
+
+        return self._tcp_connector or aiohttp.TCPConnector(
+            verify_ssl=self.config.verify_ssl
+        )
 
     def get_session(self):
         """New client session
@@ -47,10 +78,10 @@ class Application:
             NoAuthenticationMethod
         """
 
-        if self.config.basic_auth:
-            return aiohttp.ClientSession(auth=aiohttp.BasicAuth(*self.config.basic_auth))
-        else:
-            raise NoAuthenticationMethod("No known authentication methods was provided")
+        return aiohttp.ClientSession(
+            auth=self._auth,
+            connector=self._connector,
+        )
 
     def resource(self, schema: Type[Schema]) -> Resource:
         """Snow Resource factory

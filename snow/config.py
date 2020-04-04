@@ -18,6 +18,7 @@ class ConfigSchema(Schema):
 
     address = fields.Url(required=True)
     basic_auth = fields.Tuple(tuple_fields=(fields.String(), fields.String()), required=False)
+    verify_ssl = fields.Boolean(default=True)
 
     def __init__(self, *args, **kwargs):
         super(ConfigSchema, self).__init__(*args, **kwargs)
