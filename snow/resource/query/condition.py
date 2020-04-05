@@ -12,15 +12,15 @@ class Condition:
     @property
     def __str__(self):
         return (
+            (self.operator_logical or "") +
             self.operand_left +
             self.operator_conditional +
-            self.operand_right +
-            (self.operator_logical or "")
+            self.operand_right
         )
 
     def _set_next(self, next_cond, operator):
+        next_cond.operator_logical = operator
         self.selection.append(next_cond)
-        self.operator_logical = operator
         return self
 
     def __and__(self, next_cond):
