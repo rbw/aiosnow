@@ -18,6 +18,5 @@ class Reader:
                     yield item
 
     async def collect(self, selection, **kwargs) -> dict:
-        response = await GetRequest(self.resource, query=selection, **kwargs).send()
-        content = await response.read()
+        _, content = await GetRequest(self.resource, query=selection, **kwargs).send()
         return self.schema.load(content, many=True)
