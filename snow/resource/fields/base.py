@@ -22,6 +22,26 @@ class BaseField(marshmallow.fields.Field):
 
         return Condition(self.name, operator, value)
 
+    def in_list(self, value):
+        """
+        Example: impact.in_list([3, 4])
+
+        All records in which the Impact field has one of the values 3 or 4.
+        """
+
+        value = ",".join(str(v) for v in value)
+        return self._condition(BaseOperator.ONEOF, value)
+
+    def not_in_list(self, value):
+        """
+        Example: impact.not_in_list([3, 4])
+
+        All records in which the Impact field does not have one of the values 3 or 4.
+        """
+
+        value = ",".join(str(v) for v in value)
+        return self._condition(BaseOperator.NOT_ONEOF, value)
+
     def is_empty(self):
         """
         All records in which there is no value in the given field
