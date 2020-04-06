@@ -4,7 +4,7 @@ import warnings
 
 from typing import Iterable, Tuple
 
-from snow.exceptions import NoSchemaFields, UnexpectedResponse
+from snow.exceptions import NoSchemaFields
 
 from .fields import BaseField
 
@@ -111,7 +111,7 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
                         warnings.warn(f"Unexpected field in response content: {name}, skipping...")
                         continue
 
-                    yield name, value.get(field.joined.value, "")
+                    yield name, value[field.joined.value]
                     continue
             elif isinstance(field, Nested):
                 pass
