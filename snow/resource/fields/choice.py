@@ -3,13 +3,9 @@ from .numeric import Numeric
 from .base import BaseField
 
 
-class ChoiceBase(BaseField):
+class NumericChoice(BaseField, Numeric):
     pass
 
 
-class NumericChoice(ChoiceBase, Numeric):
-    pass
-
-
-class TextChoice(ChoiceBase, Text):
+class TextChoice(BaseField, Text):
     pass
