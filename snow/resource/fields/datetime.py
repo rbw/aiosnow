@@ -10,9 +10,6 @@ class Datetime(BaseField, marshmallow.fields.DateTime):
         # @TODO - add support for "DatetimeHelper" and serialize here.
         return super(Datetime, self)._condition(operator, value, **kwargs)
 
-    def _deserialize(self, value, *args, **kwargs):
-        return value if value != "" else None
-
     def on(self, value):
         """
         Example: sla_due.on("2019-12-24 02:03:04")

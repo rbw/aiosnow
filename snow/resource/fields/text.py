@@ -15,9 +15,6 @@ class Text(BaseField, marshmallow.fields.String):
 
         return self._condition(StringOperator.EQUALS, value, field_operator=StringOperator.SAME)
 
-    def _deserialize(self, value, *args, **kwargs):
-        return value if value != "" else None
-
     def not_equals(self, value):
         """
         Example: short_description.not_equals("Network storage is unavailable")
