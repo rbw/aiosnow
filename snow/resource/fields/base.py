@@ -11,6 +11,7 @@ class BaseField(marshmallow.fields.Field):
         self.joined = Joined(pluck)
         self.is_primary = is_primary
         super(BaseField, self).__init__(*args, **kwargs)
+        self.allow_none = kwargs.pop("allow_none", True)
 
     def _condition(self, operator, value=None, field_operator=None):
         if isinstance(value, BaseField):
