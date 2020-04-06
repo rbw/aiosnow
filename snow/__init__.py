@@ -37,6 +37,19 @@ class Application:
         except ValidationError as e:
             raise ConfigurationException(e)
 
+    @property
+    def _auth(self):
+        """Get authentication object built using config
+
+        Returns:
+            aiohttp-compatible authentication object
+        """
+
+        if self.config.basic_auth:
+            return aiohttp.BasicAuth(*self.config.basic_auth)
+        else:
+            raise NoAuthenticationMethod("No known authentication methods was provided")
+
     def get_session(self):
         """New client session
 
@@ -47,10 +60,12 @@ class Application:
             NoAuthenticationMethod
         """
 
-        if self.config.basic_auth:
-            return aiohttp.ClientSession(auth=aiohttp.BasicAuth(*self.config.basic_auth))
-        else:
-            raise NoAuthenticationMethod("No known authentication methods was provided")
+        return aiohttp.ClientSession(
+            auth=self._auth,
+            connector=aiohttp.TCPConnector(
+                verify_ssl=self.config.verify_ssl
+            )
+        )
 
     def resource(self, schema: Type[Schema]) -> Resource:
         """Snow Resource factory
