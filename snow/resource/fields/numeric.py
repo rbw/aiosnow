@@ -1,9 +1,11 @@
+import marshmallow
+
 from .base import BaseField
 
 from ..query import NumericOperator
 
 
-class Numeric(BaseField):
+class Numeric(BaseField, marshmallow.fields.Integer):
     def equals(self, value):
         """
         Example: reassignment_count.equals(0)
