@@ -3,9 +3,9 @@ from .numeric import Numeric
 from .base import BaseField
 
 
-class NumericChoice(BaseField, Numeric):
+class NumericChoice(Numeric, BaseField):
     pass
 
 
-class TextChoice(BaseField, Text):
+class TextChoice(Text, BaseField):
     pass
