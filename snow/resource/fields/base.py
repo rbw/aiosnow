@@ -5,6 +5,8 @@ from snow.consts import Joined
 
 from ..query import Condition, BaseOperator
 
+from ._utils import serialize_list
+
 
 class BaseField(marshmallow.fields.Field):
     def __init__(self, *args, pluck=Joined.VALUE, is_primary=False, empty_as_none=True, **kwargs):
@@ -29,6 +31,24 @@ class BaseField(marshmallow.fields.Field):
             value = value.name
 
         return Condition(self.name, operator, value)
+
+    def in_list(self, values):
+        """
+        Example: impact.in_list([3, 4])
+
+        All records in which the Impact field has one of the values 3 or 4.
+        """
+
+        return self._condition(BaseOperator.ONEOF, serialize_list(values))
+
+    def not_in_list(self, values):
+        """
+        Example: impact.not_in_list([3, 4])
+
+        All records in which the Impact field does not have one of the values 3 or 4.
+        """
+
+        return self._condition(BaseOperator.NOT_ONEOF, serialize_list(values))
 
     def is_empty(self):
         """
