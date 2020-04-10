@@ -7,6 +7,7 @@ class ConfigSchema(Schema):
     Attributes:
         address (str): Instance address, e.g. https://my_instance.service-now.com
         basic_auth (tuple): (<username>, <password>), mutually exclusive with other authentication methods
+        verify_ssl (bool): Whether to validate SSL certificates, defaults to True
     """
 
     class InternalConfig:
