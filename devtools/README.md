@@ -1,6 +1,6 @@
 # Development tools
 
-Snow uses Poetry for working with the project. Guides for the trivial installation can be found at [python-poetry/poetry](https://github.com/python-poetry/poetry#installation).
+Snow uses Poetry for working with the project. Guides for its installation procedure is described at [python-poetry/poetry](https://github.com/python-poetry/poetry#installation).
 
 With poetry installed, run `make` in the project root for a list of available commands.
 
