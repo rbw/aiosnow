@@ -2,6 +2,8 @@ ifeq (, $(shell which poetry))
 $(error "No poetry found in PATH, check out: https://github.com/python-poetry/poetry#installation")
 endif
 
+export POETRY_CACHE_DIR=./.poetry
+
 .PHONY: lint clean publish install check test
 
 help:
