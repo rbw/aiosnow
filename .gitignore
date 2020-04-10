@@ -15,13 +15,9 @@ pip-selfcheck.json
 .DS_Store
 .AppleDouble
 .LSOverride
-.aioli-state
-
-# Aioli
-.aioli.db
 
 # Poetry
-poetry.lock
+.poetry/
 
 # PyCharm
 .idea/
