@@ -31,14 +31,14 @@ class Response:
             )
 
         body = await self.text()
-        content = ujson.loads(body).get("result")
+        content = ujson.loads(body)
 
         if "error" in content:
             err = ErrorSchema().load(content["error"])
             text = f"{err['message']} ({self.status}): {err['detail']}" if err["detail"] else err["message"]
             raise ErrorResponse(text)
 
-        return content
+        return content["result"]
 
 
 class Request(ABC):
