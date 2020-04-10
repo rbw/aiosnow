@@ -44,7 +44,7 @@ With poetry installed, run `make` in the project root for a list of available co
 
 ### Install
 
-Creates a virtual environment and installs dependencies.
+Creates a virtual environment and installs dependencies in *.poetry/*
 
 ```
 $ make install
@@ -52,7 +52,7 @@ $ make install
 
 ### Update
 
-Update dependencies.
+Updates dependencies in *.poetry/*
 
 ```
 $ make update
@@ -69,7 +69,7 @@ $ make shell
 
 ### Test
 
-Run tests.
+Runs tests.
 
 ```
 $ make test
@@ -77,7 +77,7 @@ $ make test
 
 #### Clean
 
-Remove cache and bytecode files.
+Removes cache and bytecode files.
 
 ```
 $ make clean
@@ -85,7 +85,7 @@ $ make clean
 
 ### Publish
 
-Upload Snow to PyPI.
+Uploads Snow to PyPI.
 
 ```
 $ make publish
