@@ -24,6 +24,12 @@ Development status
 
 Pre-alpha
 
+Contributing
+---
+
+Check out the [contributing guidelines](CONTRIBUTING.md) if you want to help out with code or documentation.
+
+
 Funding
 -------
 
