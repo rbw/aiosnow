@@ -16,9 +16,6 @@ pip-selfcheck.json
 .AppleDouble
 .LSOverride
 
-# Poetry
-.poetry/
-
 # PyCharm
 .idea/
 

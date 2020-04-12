@@ -29,7 +29,7 @@ pytest-cov = "^2.7.1"
 autoflake = "^1.3"
 codecov = "^2.0.15"
 docutils = { version = "0.15" }
-black = { version = "^19.3b0", allows-prereleases = true }
+black = { version = "^19.3b0", allow-prereleases = true }
 
 [build-system]
 requires = ["poetry>=0.12"]
