@@ -1,4 +1,4 @@
-from aiohttp.client_reqrep import ClientResponse
+"""from aiohttp.client_reqrep import ClientResponse
 from aiohttp.helpers import TimerNoop
 import unittest
 from unittest import mock
@@ -44,3 +44,4 @@ class TestResponse(unittest.IsolatedAsyncioTestCase):
 
 if __name__ == '__main__':
     unittest.main()
+"""
