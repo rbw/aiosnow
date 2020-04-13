@@ -26,7 +26,7 @@ shell:
 	poetry shell
 
 test:
-	poetry run python -m pytest --cov=snow --cov=tests --ignore venv
+	poetry run python -m pytest
 
 clean:
 	rm -rf dist .mypy_cache
