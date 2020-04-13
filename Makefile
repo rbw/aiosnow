@@ -28,14 +28,14 @@ shell:
 test:
 	poetry run python -m pytest --cov=snow --cov=tests --ignore venv
 
-publish:
-	clean
-	poetry publish --build
-
 clean:
 	rm -rf dist .mypy_cache
 	find snow -type d -name __pycache__ -exec rm -rv {} +
 	find snow -type f -name "*.py[co]" -delete
+
+publish:
+	make clean
+	poetry publish --build
 
 lint:
 	poetry run mypy snow --disallow-untyped-defs
