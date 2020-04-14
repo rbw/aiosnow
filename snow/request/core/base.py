@@ -40,8 +40,8 @@ class Request(ABC):
     def __init__(self, resource):
         self._session = resource.session
         self._resource = resource
+        self._headers_default = {"Content-type": CONTENT_TYPE}
         self._resource_url = resource.get_url()
-        self.default_headers = {"Content-type": CONTENT_TYPE}
 
     @property
     @abstractmethod
@@ -71,14 +71,14 @@ class Request(ABC):
 
         return nested
 
-    async def _send(self, **kwargs):
-        headers = self.default_headers
-        headers.update(kwargs.pop("headers", {}))
+    async def _send(self, headers_extra: dict = None, **kwargs):
+        headers = self._headers_default
+        headers.update(**headers_extra or {})
+        kwargs["headers"] = headers
 
         response = await self._session.request(
             self.__verb__,
             kwargs.pop("url", self.url),
-            headers={**self.default_headers, **(headers or {})},
             **kwargs
         )
 
