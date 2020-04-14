@@ -1,7 +1,6 @@
 from typing import Iterable
 
 from ..core import GetRequest
-
 from .stream import StreamLike
 
 

@@ -18,14 +18,13 @@ class Updater:
             )
 
         try:
-            payload = self.schema(
-                unknown=marshmallow.EXCLUDE
-            ).load({k.name: v for k, v in data.items()})
+            payload = self.schema(unknown=marshmallow.EXCLUDE).load(
+                {k.name: v for k, v in data.items()}
+            )
         except marshmallow.exceptions.ValidationError as e:
             raise PayloadValidationError(e)
 
-        _, content = await PatchRequest(self.resource, object_id, ujson.dumps(payload)).send()
+        _, content = await PatchRequest(
+            self.resource, object_id, ujson.dumps(payload)
+        ).send()
         return self.schema(unknown=marshmallow.RAISE).load(content)
-
-    async def replace(self, data):
-        pass

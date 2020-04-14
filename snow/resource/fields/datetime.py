@@ -1,8 +1,7 @@
 import marshmallow
 
-from .base import BaseField
-
 from ..query import DateTimeOperator
+from .base import BaseField
 
 
 class Datetime(BaseField, marshmallow.fields.DateTime):

@@ -1,8 +1,7 @@
 import marshmallow
 
-from .base import BaseField
-
 from ..query import EmailOperator
+from .base import BaseField
 
 
 class Email(BaseField, marshmallow.fields.Email):

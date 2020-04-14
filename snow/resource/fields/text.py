@@ -1,8 +1,7 @@
 import marshmallow
 
-from .base import BaseField
-
 from ..query import StringOperator
+from .base import BaseField
 
 
 class Text(BaseField, marshmallow.fields.String):
@@ -13,7 +12,9 @@ class Text(BaseField, marshmallow.fields.String):
         All records in which the Short description says nothing else but "Network storage is unavailable."
         """
 
-        return self._condition(StringOperator.EQUALS, value, field_operator=StringOperator.SAME)
+        return self._condition(
+            StringOperator.EQUALS, value, field_operator=StringOperator.SAME
+        )
 
     def not_equals(self, value):
         """
@@ -23,7 +24,9 @@ class Text(BaseField, marshmallow.fields.String):
         is unavailable."
         """
 
-        return self._condition(StringOperator.NOT_EQUALS, value, field_operator=StringOperator.DIFFERENT)
+        return self._condition(
+            StringOperator.NOT_EQUALS, value, field_operator=StringOperator.DIFFERENT
+        )
 
     def starts_with(self, value):
         """

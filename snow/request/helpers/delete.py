@@ -1,5 +1,5 @@
-from snow.request import DeleteRequest
 from snow.exceptions import UnexpectedResponse
+from snow.request import DeleteRequest
 
 
 class Deleter:
@@ -15,6 +15,3 @@ class Deleter:
                 f"Invalid response for DELETE request. "
                 f"Status: {response.status}, Text: {content}"
             )
-
-    async def replace(self, data):
-        pass
