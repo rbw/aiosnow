@@ -2,10 +2,15 @@ from abc import ABC, abstractmethod
 
 import ujson
 
-from marshmallow import Schema, fields
 from aiohttp import ClientSession
+
+from snow.exceptions import UnexpectedContentType
 from snow.consts import CONTENT_TYPE
-from snow.exceptions import UnexpectedContentType, ErrorResponse
+
+
+from marshmallow import Schema, fields
+
+from snow.exceptions import ErrorResponse
 
 
 class ErrorSchema(Schema):
@@ -13,32 +18,20 @@ class ErrorSchema(Schema):
     detail = fields.String(allow_none=True)
 
 
-class Response:
-    def __init__(self, obj):
-        self.obj = obj
+async def get_result(response):
+    data = await response.text()
+    content = ujson.loads(data)
 
-    def __getattr__(self, item):
-        return getattr(self.obj, item)
+    if "error" in content:
+        err = ErrorSchema().load(content["error"])
+        text = (
+            f"{err['message']} ({response.status}): {err['detail']}"
+            if err["detail"]
+            else err["message"]
+        )
+        raise ErrorResponse(text)
 
-    async def get_content(self):
-        content_type = self.headers["content-type"]
-
-        if not content_type.startswith(CONTENT_TYPE):
-            raise UnexpectedContentType(
-                f"Unexpected content-type in response: "
-                f"{content_type}, expected: {CONTENT_TYPE}, "
-                f"probable causes: instance down or REST API disabled"
-            )
-
-        body = await self.text()
-        content = ujson.loads(body)
-
-        if "error" in content:
-            err = ErrorSchema().load(content["error"])
-            text = f"{err['message']} ({self.status}): {err['detail']}" if err["detail"] else err["message"]
-            raise ErrorResponse(text)
-
-        return content["result"]
+    return content["result"]
 
 
 class Request(ABC):
@@ -47,10 +40,8 @@ class Request(ABC):
     def __init__(self, resource):
         self._session = resource.session
         self._resource = resource
+        self._headers_default = {"Content-type": CONTENT_TYPE}
         self._resource_url = resource.get_url()
-        self.default_headers = {
-            "Content-type": CONTENT_TYPE
-        }
 
     @property
     @abstractmethod
@@ -75,31 +66,34 @@ class Request(ABC):
                 nested[name] = None
                 continue
 
-            response = Response(await self._resource.get_cached(item["link"]))
-            nested[name] = await response.get_content()
+            response = await self._resource.get_cached(item["link"])
+            nested[name] = await get_result(response)
 
         return nested
 
-    async def _send(self, **kwargs):
-        headers = self.default_headers
-        headers.update(kwargs.pop("headers", {}))
+    async def _send(self, headers_extra: dict = None, **kwargs):
+        headers = self._headers_default
+        headers.update(**headers_extra or {})
+        kwargs["headers"] = headers
 
-        response = Response(
-            await self._session.request(
-                self.__verb__,
-                kwargs.pop("url", self.url),
-                headers={
-                    **self.default_headers,
-                    **(headers or {})
-                },
-                **kwargs
-            )
+        response = await self._session.request(
+            self.__verb__,
+            kwargs.pop("url", self.url),
+            **kwargs
         )
 
         if response.status == 204:
             return response, {}
 
-        content = await response.get_content()
+        content_type = response.headers["content-type"]
+        if not content_type.startswith(CONTENT_TYPE):
+            raise UnexpectedContentType(
+                f"Unexpected content-type in response: "
+                f"{content_type}, expected: {CONTENT_TYPE}, "
+                f"probable causes: instance down or REST API disabled"
+            )
+
+        content = await get_result(response)
 
         if self._resource.nested_fields:
             if isinstance(content, dict):
