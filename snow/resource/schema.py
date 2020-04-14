@@ -1,8 +1,8 @@
+import warnings
+from typing import Iterable, Tuple
+
 import marshmallow
 import ujson
-import warnings
-
-from typing import Iterable, Tuple
 
 from snow.exceptions import NoSchemaFields
 
@@ -64,7 +64,9 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
 
     def __init__(self, *args, joined_with: str = None, **kwargs):
         self.registered_fields = self.get_fields()
-        self.nested_fields = [k for k, v in self.registered_fields.items() if isinstance(v, Nested)]
+        self.nested_fields = [
+            k for k, v in self.registered_fields.items() if isinstance(v, Nested)
+        ]
 
         if joined_with:
             self.joined_with = joined_with
@@ -106,9 +108,13 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
 
                 if isinstance(value, str):
                     pass
-                elif isinstance(value, dict) and {"value", "display_value"} <= set(value.keys()):
+                elif isinstance(value, dict) and {"value", "display_value"} <= set(
+                    value.keys()
+                ):
                     if not getattr(self, name, None):
-                        warnings.warn(f"Unexpected field in response content: {name}, skipping...")
+                        warnings.warn(
+                            f"Unexpected field in response content: {name}, skipping..."
+                        )
                         continue
 
                     yield name, value[field.joined.value]

@@ -1,15 +1,16 @@
 import marshmallow
 
-from snow.exceptions import UnexpectedValue
 from snow.consts import Joined
+from snow.exceptions import UnexpectedValue
 
-from ..query import Condition, BaseOperator
-
+from ..query import BaseOperator, Condition
 from ._utils import serialize_list
 
 
 class BaseField(marshmallow.fields.Field):
-    def __init__(self, *args, pluck=Joined.VALUE, is_primary=False, empty_as_none=True, **kwargs):
+    def __init__(
+        self, *args, pluck=Joined.VALUE, is_primary=False, empty_as_none=True, **kwargs
+    ):
         self.joined = Joined(pluck)
         self.is_primary = is_primary
         self.empty_as_none = empty_as_none

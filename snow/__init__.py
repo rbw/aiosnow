@@ -1,15 +1,13 @@
 import re
-
 from typing import Type
 
 import aiohttp
-
 from marshmallow import ValidationError
 
-from .resource import Resource, Schema, QueryBuilder, select
-from .consts import Joined
 from .config import ConfigSchema
-from .exceptions import ConfigurationException, UnexpectedSchema, NoAuthenticationMethod
+from .consts import Joined
+from .exceptions import ConfigurationException, NoAuthenticationMethod, UnexpectedSchema
+from .resource import QueryBuilder, Resource, Schema, select
 
 
 def load_config(config_data):
@@ -62,9 +60,7 @@ class Application:
 
         return aiohttp.ClientSession(
             auth=self._auth,
-            connector=aiohttp.TCPConnector(
-                verify_ssl=self.config.verify_ssl
-            )
+            connector=aiohttp.TCPConnector(verify_ssl=self.config.verify_ssl),
         )
 
     def resource(self, schema: Type[Schema]) -> Resource:
@@ -81,7 +77,9 @@ class Application:
         """
 
         if not issubclass(schema, Schema):
-            raise UnexpectedSchema(f"Invalid schema class: {schema}, must be of type {Schema}")
+            raise UnexpectedSchema(
+                f"Invalid schema class: {schema}, must be of type {Schema}"
+            )
         if not re.match(r"^/.*", str(schema.__location__)):
             raise UnexpectedSchema(
                 f"Unexpected path in {schema.__name__}.__location__: {schema.__location__}"

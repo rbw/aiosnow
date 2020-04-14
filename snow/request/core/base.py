@@ -1,16 +1,11 @@
 from abc import ABC, abstractmethod
 
 import ujson
-
 from aiohttp import ClientSession
-
-from snow.exceptions import UnexpectedContentType
-from snow.consts import CONTENT_TYPE
-
-
 from marshmallow import Schema, fields
 
-from snow.exceptions import ErrorResponse
+from snow.consts import CONTENT_TYPE
+from snow.exceptions import ErrorResponse, UnexpectedContentType
 
 
 class ErrorSchema(Schema):
@@ -77,9 +72,7 @@ class Request(ABC):
         kwargs["headers"] = headers
 
         response = await self._session.request(
-            self.__verb__,
-            kwargs.pop("url", self.url),
-            **kwargs
+            self.__verb__, kwargs.pop("url", self.url), **kwargs
         )
 
         if response.status == 204:

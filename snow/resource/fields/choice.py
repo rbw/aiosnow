@@ -1,6 +1,6 @@
-from .text import Text
-from .numeric import Numeric
 from .base import BaseField
+from .numeric import Numeric
+from .text import Text
 
 
 class NumericChoice(Numeric, BaseField):

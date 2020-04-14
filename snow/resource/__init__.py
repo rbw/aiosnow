@@ -1,24 +1,22 @@
 from typing import Iterable, Type, Union
-from urllib.parse import urljoin, urlencode
-
-from snow.exceptions import (
-    SnowException,
-    TooManyItems,
-    NoItems,
-    SchemaError,
-    SelectError
-)
+from urllib.parse import urlencode, urljoin
 
 from marshmallow.fields import Nested
 
-from snow.consts import Joined
-from snow.request import Reader, Creator, Updater, Deleter
 from snow.config import ConfigSchema
-
-from .schema import Schema, PartialSchema, SchemaMeta
-from .query import QueryBuilder, Condition, select
+from snow.consts import Joined
+from snow.exceptions import (
+    NoItems,
+    SchemaError,
+    SelectError,
+    SnowException,
+    TooManyItems,
+)
+from snow.request import Creator, Deleter, Reader, Updater
 
 from . import fields
+from .query import Condition, QueryBuilder, select
+from .schema import PartialSchema, Schema, SchemaMeta
 
 
 class Resource:
@@ -42,7 +40,9 @@ class Resource:
         # Read Resource schema
         self.schema_cls = schema_cls
         self.fields = schema_cls.get_fields()
-        self.nested_fields = [k for k, v in self.fields.items() if isinstance(v, Nested)]
+        self.nested_fields = [
+            k for k, v in self.fields.items() if isinstance(v, Nested)
+        ]
         self.primary_key = self._get_primary_key()
         self._should_resolve = self.__should_resolve
 
@@ -59,7 +59,9 @@ class Resource:
     @property
     def __should_resolve(self) -> bool:
         for f in self.fields.values():
-            if (isinstance(f, fields.BaseField) and f.joined != Joined.VALUE) or isinstance(f, Nested):
+            if (
+                isinstance(f, fields.BaseField) and f.joined != Joined.VALUE
+            ) or isinstance(f, Nested):
                 return True
 
         return False
@@ -73,7 +75,11 @@ class Resource:
 
     @property
     def _pk_candidates(self):
-        return [n for n, f in self.fields.items() if isinstance(f, fields.BaseField) and f.is_primary is True]
+        return [
+            n
+            for n, f in self.fields.items()
+            if isinstance(f, fields.BaseField) and f.is_primary is True
+        ]
 
     def _get_primary_key(self):
         pks = self._pk_candidates
@@ -107,7 +113,7 @@ class Resource:
 
         params = dict(
             sysparm_fields=",".join(self.fields.keys()),
-            sysparm_display_value="all" if self._should_resolve else "false"
+            sysparm_display_value="all" if self._should_resolve else "false",
         )
 
         url = self.url
@@ -136,10 +142,7 @@ class Resource:
             list: Chunk of records
         """
 
-        return self.reader.stream(
-            select(selection).sysparms,
-            **kwargs
-        )
+        return self.reader.stream(select(selection).sysparms, **kwargs)
 
     async def get_cached(self, url):
         if url not in self._object_cache:
@@ -167,10 +170,7 @@ class Resource:
             list: Records
         """
 
-        return await self.reader.collect(
-            select(selection).sysparms,
-            **kwargs
-        )
+        return await self.reader.collect(select(selection).sysparms, **kwargs)
 
     async def get_one(self, selection=None):
         """Get one record

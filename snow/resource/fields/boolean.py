@@ -1,8 +1,7 @@
 import marshmallow
 
-from .base import BaseField
-
 from ..query import BooleanOperator
+from .base import BaseField
 
 
 class Boolean(BaseField, marshmallow.fields.Boolean):

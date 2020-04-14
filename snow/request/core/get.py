@@ -24,9 +24,7 @@ class GetRequest(Request):
 
     @property
     def url(self):
-        params = dict(
-            sysparm_offset=self._offset,
-        )
+        params = dict(sysparm_offset=self._offset)
 
         if self._page_size:
             params["sysparm_limit"] = self._page_size
