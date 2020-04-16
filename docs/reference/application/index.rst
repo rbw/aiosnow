@@ -7,7 +7,7 @@ The :class:`snow.Application` expects a configuration dictionary and provides a 
 
 .. code-block:: python
 
-    from snow.resource import Application
+    from snow import Application
 
     config = dict(
         address="https://my-instance.service-now.com",

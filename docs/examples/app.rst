@@ -10,7 +10,7 @@ Once created, an interface for producing :class:`~snow.resource.Resource` models
 
 .. code-block:: python
 
-    from snow.resource import Application
+    from snow import Application
 
     config = dict(
         address="https://my-instance.service-now.com",
