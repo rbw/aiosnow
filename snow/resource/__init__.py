@@ -32,10 +32,13 @@ class Resource:
         fields: Schema fields
     """
 
-    _object_cache = {}
-
     def __init__(self, schema_cls: Union[Type[Schema], Schema], app):
         self.app = app
+        self.session = app.get_session()
+
+        # Configure self
+        self.config = self.app.config
+        self.url = urljoin(self.config.address, str(schema_cls.__location__))
 
         # Read Resource schema
         self.schema_cls = schema_cls
@@ -45,10 +48,6 @@ class Resource:
         ]
         self.primary_key = self._get_primary_key()
         self._should_resolve = self.__should_resolve
-
-        # Configure self
-        self.config = self.app.config
-        self.url = urljoin(self.config.address, str(schema_cls.__location__))
 
         # Create helpers
         self.reader = Reader(self)
@@ -67,7 +66,6 @@ class Resource:
         return False
 
     async def __aenter__(self):
-        self.session = self.app.get_session()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
@@ -143,15 +141,6 @@ class Resource:
         """
 
         return self.reader.stream(select(selection).sysparms, **kwargs)
-
-    async def get_cached(self, url):
-        if url not in self._object_cache:
-            self._object_cache[url] = await self.session.request("GET", url)
-        else:
-            # @TODO: write debug log about cache hit
-            pass
-
-        return self._object_cache[url]
 
     async def get(self, selection=None, **kwargs) -> dict:
         """Buffered many

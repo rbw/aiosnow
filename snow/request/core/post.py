@@ -13,4 +13,4 @@ class PostRequest(Request):
 
     @property
     def url(self):
-        return self._resource_url
+        return self.base_url

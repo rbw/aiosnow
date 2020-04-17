@@ -12,6 +12,20 @@ class GetRequest(Request):
         self._offset = offset
         self.query = query
 
+    async def _resolve_nested(self, record):
+        nested = {}
+
+        for name in self.resource.nested_fields:
+            item = record[name]
+            if not item or "link" not in item:
+                nested[name] = None
+                continue
+
+            response = await self.get_cached(item["link"])
+            nested[name] = await self.get_result(response)
+
+        return nested
+
     async def send(self, **kwargs):
         return await self._send(**kwargs)
 
@@ -31,4 +45,4 @@ class GetRequest(Request):
         if self.query:
             params["sysparm_query"] = self.query
 
-        return f"{self._resource_url}&{urlencode(params)}"
+        return f"{self.base_url}&{urlencode(params)}"
