@@ -8,35 +8,21 @@ from snow.consts import CONTENT_TYPE
 from snow.exceptions import ErrorResponse, UnexpectedContentType
 
 
-class ErrorSchema(Schema):
-    message = fields.String()
-    detail = fields.String(allow_none=True)
-
-
-async def get_result(response):
-    data = await response.text()
-    content = ujson.loads(data)
-
-    if "error" in content:
-        err = ErrorSchema().load(content["error"])
-        text = (
-            f"{err['message']} ({response.status}): {err['detail']}"
-            if err["detail"]
-            else err["message"]
-        )
-        raise ErrorResponse(text)
-
-    return content["result"]
+_cache = {}
 
 
 class Request(ABC):
-    _session: ClientSession
+    class ErrorSchema(Schema):
+        message = fields.String()
+        detail = fields.String(allow_none=True)
+
+    session: ClientSession
 
     def __init__(self, resource):
-        self._session = resource.session
-        self._resource = resource
-        self._headers_default = {"Content-type": CONTENT_TYPE}
-        self._resource_url = resource.get_url()
+        self.resource = resource
+        self.session = resource.session
+        self.headers_default = {"Content-type": CONTENT_TYPE}
+        self.base_url = resource.get_url()
 
     @property
     @abstractmethod
@@ -52,26 +38,36 @@ class Request(ABC):
     def __verb__(self):
         pass
 
-    async def _resolve_nested(self, record):
-        nested = {}
+    async def get_cached(self, url):
+        if url not in _cache:
+            _cache[url] = await self.session.request("GET", url)
+        else:
+            # @TODO: write debug log about cache hit
+            pass
 
-        for name in self._resource.nested_fields:
-            item = record[name]
-            if not item or "link" not in item:
-                nested[name] = None
-                continue
+        return _cache[url]
 
-            response = await self._resource.get_cached(item["link"])
-            nested[name] = await get_result(response)
+    async def get_result(self, response):
+        data = await response.text()
+        content = ujson.loads(data)
 
-        return nested
+        if "error" in content:
+            err = self.ErrorSchema().load(content["error"])
+            text = (
+                f"{err['message']} ({response.status}): {err['detail']}"
+                if err["detail"]
+                else err["message"]
+            )
+            raise ErrorResponse(text)
+
+        return content["result"]
 
     async def _send(self, headers_extra: dict = None, **kwargs):
-        headers = self._headers_default
+        headers = self.headers_default
         headers.update(**headers_extra or {})
         kwargs["headers"] = headers
 
-        response = await self._session.request(
+        response = await self.session.request(
             self.__verb__, kwargs.pop("url", self.url), **kwargs
         )
 
@@ -86,15 +82,4 @@ class Request(ABC):
                 f"probable causes: instance down or REST API disabled"
             )
 
-        content = await get_result(response)
-
-        if self._resource.nested_fields:
-            if isinstance(content, dict):
-                nested = await self._resolve_nested(content)
-                content.update(nested)
-            elif isinstance(content, list):
-                for idx, record in enumerate(content):
-                    nested = await self._resolve_nested(record)
-                    content[idx].update(nested)
-
-        return response, content
+        return response, await self.get_result(response)
