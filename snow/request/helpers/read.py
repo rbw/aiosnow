@@ -1,13 +1,15 @@
 from typing import Iterable
 
-from ..core import GetRequest
-from .stream import StreamLike
+import marshmallow
+
+from ..core import GetRequest, StreamLike
+from .base import RequestHelper
 
 
-class Reader:
-    def __init__(self, resource):
-        self.resource = resource
-        self.schema = resource.schema_cls()
+class Reader(RequestHelper):
+    @property
+    def schema(self):
+        return self.resource.schema_cls(unknown=marshmallow.EXCLUDE)
 
     async def stream(self, selection, **kwargs) -> Iterable:
         stream = StreamLike(self.resource, query=selection, **kwargs)

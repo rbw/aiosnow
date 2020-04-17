@@ -4,12 +4,13 @@ import ujson
 from snow.exceptions import PayloadValidationError
 
 from ..core import PatchRequest
+from .base import RequestHelper
 
 
-class Updater:
-    def __init__(self, resource):
-        self.resource = resource
-        self.schema = resource.schema_cls
+class Updater(RequestHelper):
+    @property
+    def schema(self):
+        return self.resource.schema_cls(unknown=marshmallow.EXCLUDE)
 
     async def patch(self, object_id, data):
         if not isinstance(data, dict):
@@ -18,7 +19,7 @@ class Updater:
             )
 
         try:
-            payload = self.schema(unknown=marshmallow.EXCLUDE).load(
+            payload = self.schema.load(
                 {k.name: v for k, v in data.items()}
             )
         except marshmallow.exceptions.ValidationError as e:
@@ -27,4 +28,4 @@ class Updater:
         _, content = await PatchRequest(
             self.resource, object_id, ujson.dumps(payload)
         ).send()
-        return self.schema(unknown=marshmallow.RAISE).load(content)
+        return self.schema.load(content)
