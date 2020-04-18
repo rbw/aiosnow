@@ -1,21 +1,16 @@
 from abc import ABC, abstractmethod
 
-import ujson
 from aiohttp import ClientSession
-from marshmallow import Schema, fields
 
 from snow.consts import CONTENT_TYPE
-from snow.exceptions import ErrorResponse, UnexpectedContentType
+from snow.exceptions import UnexpectedContentType
 
+from .response import load_content
 
 _cache = {}
 
 
 class Request(ABC):
-    class ErrorSchema(Schema):
-        message = fields.String()
-        detail = fields.String(allow_none=True)
-
     session: ClientSession
 
     def __init__(self, resource):
@@ -47,21 +42,6 @@ class Request(ABC):
 
         return _cache[url]
 
-    async def get_result(self, response):
-        data = await response.text()
-        content = ujson.loads(data)
-
-        if "error" in content:
-            err = self.ErrorSchema().load(content["error"])
-            text = (
-                f"{err['message']} ({response.status}): {err['detail']}"
-                if err["detail"]
-                else err["message"]
-            )
-            raise ErrorResponse(text)
-
-        return content["result"]
-
     async def _send(self, headers_extra: dict = None, **kwargs):
         headers = self.headers_default
         headers.update(**headers_extra or {})
@@ -82,4 +62,5 @@ class Request(ABC):
                 f"probable causes: instance down or REST API disabled"
             )
 
-        return response, await self.get_result(response)
+        content = await response.text()
+        return response, load_content(content)
