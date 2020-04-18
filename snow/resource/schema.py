@@ -2,21 +2,10 @@ import warnings
 from typing import Iterable, Tuple
 
 import marshmallow
-import ujson
 
 from snow.exceptions import NoSchemaFields
 
 from .fields import BaseField
-
-
-class SchemaOpts(marshmallow.schema.SchemaOpts):
-    def __init__(self, meta, **kwargs):
-        self.load_only = []
-        self.dump_only = []
-
-        super(SchemaOpts, self).__init__(meta, **kwargs)
-        self.render_module = ujson
-        self.unknown = marshmallow.EXCLUDE
 
 
 class SchemaMeta(marshmallow.schema.SchemaMeta):
@@ -59,7 +48,6 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
         __location__: API path
     """
 
-    OPTIONS_CLASS = SchemaOpts
     joined_with: str = None
 
     def __init__(self, *args, joined_with: str = None, **kwargs):

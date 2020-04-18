@@ -1,5 +1,4 @@
 import marshmallow
-import ujson
 
 from snow.exceptions import PayloadValidationError
 

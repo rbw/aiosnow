@@ -1,5 +1,5 @@
-import ujson
-from marshmallow import Schema, fields, EXCLUDE
+import json
+from marshmallow import Schema, fields
 
 from snow.exceptions import ErrorResponse
 
@@ -13,7 +13,7 @@ _schema = ErrorSchema()
 
 
 def load_content(data):
-    content = ujson.loads(data)
+    content = json.loads(data)
 
     if "error" in content:
         err = _schema.load(content["error"])
