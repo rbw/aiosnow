@@ -91,16 +91,16 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
 
         return fields
 
-    def __transform_response(self, data) -> Iterable[Tuple[str, str]]:
-        """Transform the response after ensuring its sanity
+    def __load_response(self, response) -> Iterable[Tuple[str, str]]:
+        """Yields deserialized response content items
 
         Args:
-            data: Response content
+            response: Response content to deserialize
 
         Yields: <name>, <value>
         """
 
-        for key, value in data.items():
+        for key, value in response.items():
             field = self.registered_fields.get(key, None)
 
             if isinstance(field, BaseField):
@@ -126,18 +126,54 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
 
             yield key, value
 
-    @marshmallow.pre_load
-    def _transform(self, data, **_):
-        """Normalize the given data
+    def __dump_payload(self, payload) -> Iterable[Tuple[str, str]]:
+        """Plucks name from Field and yields along with its value as a tuple
 
         Args:
-            data: Dictionary of fields to load
+            payload: Payload to serialize
+
+        Yields: <name>, <value>
+        """
+
+        for field, value in payload.items():
+            name = field.name
+
+            if not isinstance(field, BaseField):
+                continue
+
+            if not getattr(self, name, None):
+                warnings.warn(
+                    f"Unexpected field in response content: {name}, skipping..."
+                )
+                continue
+
+            yield field.name, value
+
+    @marshmallow.pre_dump
+    def _dump_payload(self, data, **_):
+        """Dump payload
+
+        Args:
+            data: Dictionary of payload to serialize
 
         Returns:
             dict(field_name=field_value, ...)
         """
 
-        return dict(self.__transform_response(data or {}))
+        return dict(self.__dump_payload(data))
+
+    @marshmallow.pre_load
+    def _load_response(self, data, **_):
+        """Load response content
+
+        Args:
+            data: Dictionary of fields to deserialize
+
+        Returns:
+            dict(field_name=field_value, ...)
+        """
+
+        return dict(self.__load_response(data or {}))
 
     @property
     def __location__(self):

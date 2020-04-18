@@ -1,5 +1,4 @@
 import marshmallow
-import ujson
 
 from snow.exceptions import PayloadValidationError
 
@@ -14,9 +13,9 @@ class Creator(RequestHelper):
 
     async def write(self, data):
         try:
-            payload = self.schema.load(data)
+            payload = self.schema.dumps(data)
         except marshmallow.exceptions.ValidationError as e:
             raise PayloadValidationError(e)
 
-        _, content = await PostRequest(self.resource, ujson.dumps(payload)).send()
+        _, content = await PostRequest(self.resource, payload).send()
         return self.schema.load(content)
