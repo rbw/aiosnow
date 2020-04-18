@@ -19,13 +19,11 @@ class Updater(RequestHelper):
             )
 
         try:
-            payload = self.schema.load(
-                {k.name: v for k, v in data.items()}
-            )
+            payload = self.schema.dumps(data)
         except marshmallow.exceptions.ValidationError as e:
             raise PayloadValidationError(e)
 
         _, content = await PatchRequest(
-            self.resource, object_id, ujson.dumps(payload)
+            self.resource, object_id, payload
         ).send()
         return self.schema.load(content)
