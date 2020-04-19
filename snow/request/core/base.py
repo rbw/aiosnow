@@ -35,12 +35,43 @@ class Request(ABC):
 
     async def get_cached(self, url):
         if url not in _cache:
-            _cache[url] = await self.session.request("GET", url)
+            response = await self.session.request("GET", url)
+            _cache[url] = await response.text()
         else:
             # @TODO: write debug log about cache hit
             pass
 
         return _cache[url]
+
+    async def __resolve_nested(self, record):
+        nested = {}
+
+        for name in self.resource.nested_fields:
+            item = record[name]
+            if not item or "link" not in item:
+                nested[name] = None
+                continue
+
+            response = await self.get_cached(item["link"])
+            nested[name] = load_content(response)
+
+        return nested
+
+    async def _resolve_nested(self, content):
+        if self.resource.nested_fields:
+            if isinstance(content, dict):
+                nested = await self.__resolve_nested(content)
+                content.update(nested)
+            elif isinstance(content, list):
+                for idx, record in enumerate(content):
+                    nested = await self.__resolve_nested(record)
+                    content[idx].update(nested)
+
+        return content
+
+    async def send_resolve(self, *args, **kwargs):
+        response, content = await self._send(*args, **kwargs)
+        return response, await self._resolve_nested(content)
 
     async def _send(self, headers_extra: dict = None, **kwargs):
         headers = self.headers_default

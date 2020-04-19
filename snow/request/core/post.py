@@ -9,7 +9,7 @@ class PostRequest(Request):
         self.payload = payload
 
     async def send(self, **kwargs):
-        return await self._send(data=self.payload, **kwargs)
+        return await self.send_resolve(data=self.payload, **kwargs)
 
     @property
     def url(self):

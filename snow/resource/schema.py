@@ -1,9 +1,11 @@
 import warnings
+import json
+
 from typing import Iterable, Tuple
 
 import marshmallow
 
-from snow.exceptions import NoSchemaFields
+from snow.exceptions import NoSchemaFields, IncompatiblePayloadField, UnknownPayloadField
 
 from .fields import BaseField
 
@@ -92,21 +94,18 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
             field = self.registered_fields.get(key, None)
 
             if isinstance(field, BaseField):
-                name = field.name
-
                 if isinstance(value, str):
                     pass
                 elif isinstance(value, dict) and {"value", "display_value"} <= set(
                     value.keys()
                 ):
-                    if not getattr(self, name, None):
+                    if not getattr(self, field.name, None):
                         warnings.warn(
-                            f"Unexpected field in response content: {name}, skipping..."
+                            f"Unexpected field in response content: {field.name}, skipping..."
                         )
                         continue
 
-                    yield name, value[field.joined.value]
-                    continue
+                    value = value[field.joined.value]
             elif isinstance(field, Nested):
                 pass
             else:  # Unknown field
@@ -115,7 +114,7 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
             yield key, value
 
     def __dump_payload(self, payload) -> Iterable[Tuple[str, str]]:
-        """Plucks name from Field and yields along with its value as a tuple
+        """Yields serialized payload
 
         Args:
             payload: Payload to serialize
@@ -123,22 +122,25 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
         Yields: <name>, <value>
         """
 
-        for field, value in payload.items():
-            name = field.name
-
-            if not isinstance(field, BaseField):
-                continue
-
-            if not getattr(self, name, None):
-                warnings.warn(
-                    f"Unexpected field in response content: {name}, skipping..."
+        for key, value in payload.items():
+            if isinstance(key, BaseField):
+                key = key.name
+            elif isinstance(key, str):
+                pass
+            else:
+                raise IncompatiblePayloadField(
+                    f"Incompatible field in payload: {type(key)}"
                 )
-                continue
 
-            yield field.name, value
+            field = getattr(self, key, None)
+            if not field:
+                raise UnknownPayloadField(
+                    f"Unknown field in payload {key}"
+                )
 
-    @marshmallow.pre_dump
-    def _dump_payload(self, data, **_):
+            yield key, value
+
+    def dumps(self, data, **_):
         """Dump payload
 
         Args:
@@ -148,7 +150,8 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
             dict(field_name=field_value, ...)
         """
 
-        return dict(self.__dump_payload(data))
+        data = dict(self.__dump_payload(data))
+        return json.dumps(data)
 
     @marshmallow.pre_load
     def _load_response(self, data, **_):
