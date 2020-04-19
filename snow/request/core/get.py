@@ -12,22 +12,8 @@ class GetRequest(Request):
         self._offset = offset
         self.query = query
 
-    async def _resolve_nested(self, record):
-        nested = {}
-
-        for name in self.resource.nested_fields:
-            item = record[name]
-            if not item or "link" not in item:
-                nested[name] = None
-                continue
-
-            response = await self.get_cached(item["link"])
-            nested[name] = await self.get_result(response)
-
-        return nested
-
     async def send(self, **kwargs):
-        return await self._send(**kwargs)
+        return await self.send_resolve(**kwargs)
 
     @property
     def _page_size(self):

@@ -26,6 +26,14 @@ class ErrorResponse(SnowException):
     """An error was returned from server"""
 
 
+class IncompatiblePayloadField(SnowException):
+    """An incompatible field was found in the payload"""
+
+
+class UnknownPayloadField(SnowException):
+    """A field unknown to the schema was found in the payload"""
+
+
 class UnexpectedSchema(SnowException):
     """Schema not of snow.resource.schema.Schema type"""
 
