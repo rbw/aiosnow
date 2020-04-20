@@ -5,8 +5,9 @@ class ConfigSchema(Schema):
     """Snow config schema
 
     Attributes:
-        address (str): Instance address, e.g. https://my_instance.service-now.com
+        address (str): Instance address, e.g. my_instance.service-now.com
         basic_auth (tuple): (<username>, <password>), mutually exclusive with other authentication methods
+        use_ssl (bool): Whether to use SSL, defaults to True
         verify_ssl (bool): Whether to validate SSL certificates, defaults to True
     """
 
@@ -17,10 +18,11 @@ class ConfigSchema(Schema):
             for k, v in config.items():
                 setattr(self, k, v)
 
-    address = fields.Url(required=True)
+    address = fields.String(required=True)
     basic_auth = fields.Tuple(
         tuple_fields=(fields.String(), fields.String()), required=False
     )
+    use_ssl = fields.Boolean(missing=True)
     verify_ssl = fields.Boolean(missing=True)
 
     def __init__(self, *args, **kwargs):

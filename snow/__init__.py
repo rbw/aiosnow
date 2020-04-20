@@ -58,9 +58,14 @@ class Application:
             NoAuthenticationMethod
         """
 
+        connector_args = {}
+
+        if self.config.use_ssl:
+            connector_args["verify_ssl"] = self.config.verify_ssl
+
         return aiohttp.ClientSession(
             auth=self._auth,
-            connector=aiohttp.TCPConnector(verify_ssl=self.config.verify_ssl),
+            connector=aiohttp.TCPConnector(**connector_args),
         )
 
     def resource(self, schema: Type[Schema]) -> Resource:
