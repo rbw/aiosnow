@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 
-from aiohttp import ClientSession
-from marshmallow import Schema, fields
+from aiohttp import ClientSession, http_exceptions, client_exceptions, web_exceptions
+from marshmallow import Schema, fields, EXCLUDE
 
 from snow.consts import CONTENT_TYPE
-from snow.exceptions import UnexpectedContentType, ErrorResponse
+from snow.exceptions import UnexpectedContentType, ClientConnectionError, RequestError
 
 
 class ErrorSchema(Schema):
@@ -12,17 +12,48 @@ class ErrorSchema(Schema):
     detail = fields.String(allow_none=True)
 
 
-def load_content(content):
+class ContentSchema(Schema):
+    error = fields.Nested(ErrorSchema)
+    result = fields.Raw()
+    status = fields.String(missing=None)
+
+
+async def _process_response(data, status):
+    if not data:
+        return
+
+    content = ContentSchema(
+        unknown=EXCLUDE,
+        many=False
+    ).load(data)
+
     if "error" in content:
-        err = ErrorSchema().load(content["error"])
-        text = (
+        err = content["error"]
+        msg = (
             f"{err['message']}: {err['detail']}"
             if err["detail"]
             else err["message"]
         )
-        raise ErrorResponse(text)
+
+        raise RequestError(msg, status)
 
     return content["result"]
+
+
+async def process_response(response):
+    processed = await _process_response(
+        data=await response.json(),
+        status=response.status
+    )
+
+    try:
+        response.raise_for_status()
+    except (client_exceptions.ClientResponseError, http_exceptions.HttpProcessingError) as exc:
+        raise RequestError(exc.message, exc.status) from exc
+    except web_exceptions.HTTPException as exc:
+        raise RequestError(exc.text, exc.status) from exc
+
+    return processed
 
 
 _cache = {}
@@ -53,8 +84,7 @@ class Request(ABC):
 
     async def get_cached(self, url):
         if url not in _cache:
-            response = await self.session.request("GET", url)
-            _cache[url] = await response.json()
+            _, _cache[url] = await self._send(method="GET", url=url)
         else:
             # @TODO: write debug log about cache hit
             pass
@@ -70,8 +100,7 @@ class Request(ABC):
                 nested[name] = None
                 continue
 
-            response = await self.get_cached(item["link"])
-            nested[name] = load_content(response)
+            nested[name] = await self.get_cached(item["link"])
 
         return nested
 
@@ -96,9 +125,14 @@ class Request(ABC):
         headers.update(**headers_extra or {})
         kwargs["headers"] = headers
 
-        response = await self.session.request(
-            self.__verb__, kwargs.pop("url", self.url), **kwargs
-        )
+        try:
+            response = await self.session.request(
+                kwargs.pop("method", self.__verb__),
+                kwargs.pop("url", self.url),
+                **kwargs
+            )
+        except client_exceptions.ClientConnectionError as exc:
+            raise ClientConnectionError(str(exc)) from exc
 
         if response.status == 204:
             return response, {}
@@ -111,5 +145,4 @@ class Request(ABC):
                 f"probable causes: instance down or REST API disabled"
             )
 
-        content = await response.json()
-        return response, load_content(content)
+        return response, await process_response(response)
