@@ -1,11 +1,29 @@
 from abc import ABC, abstractmethod
 
 from aiohttp import ClientSession
+from marshmallow import Schema, fields
 
 from snow.consts import CONTENT_TYPE
-from snow.exceptions import UnexpectedContentType
+from snow.exceptions import UnexpectedContentType, ErrorResponse
 
-from .response import load_content
+
+class ErrorSchema(Schema):
+    message = fields.String()
+    detail = fields.String(allow_none=True)
+
+
+def load_content(content):
+    if "error" in content:
+        err = ErrorSchema().load(content["error"])
+        text = (
+            f"{err['message']}: {err['detail']}"
+            if err["detail"]
+            else err["message"]
+        )
+        raise ErrorResponse(text)
+
+    return content["result"]
+
 
 _cache = {}
 
@@ -36,7 +54,7 @@ class Request(ABC):
     async def get_cached(self, url):
         if url not in _cache:
             response = await self.session.request("GET", url)
-            _cache[url] = await response.text()
+            _cache[url] = await response.json()
         else:
             # @TODO: write debug log about cache hit
             pass
@@ -93,5 +111,5 @@ class Request(ABC):
                 f"probable causes: instance down or REST API disabled"
             )
 
-        content = await response.text()
+        content = await response.json()
         return response, load_content(content)

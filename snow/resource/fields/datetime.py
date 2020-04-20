@@ -4,7 +4,7 @@ from ..query import DateTimeOperator
 from .base import BaseField
 
 
-class Datetime(BaseField, marshmallow.fields.DateTime):
+class Datetime(marshmallow.fields.DateTime, BaseField):
     def _condition(self, operator, value=None, **kwargs):
         # @TODO - add support for "DatetimeHelper" and serialize here.
         return super(Datetime, self)._condition(operator, value, **kwargs)

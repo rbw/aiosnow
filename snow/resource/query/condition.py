@@ -15,7 +15,7 @@ class Condition:
             (self.operator_logical or "")
             + self.operand_left
             + self.operator_conditional
-            + self.operand_right
+            + str(self.operand_right)
         )
 
     def _set_next(self, next_cond, operator):

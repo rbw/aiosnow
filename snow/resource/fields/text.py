@@ -4,7 +4,7 @@ from ..query import StringOperator
 from .base import BaseField
 
 
-class Text(BaseField, marshmallow.fields.String):
+class Text(marshmallow.fields.String, BaseField):
     def equals(self, value):
         """
         Example: short_description.equals("Network storage is unavailable")

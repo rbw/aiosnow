@@ -4,7 +4,7 @@ from ..query import BooleanOperator
 from .base import BaseField
 
 
-class Boolean(BaseField, marshmallow.fields.Boolean):
+class Boolean(marshmallow.fields.Boolean, BaseField):
     def is_true(self):
         """
         Example: active.is_true()
