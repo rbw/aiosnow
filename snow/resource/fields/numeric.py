@@ -4,7 +4,7 @@ from ..query import NumericOperator
 from .base import BaseField
 
 
-class Numeric(BaseField, marshmallow.fields.Integer):
+class Numeric(marshmallow.fields.Integer, BaseField):
     def equals(self, value):
         """
         Example: reassignment_count.equals(0)

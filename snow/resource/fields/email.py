@@ -4,7 +4,7 @@ from ..query import EmailOperator
 from .base import BaseField
 
 
-class Email(BaseField, marshmallow.fields.Email):
+class Email(marshmallow.fields.Email, BaseField):
     def changes(self):
         """
         Example: state.changes()
