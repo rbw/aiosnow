@@ -22,7 +22,7 @@ The Snow API reference, examples and more is available in the [documentation](ht
 Development status
 ---
 
-Pre-alpha
+Alpha
 
 Contributing
 ---
