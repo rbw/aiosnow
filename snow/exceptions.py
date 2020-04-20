@@ -22,8 +22,16 @@ class UnexpectedContentType(SnowException):
     """Unexpected content type from server"""
 
 
-class ErrorResponse(SnowException):
-    """An error was returned from server"""
+class ClientConnectionError(SnowException):
+    """Raised when there was a problem connecting to the server"""
+
+
+class RequestError(SnowException):
+    """The remote application returned an error in the response"""
+
+    def __int__(self, message, status):
+        self.message = message
+        self.status = status
 
 
 class IncompatiblePayloadField(SnowException):
@@ -38,20 +46,12 @@ class UnexpectedSchema(SnowException):
     """Schema not of snow.resource.schema.Schema type"""
 
 
-class UnexpectedResponse(SnowException):
-    """An unexpected response was received"""
-
-
 class UnexpectedValue(SnowException):
     """Typically raised when a Snow method receives unexpected input"""
 
 
 class SchemaError(SnowException):
     """Generic exception raised on schema issues, e.g. integrity errors"""
-
-
-class NoLocationField(SchemaError):
-    """The schema lacks a __location__ field"""
 
 
 class SelectError(SnowException):
