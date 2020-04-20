@@ -38,7 +38,11 @@ class Resource:
 
         # Configure self
         self.config = self.app.config
-        self.url = urljoin(self.config.address, str(schema_cls.__location__))
+
+        # Build URL
+        url_schema = "https://" if self.config.use_ssl else "http://"
+        base_url = url_schema + self.config.address
+        self.url = urljoin(base_url, str(schema_cls.__location__))
 
         # Read Resource schema
         self.schema_cls = schema_cls
