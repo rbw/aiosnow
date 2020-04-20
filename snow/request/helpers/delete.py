@@ -1,4 +1,4 @@
-from snow.exceptions import UnexpectedResponse
+from snow.exceptions import RequestError
 from snow.request import DeleteRequest
 
 from .base import RequestHelper
@@ -14,7 +14,7 @@ class Deleter(RequestHelper):
         if response.status == 204:
             return dict(result="success")
         else:
-            raise UnexpectedResponse(
-                f"Invalid response for DELETE request. "
+            raise RequestError(
+                f"Unexpected response for DELETE request. "
                 f"Status: {response.status}, Text: {content}"
             )
