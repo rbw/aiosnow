@@ -9,19 +9,12 @@ from ._utils import serialize_list
 
 class BaseField(marshmallow.fields.Field):
     def __init__(
-        self, *args, pluck=Joined.VALUE, is_primary=False, empty_as_none=True, **kwargs
+        self, *args, pluck=Joined.VALUE, is_primary=False, **kwargs
     ):
         self.joined = Joined(pluck)
         self.is_primary = is_primary
-        self.empty_as_none = empty_as_none
         super(BaseField, self).__init__(*args, **kwargs)
         self.allow_none = kwargs.pop("allow_none", True)
-
-    def _deserialize(self, value, *args, **kwargs):
-        if self.empty_as_none and value == "":
-            return None
-
-        return value
 
     def _condition(self, operator, value=None, field_operator=None):
         if isinstance(value, BaseField):
