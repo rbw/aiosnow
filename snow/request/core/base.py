@@ -1,10 +1,15 @@
 from abc import ABC, abstractmethod
 
-from aiohttp import ClientSession, http_exceptions, client_exceptions, web_exceptions
-from marshmallow import Schema, fields, EXCLUDE
+from aiohttp import ClientSession, client_exceptions, http_exceptions, web_exceptions
+from marshmallow import EXCLUDE, Schema, fields
 
 from snow.consts import CONTENT_TYPE
-from snow.exceptions import UnexpectedContentType, ClientConnectionError, RequestError, ServerError
+from snow.exceptions import (
+    ClientConnectionError,
+    RequestError,
+    ServerError,
+    UnexpectedContentType,
+)
 
 
 class ErrorSchema(Schema):
@@ -22,18 +27,11 @@ async def _process_response(data, status):
     if not isinstance(data, dict):
         return
 
-    content = ContentSchema(
-        unknown=EXCLUDE,
-        many=False
-    ).load(data)
+    content = ContentSchema(unknown=EXCLUDE, many=False).load(data)
 
     if "error" in content:
         err = content["error"]
-        msg = (
-            f"{err['message']}: {err['detail']}"
-            if err["detail"]
-            else err["message"]
-        )
+        msg = f"{err['message']}: {err['detail']}" if err["detail"] else err["message"]
 
         raise RequestError(msg, status)
 
@@ -46,7 +44,10 @@ async def process_response(response):
 
     try:
         response.raise_for_status()
-    except (client_exceptions.ClientResponseError, http_exceptions.HttpProcessingError) as exc:
+    except (
+        client_exceptions.ClientResponseError,
+        http_exceptions.HttpProcessingError,
+    ) as exc:
         raise ServerError(exc.message, exc.status) from exc
     except web_exceptions.HTTPException as exc:
         raise ServerError(exc.text, exc.status) from exc
@@ -127,7 +128,7 @@ class Request(ABC):
             response = await self.session.request(
                 kwargs.pop("method", self.__verb__),
                 kwargs.pop("url", self.url),
-                **kwargs
+                **kwargs,
             )
         except client_exceptions.ClientConnectionError as exc:
             raise ClientConnectionError(str(exc)) from exc

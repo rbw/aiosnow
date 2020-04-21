@@ -1,4 +1,13 @@
 from .builder import QueryBuilder
 from .condition import Condition
-from .operators import BaseOperator, StringOperator, ReferenceField, NumericOperator, DateTimeOperator, BooleanOperator, EmailOperator, LogicalOperator
+from .operators import (
+    BaseOperator,
+    BooleanOperator,
+    DateTimeOperator,
+    EmailOperator,
+    LogicalOperator,
+    NumericOperator,
+    ReferenceField,
+    StringOperator,
+)
 from .utils import select

@@ -8,9 +8,7 @@ from ._utils import serialize_list
 
 
 class BaseField(marshmallow.fields.Field):
-    def __init__(
-        self, *args, pluck=Joined.VALUE, is_primary=False, **kwargs
-    ):
+    def __init__(self, *args, pluck=Joined.VALUE, is_primary=False, **kwargs):
         self.joined = Joined(pluck)
         self.is_primary = is_primary
         super(BaseField, self).__init__(*args, **kwargs)

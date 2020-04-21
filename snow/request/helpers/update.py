@@ -22,7 +22,5 @@ class Updater(RequestHelper):
         except marshmallow.exceptions.ValidationError as e:
             raise PayloadValidationError(e)
 
-        _, content = await PatchRequest(
-            self.resource, object_id, payload
-        ).send()
+        _, content = await PatchRequest(self.resource, object_id, payload).send()
         return self.schema.load(content)

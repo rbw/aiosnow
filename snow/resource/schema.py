@@ -1,11 +1,14 @@
-import warnings
 import json
-
+import warnings
 from typing import Iterable, Tuple
 
 import marshmallow
 
-from snow.exceptions import NoSchemaFields, IncompatiblePayloadField, UnknownPayloadField
+from snow.exceptions import (
+    IncompatiblePayloadField,
+    NoSchemaFields,
+    UnknownPayloadField,
+)
 
 from .fields import BaseField
 
@@ -134,9 +137,7 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
 
             field = getattr(self, key, None)
             if not field:
-                raise UnknownPayloadField(
-                    f"Unknown field in payload {key}"
-                )
+                raise UnknownPayloadField(f"Unknown field in payload {key}")
 
             yield key, value
 

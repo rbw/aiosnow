@@ -1,19 +1,16 @@
 import pytest
 
-from snow.request import GetRequest
 from snow.exceptions import RequestError, ServerError
+from snow.request import GetRequest
 
 
 async def test_error_http_ok(mock_resource):
     """Successful HTTP requests (200) with an error body should raise a RequestError"""
 
-    response = dict(
-        error=dict(
-            message="[short msg]",
-            detail="[long msg]"
-        ),
-        status="failure"
-    ), 200
+    response = (
+        dict(error=dict(message="[short msg]", detail="[long msg]"), status="failure"),
+        200,
+    )
 
     resource = await mock_resource("GET", "/", *response)
     request = GetRequest(resource)
@@ -28,13 +25,10 @@ async def test_error_http_ok(mock_resource):
 async def test_error_handled(mock_resource):
     """HTTP error response with a body should raise RequestError"""
 
-    response = dict(
-        error=dict(
-            message="[short msg]",
-            detail="[long msg]"
-        ),
-        status="failure"
-    ), 401
+    response = (
+        dict(error=dict(message="[short msg]", detail="[long msg]"), status="failure"),
+        401,
+    )
 
     resource = await mock_resource("GET", "/", *response)
     request = GetRequest(resource)
@@ -49,13 +43,10 @@ async def test_error_handled(mock_resource):
 async def test_error_message_only(mock_resource):
     """HTTP error response with null detail should work"""
 
-    response = dict(
-        error=dict(
-            message="[short msg]",
-            detail=None,
-        ),
-        status="failure"
-    ), 400
+    response = (
+        dict(error=dict(message="[short msg]", detail=None,), status="failure"),
+        400,
+    )
 
     resource = await mock_resource("GET", "/", *response)
     request = GetRequest(resource)

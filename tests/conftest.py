@@ -1,8 +1,7 @@
 import json
 
-from aiohttp import web
-
 import pytest
+from aiohttp import web
 
 from snow import Application
 from snow.resource import Resource, Schema, fields
@@ -17,7 +16,9 @@ class DefaultSchema(Schema):
 @pytest.fixture
 def mock_client(aiohttp_client):
     async def go(mock_server):
-        return await aiohttp_client(mock_server, server_kwargs={'skip_url_asserts': True})
+        return await aiohttp_client(
+            mock_server, server_kwargs={"skip_url_asserts": True}
+        )
 
     yield go
 
@@ -29,7 +30,7 @@ def mock_app(mock_client):
             config_data=dict(
                 address="test.service-now.com",
                 basic_auth=("test", "test"),
-                use_ssl=False
+                use_ssl=False,
             )
         )
         get_session = await mock_client(connect_to)
@@ -61,9 +62,7 @@ def mock_server_app():
     def go(method, path, content, status):
         async def handler(_):
             return web.Response(
-                text=json.dumps(content),
-                content_type="application/json",
-                status=status
+                text=json.dumps(content), content_type="application/json", status=status
             )
 
         app = web.Application()
