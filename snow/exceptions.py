@@ -26,12 +26,16 @@ class ClientConnectionError(SnowException):
     """Raised when there was a problem connecting to the server"""
 
 
-class RequestError(SnowException):
-    """The remote application returned an error in the response"""
+class ServerError(SnowException):
+    """The server returned an error response"""
 
-    def __int__(self, message, status):
+    def __init__(self, message, status):
         self.message = message
         self.status = status
+
+
+class RequestError(ServerError):
+    """The server application returned an error in the response"""
 
 
 class IncompatiblePayloadField(SnowException):

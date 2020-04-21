@@ -4,7 +4,7 @@ from aiohttp import ClientSession, http_exceptions, client_exceptions, web_excep
 from marshmallow import Schema, fields, EXCLUDE
 
 from snow.consts import CONTENT_TYPE
-from snow.exceptions import UnexpectedContentType, ClientConnectionError, RequestError
+from snow.exceptions import UnexpectedContentType, ClientConnectionError, RequestError, ServerError
 
 
 class ErrorSchema(Schema):
@@ -19,7 +19,7 @@ class ContentSchema(Schema):
 
 
 async def _process_response(data, status):
-    if not data:
+    if not isinstance(data, dict):
         return
 
     content = ContentSchema(
@@ -41,17 +41,15 @@ async def _process_response(data, status):
 
 
 async def process_response(response):
-    processed = await _process_response(
-        data=await response.json(),
-        status=response.status
-    )
+    data = await response.json()
+    processed = await _process_response(data, response.status)
 
     try:
         response.raise_for_status()
     except (client_exceptions.ClientResponseError, http_exceptions.HttpProcessingError) as exc:
-        raise RequestError(exc.message, exc.status) from exc
+        raise ServerError(exc.message, exc.status) from exc
     except web_exceptions.HTTPException as exc:
-        raise RequestError(exc.text, exc.status) from exc
+        raise ServerError(exc.text, exc.status) from exc
 
     return processed
 
