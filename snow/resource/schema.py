@@ -38,7 +38,6 @@ class SchemaMeta(marshmallow.schema.SchemaMeta):
 
 class Nested(marshmallow.fields.Nested):
     def __init__(self, parent_name, nested_cls, *args, **kwargs):
-        # Set namespace to support nested queries
         for name, field in getattr(nested_cls, "_declared_fields").items():
             field.name = f"{parent_name}.{name}"
             setattr(self, name, field)
