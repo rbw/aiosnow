@@ -121,7 +121,7 @@ class Resource:
         url = self.url
 
         if fragments:
-            url += "/" + "/".join(fragments)
+            url += "/" + "/".join(map(str, fragments))
 
         return f"{url}{'?' + urlencode(params) if params else ''}"
 
