@@ -1,7 +1,7 @@
 Multiple
 ========
 
-*Example – Buffered read-many*
+*Sample – Buffered read-many*
 
 .. code-block:: python
 
