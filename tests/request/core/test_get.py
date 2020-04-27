@@ -1,4 +1,5 @@
 from snow.request import GetRequest
+from snow.resource import Resource
 
 
 async def test_get_one(mock_resource):
@@ -21,25 +22,25 @@ async def test_get_response_invalid(mock_resource):
     assert response.status == resp_status
 
 
-async def test_params_query(dummy_resource):
-    query = {"k1": "v1", "k2": "v2"}
+async def test_params_query(dummy_resource: Resource):
+    query = "k1=v1^k2=v2"
     request = GetRequest(dummy_resource, query=query)
     assert request.params["sysparm_query"] == query
 
 
-async def test_params_limit(dummy_resource):
+async def test_params_limit(dummy_resource: Resource):
     limit = 15
     request = GetRequest(dummy_resource, limit)
     assert request.params["sysparm_limit"] == limit
 
 
-async def test_params_offset(dummy_resource):
+async def test_params_offset(dummy_resource: Resource):
     offset = 20
     request = GetRequest(dummy_resource, offset=offset)
     assert request.params["sysparm_offset"] == offset
 
 
-async def test_params_page(dummy_resource):
+async def test_params_page(dummy_resource: Resource):
     limit = 15
     offset = 10
 
