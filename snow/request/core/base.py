@@ -8,6 +8,7 @@ from snow.exceptions import (
     ClientConnectionError,
     RequestError,
     ServerError,
+    UnexpectedResponseContent,
     UnexpectedContentType,
 )
 
@@ -44,6 +45,10 @@ async def process_response(response):
 
     try:
         response.raise_for_status()
+        if not isinstance(data, dict):
+            text = await response.text()
+            raise UnexpectedResponseContent(f"Unexpected response received from server: {text}", 200)
+
     except (
         client_exceptions.ClientResponseError,
         http_exceptions.HttpProcessingError,
