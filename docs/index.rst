@@ -28,7 +28,6 @@ Snow depends on a small set of stable and permissively licensed libraries.
 
 - `aiohttp <https://github.com/aio-libs/aiohttp>`_: Communication
 - `marshmallow <https://marshmallow.readthedocs.io/en/stable>`_: Schema system
-- `ultrajson <https://github.com/esnme/ultrajson>`_: JSON encoder and decoder
 
 Table of Contents
 -----------------
