@@ -15,8 +15,8 @@ class StreamLike(GetRequest):
 
     @property
     def _page_size(self):
-        if self._offset + self._chunk_size >= self._limit:
-            return self._limit - self._offset
+        if self._offset + self._chunk_size >= self.limit:
+            return self.limit - self._offset
 
         return self._chunk_size
 
@@ -25,7 +25,7 @@ class StreamLike(GetRequest):
             url_next = str(links["next"]["url"])
             offset_next = int(parse_qs(url_next).get("sysparm_offset")[0])
 
-            if offset_next >= self._limit:
+            if offset_next >= self.limit:
                 raise StreamExhausted
         else:
             raise StreamExhausted

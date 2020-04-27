@@ -6,29 +6,23 @@ from .base import Request
 class GetRequest(Request):
     __verb__ = "GET"
 
-    def __init__(self, resource, limit=30, offset=0, query=None):
+    def __init__(self, resource, limit: int = 10000, offset: int = 0, query: dict = None):
         super(GetRequest, self).__init__(resource)
-        self._limit = limit
-        self._offset = offset
+        self.limit = limit
+        self.offset = offset
         self.query = query
 
     async def send(self, **kwargs):
         return await self.send_resolve(**kwargs)
 
     @property
-    def _page_size(self):
-        if not self._limit:
-            return False
-
-        return self._limit - self._offset
+    def params(self):
+        return dict(
+            sysparm_offset=self.offset,
+            sysparm_limit=self.limit,
+            sysparm_query=self.query
+        )
 
     @property
     def url(self):
-        params = dict(sysparm_offset=self._offset)
-
-        if self._page_size:
-            params["sysparm_limit"] = self._page_size
-        if self.query:
-            params["sysparm_query"] = self.query
-
-        return f"{self.base_url}&{urlencode(params)}"
+        return f"{self.base_url}&{urlencode(self.params)}"
