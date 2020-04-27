@@ -29,7 +29,7 @@ class ClientConnectionError(SnowException):
 class RequestError(SnowException):
     """The application returned an error in the response"""
 
-    def __init__(self, message, status):
+    def __init__(self, message: str, status: int):
         self.message = message
         self.status = status
 

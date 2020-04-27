@@ -16,13 +16,10 @@ class DefaultSchema(Schema):
 @pytest.fixture
 def mock_error():
     def go(message, status, detail=None):
-        return dict(
-            error=dict(
-                message=message,
-                detail=detail,
-            ),
-            status="failure"
-        ), status
+        return (
+            dict(error=dict(message=message, detail=detail,), status="failure"),
+            status,
+        )
 
     yield go
 

@@ -1,4 +1,4 @@
-.. _app-example:
+.. _app-sample:
 
 Application
 ===========

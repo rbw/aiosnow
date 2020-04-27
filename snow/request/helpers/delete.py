@@ -1,3 +1,5 @@
+from typing import Any
+
 from snow.exceptions import RequestError
 from snow.request import DeleteRequest
 
@@ -6,10 +8,10 @@ from .base import RequestHelper
 
 class Deleter(RequestHelper):
     @property
-    def schema(self):
+    def schema(self) -> Any:
         return
 
-    async def delete(self, object_id):
+    async def delete(self, object_id: str) -> dict:
         response, content = await DeleteRequest(self.resource, object_id).send()
         if response.status == 204:
             return dict(result="success")

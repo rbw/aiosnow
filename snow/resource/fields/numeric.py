@@ -1,11 +1,11 @@
 import marshmallow
 
-from ..query import NumericOperator
+from ..query import Condition, NumericOperator
 from .base import BaseField
 
 
 class Numeric(marshmallow.fields.Integer, BaseField):
-    def equals(self, value):
+    def equals(self, value: int) -> Condition:
         """
         Example: reassignment_count.equals(0)
 
@@ -16,7 +16,7 @@ class Numeric(marshmallow.fields.Integer, BaseField):
             NumericOperator.EQUALS, value, field_operator=NumericOperator.SAME
         )
 
-    def not_equals(self, value):
+    def not_equals(self, value: int) -> Condition:
         """
         Example: reassignment_count.not_equals(0)
 
@@ -27,7 +27,7 @@ class Numeric(marshmallow.fields.Integer, BaseField):
             NumericOperator.NOT_EQUALS, value, field_operator=NumericOperator.DIFFERENT
         )
 
-    def less_than(self, value):
+    def less_than(self, value: int) -> Condition:
         """
         Example: impact.less_than(2)
 
@@ -38,7 +38,7 @@ class Numeric(marshmallow.fields.Integer, BaseField):
             NumericOperator.LESS, value, field_operator=NumericOperator.Related.LESS
         )
 
-    def greater_than(self, value):
+    def greater_than(self, value: int) -> Condition:
         """
         Example: impact.greater_than(2)
 
@@ -49,7 +49,7 @@ class Numeric(marshmallow.fields.Integer, BaseField):
             NumericOperator.LESS, value, field_operator=NumericOperator.Related.GREATER
         )
 
-    def less_or_equals(self, value):
+    def less_or_equals(self, value: int) -> Condition:
         """
         Example: impact.less_or_equals(2)
 
@@ -62,7 +62,7 @@ class Numeric(marshmallow.fields.Integer, BaseField):
             field_operator=NumericOperator.Related.LESS_EQUALS,
         )
 
-    def greater_or_equals(self, value):
+    def greater_or_equals(self, value: int) -> Condition:
         """
         Example: impact.greater_or_equals(2)
 
@@ -75,7 +75,7 @@ class Numeric(marshmallow.fields.Integer, BaseField):
             field_operator=NumericOperator.Related.GREATER_EQUALS,
         )
 
-    def between(self, value1, value2):
+    def between(self, value1: int, value2: int) -> Condition:
         """
         Example: impact.between([1, 3])
 

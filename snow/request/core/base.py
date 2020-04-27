@@ -1,6 +1,15 @@
-from abc import ABC, abstractmethod
+from __future__ import annotations
 
-from aiohttp import ClientSession, client_exceptions, http_exceptions, web_exceptions
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Any, Dict, Tuple
+
+from aiohttp import (
+    ClientResponse,
+    ClientSession,
+    client_exceptions,
+    http_exceptions,
+    web_exceptions,
+)
 from marshmallow import EXCLUDE, Schema, fields
 
 from snow.consts import CONTENT_TYPE
@@ -8,56 +17,67 @@ from snow.exceptions import (
     ClientConnectionError,
     RequestError,
     ServerError,
-    UnexpectedResponseContent,
     UnexpectedContentType,
+    UnexpectedResponseContent,
 )
+
+if TYPE_CHECKING:
+    from snow import Resource
 
 
 class ErrorSchema(Schema):
+    """Defines the structure of the ServiceNow error response content"""
+
     message = fields.String()
     detail = fields.String(allow_none=True)
 
 
 class ContentSchema(Schema):
+    """Defines structure of the ServiceNow response content"""
+
     error = fields.Nested(ErrorSchema)
     result = fields.Raw()
     status = fields.String(missing=None)
 
 
-async def _process_response(data, status):
-    if not isinstance(data, dict):
-        return
-
-    content = ContentSchema(unknown=EXCLUDE, many=False).load(data)
-
-    if "error" in content:
-        err = content["error"]
-        msg = f"{err['message']}: {err['detail']}" if err["detail"] else err["message"]
-
-        raise RequestError(msg, status)
-
-    return content["result"]
-
-
-async def process_response(response):
+async def process_response(response: ClientResponse) -> dict:
     data = await response.json()
-    processed = await _process_response(data, response.status)
 
-    try:
-        response.raise_for_status()
-        if not isinstance(data, dict):
+    if isinstance(data, dict):
+        content = ContentSchema(unknown=EXCLUDE, many=False).load(data)
+
+        # Was there an error?
+        if "error" in content:
+            err = content["error"]
+            msg = (
+                f"{err['message']}: {err['detail']}"
+                if err["detail"]
+                else err["message"]
+            )
+
+            raise RequestError(msg, response.status)
+
+        content = content["result"]
+    else:
+        try:
+            # Something went wrong, most likely out of the ServiceNow application's control:
+            # Raise exception if we got a HTTP error status back.
+            response.raise_for_status()
+        except (
+            client_exceptions.ClientResponseError,
+            http_exceptions.HttpProcessingError,
+        ) as exc:
+            raise ServerError(exc.message, exc.code) from exc
+        except web_exceptions.HTTPException as exc:
+            raise ServerError(exc.text or "", exc.status) from exc
+        else:
+            # Non-JSON content along with a HTTP 200 returned: Unexpected.
             text = await response.text()
-            raise UnexpectedResponseContent(f"Unexpected response received from server: {text}", 200)
+            raise UnexpectedResponseContent(
+                f"Unexpected response received from server: {text}", 200
+            )
 
-    except (
-        client_exceptions.ClientResponseError,
-        http_exceptions.HttpProcessingError,
-    ) as exc:
-        raise ServerError(exc.message, exc.status) from exc
-    except web_exceptions.HTTPException as exc:
-        raise ServerError(exc.text, exc.status) from exc
-
-    return processed
+    return content
 
 
 _cache = {}
@@ -66,7 +86,7 @@ _cache = {}
 class Request(ABC):
     session: ClientSession
 
-    def __init__(self, resource):
+    def __init__(self, resource: Resource):
         self.resource = resource
         self.session = resource.session
         self.headers_default = {"Content-type": CONTENT_TYPE}
@@ -74,19 +94,19 @@ class Request(ABC):
 
     @property
     @abstractmethod
-    def url(self):
+    def url(self) -> str:
         pass
 
     @abstractmethod
-    async def send(self, *args, **kwargs):
+    async def send(self, *args: Any, **kwargs: Any) -> Tuple[ClientResponse, dict]:
         pass
 
     @property
     @abstractmethod
-    def __verb__(self):
+    def __verb__(self) -> str:
         pass
 
-    async def get_cached(self, url):
+    async def get_cached(self, url: str) -> dict:
         if url not in _cache:
             _, _cache[url] = await self._send(method="GET", url=url)
         else:
@@ -95,8 +115,8 @@ class Request(ABC):
 
         return _cache[url]
 
-    async def __resolve_nested(self, record):
-        nested = {}
+    async def __resolve_nested(self, record: dict) -> dict:
+        nested: Dict[Any, Any] = {}
 
         for name in self.resource.nested_fields:
             item = record[name]
@@ -108,7 +128,7 @@ class Request(ABC):
 
         return nested
 
-    async def _resolve_nested(self, content):
+    async def _resolve_nested(self, content: dict) -> dict:
         if self.resource.nested_fields:
             if isinstance(content, dict):
                 nested = await self.__resolve_nested(content)
@@ -120,11 +140,15 @@ class Request(ABC):
 
         return content
 
-    async def send_resolve(self, *args, **kwargs):
+    async def send_resolve(
+        self, *args: Any, **kwargs: Any
+    ) -> Tuple[ClientResponse, dict]:
         response, content = await self._send(*args, **kwargs)
         return response, await self._resolve_nested(content)
 
-    async def _send(self, headers_extra: dict = None, **kwargs):
+    async def _send(
+        self, headers_extra: dict = None, **kwargs: Any
+    ) -> Tuple[ClientResponse, dict]:
         headers = self.headers_default
         headers.update(**headers_extra or {})
         kwargs["headers"] = headers
@@ -139,7 +163,7 @@ class Request(ABC):
             raise ClientConnectionError(str(exc)) from exc
 
         if response.status == 204:
-            return response, None
+            return response, {}
 
         content_type = response.headers["content-type"]
         if not content_type.startswith(CONTENT_TYPE):

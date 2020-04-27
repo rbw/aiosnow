@@ -1,15 +1,11 @@
 import marshmallow
 
-from ..query import DateTimeOperator
+from ..query import Condition, DateTimeOperator
 from .base import BaseField
 
 
 class Datetime(marshmallow.fields.DateTime, BaseField):
-    def _condition(self, operator, value=None, **kwargs):
-        # @TODO - add support for "DatetimeHelper" and serialize here.
-        return super(Datetime, self)._condition(operator, value, **kwargs)
-
-    def on(self, value):
+    def on(self, value: str) -> Condition:
         """
         Example: sla_due.on("2019-12-24 02:03:04")
 
@@ -18,7 +14,7 @@ class Datetime(marshmallow.fields.DateTime, BaseField):
 
         return self._condition(DateTimeOperator.ON, value)
 
-    def not_on(self, value):
+    def not_on(self, value: str) -> Condition:
         """
         Example: sla_due.not_on("2019-12-24 02:03:04")
 
@@ -27,7 +23,7 @@ class Datetime(marshmallow.fields.DateTime, BaseField):
 
         return self._condition(DateTimeOperator.NOT_ON, value)
 
-    def before(self, value):
+    def before(self, value: str) -> Condition:
         """
         Example: sla_due.before("2019-12-24 02:03:04")
 
@@ -36,7 +32,7 @@ class Datetime(marshmallow.fields.DateTime, BaseField):
 
         return self._condition(DateTimeOperator.LESS, value)
 
-    def after(self, value):
+    def after(self, value: str) -> Condition:
         """
         Example: sla_due.after("2019-12-24 02:03:04")
 
@@ -45,7 +41,7 @@ class Datetime(marshmallow.fields.DateTime, BaseField):
 
         return self._condition(DateTimeOperator.GREATER, value)
 
-    def until(self, value):
+    def until(self, value: str) -> Condition:
         """
         Example: sla_due.until("2019-12-24 02:03:04")
 
@@ -56,7 +52,7 @@ class Datetime(marshmallow.fields.DateTime, BaseField):
 
         return self._condition(DateTimeOperator.LESS_EQUALS, value)
 
-    def as_of(self, value):
+    def as_of(self, value: str) -> Condition:
         """
         Example: sla_due.as_of("2019-12-24 02:03:04")
 
@@ -67,7 +63,7 @@ class Datetime(marshmallow.fields.DateTime, BaseField):
 
         return self._condition(DateTimeOperator.GREATER_EQUALS, value)
 
-    def between(self, value1, value2):
+    def between(self, value1: str, value2: str) -> Condition:
         """
         Example:
 

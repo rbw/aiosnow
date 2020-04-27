@@ -50,8 +50,8 @@ Table of Contents
    reference/exceptions
 
 .. toctree::
-   :caption: Examples
+   :caption: Samples
    :maxdepth: 2
 
-   examples/app
-   examples/operations/index
+   samples/app
+   samples/operations/index

@@ -10,7 +10,7 @@ from .exceptions import ConfigurationException, NoAuthenticationMethod, Unexpect
 from .resource import QueryBuilder, Resource, Schema, select
 
 
-def load_config(config_data):
+def load_config(config_data: dict) -> ConfigSchema:
     return ConfigSchema().load(config_data)
 
 
@@ -26,17 +26,17 @@ class Application:
         config_data: Config dictionary
 
     Attributes:
-        config (ConfigSchema): Application configuration object
+        config: Application configuration object
     """
 
-    def __init__(self, config_data):
+    def __init__(self, config_data: dict):
         try:
             self.config = load_config(config_data)
         except ValidationError as e:
             raise ConfigurationException(e)
 
     @property
-    def _auth(self):
+    def _auth(self) -> aiohttp.BasicAuth:
         """Get authentication object built using config
 
         Returns:
@@ -44,11 +44,11 @@ class Application:
         """
 
         if self.config.basic_auth:
-            return aiohttp.BasicAuth(*self.config.basic_auth)
+            return aiohttp.BasicAuth(*self.config.basic_auth)  # type: ignore
         else:
             raise NoAuthenticationMethod("No known authentication methods was provided")
 
-    def get_session(self):
+    def get_session(self) -> aiohttp.ClientSession:
         """New client session
 
         Returns:
@@ -58,7 +58,7 @@ class Application:
             NoAuthenticationMethod
         """
 
-        connector_args = {}
+        connector_args = {}  # type: dict
 
         if self.config.use_ssl:
             connector_args["verify_ssl"] = self.config.verify_ssl
@@ -71,7 +71,7 @@ class Application:
         """Snow Resource factory
 
         Args:
-            schema (Schema): Resource Schema
+            schema: Resource Schema
 
         Returns:
             Resource: Resource object

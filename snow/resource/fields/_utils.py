@@ -1,3 +1,2 @@
-def serialize_list(values):
-    values = map(str, values)
-    return ",".join(values)
+def serialize_list(values: list) -> str:
+    return ",".join(map(str, values))

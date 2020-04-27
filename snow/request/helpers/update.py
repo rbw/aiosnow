@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import marshmallow
 
 from snow.exceptions import PayloadValidationError
@@ -5,13 +9,16 @@ from snow.exceptions import PayloadValidationError
 from ..core import PatchRequest
 from .base import RequestHelper
 
+if TYPE_CHECKING:
+    from snow.resource import Schema
+
 
 class Updater(RequestHelper):
     @property
-    def schema(self):
+    def schema(self) -> Schema:
         return self.resource.schema_cls(unknown=marshmallow.EXCLUDE)
 
-    async def patch(self, object_id, data):
+    async def patch(self, object_id: str, data: dict) -> dict:
         if not isinstance(data, dict):
             raise PayloadValidationError(
                 f"Expected payload as a {dict}, got: {type(data)}"

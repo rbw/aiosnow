@@ -1,6 +1,5 @@
-import json
 import warnings
-from typing import Iterable, Tuple
+from typing import Any, Dict, Iterable, Optional, Tuple, Union
 
 import marshmallow
 
@@ -14,8 +13,9 @@ from .fields import BaseField
 
 
 class SchemaMeta(marshmallow.schema.SchemaMeta):
-    def __new__(mcs, name, bases, attrs):
-        fields = {}
+    def __new__(mcs, name: str, bases: tuple, attrs: dict) -> Any:
+        fields = {}  # type: Dict[Any, Union[BaseField, Nested]]
+
         for key, value in attrs.items():
             if isinstance(value, BaseField):
                 fields[key] = value
@@ -37,7 +37,7 @@ class SchemaMeta(marshmallow.schema.SchemaMeta):
 
 
 class Nested(marshmallow.fields.Nested):
-    def __init__(self, parent_name, nested_cls, *args, **kwargs):
+    def __init__(self, parent_name: str, nested_cls: type, *args: Any, **kwargs: Any):
         for name, field in getattr(nested_cls, "_declared_fields").items():
             field.name = f"{parent_name}.{name}"
             setattr(self, name, field)
@@ -52,9 +52,9 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
         __location__: API path
     """
 
-    joined_with: str = None
+    joined_with: str = ""
 
-    def __init__(self, *args, joined_with: str = None, **kwargs):
+    def __init__(self, *args: Any, joined_with: str = None, **kwargs: Any):
         self.registered_fields = self.get_fields()
         self.nested_fields = [
             k for k, v in self.registered_fields.items() if isinstance(v, Nested)
@@ -70,7 +70,7 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
         super(Schema, self).__init__(*args, **kwargs)
 
     @classmethod
-    def get_fields(cls):
+    def get_fields(cls) -> dict:
         fields = {}
         for name, field in cls.__dict__.items():
             if name.startswith("_") or name == "opts":
@@ -83,7 +83,7 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
 
         return fields
 
-    def __load_response(self, response) -> Iterable[Tuple[str, str]]:
+    def __load_response(self, response: dict) -> Iterable[Tuple[str, str]]:
         """Yields deserialized response content items
 
         Args:
@@ -101,7 +101,7 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
                 elif isinstance(value, dict) and {"value", "display_value"} <= set(
                     value.keys()
                 ):
-                    if not getattr(self, field.name, None):
+                    if not field.name or not getattr(self, field.name, None):
                         warnings.warn(
                             f"Unexpected field in response content: {field.name}, skipping..."
                         )
@@ -115,7 +115,7 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
 
             yield key, value
 
-    def __dump_payload(self, payload) -> Iterable[Tuple[str, str]]:
+    def __dump_payload(self, payload: dict) -> Iterable[Tuple[str, str]]:
         """Yields serialized payload
 
         Args:
@@ -140,21 +140,23 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
 
             yield key, value
 
-    def dumps(self, data, **_):
+    def dumps(self, obj: Any, *args: Any, many: bool = None, **kwargs: Any) -> str:
         """Dump payload
 
         Args:
-            data: Dictionary of payload to serialize
+            obj: The object to serialize
+            many: Whether to serialize `obj` as a collection. If `None`, the value
+            for `self.many` is used.
 
         Returns:
-            dict(field_name=field_value, ...)
+            JSON string
         """
 
-        data = dict(self.__dump_payload(data))
-        return json.dumps(data)
+        data = dict(self.__dump_payload(obj))
+        return super().dumps(data)
 
     @marshmallow.pre_load
-    def _load_response(self, data, **_):
+    def _load_response(self, data: dict, **_: Any) -> dict:
         """Load response content
 
         Args:
@@ -167,11 +169,11 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
         return dict(self.__load_response(data or {}))
 
     @property
-    def __location__(self):
+    def __location__(self) -> Optional[str]:
         raise NotImplementedError
 
 
 class PartialSchema(Schema):
     @property
-    def __location__(self):
-        return None
+    def __location__(self) -> None:
+        return

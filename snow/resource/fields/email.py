@@ -1,11 +1,11 @@
 import marshmallow
 
-from ..query import EmailOperator
+from ..query import Condition, EmailOperator
 from .base import BaseField
 
 
 class Email(marshmallow.fields.Email, BaseField):
-    def changes(self):
+    def changes(self) -> Condition:
         """
         Example: state.changes()
 
@@ -14,7 +14,7 @@ class Email(marshmallow.fields.Email, BaseField):
 
         return self._condition(EmailOperator.CHANGES)
 
-    def changes_from(self, value):
+    def changes_from(self, value: str) -> Condition:
         """
         Example: state.changes_from("4^EQ")
 
@@ -23,7 +23,7 @@ class Email(marshmallow.fields.Email, BaseField):
 
         return self._condition(EmailOperator.CHANGES_FROM, value)
 
-    def changes_to(self, value):
+    def changes_to(self, value: str) -> Condition:
         """
         Example: state.changes_to("4^EQ")
 
