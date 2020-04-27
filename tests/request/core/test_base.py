@@ -26,7 +26,9 @@ async def test_error_full(mock_resource, mock_error):
     with pytest.raises(RequestError) as exc_info:
         await request._send(url="/")
 
-    assert exc_info.value.message == "{message}: {detail}".format(**resp_content["error"])
+    assert exc_info.value.message == "{message}: {detail}".format(
+        **resp_content["error"]
+    )
     assert exc_info.value.status == resp_status
 
 
