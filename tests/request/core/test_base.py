@@ -4,42 +4,6 @@ from snow.exceptions import RequestError, ServerError
 from snow.request import GetRequest
 
 
-async def test_error_http_ok(mock_resource):
-    """Successful HTTP requests (200) with an error body should raise a RequestError"""
-
-    response = (
-        dict(error=dict(message="[short msg]", detail="[long msg]"), status="failure"),
-        200,
-    )
-
-    resource = await mock_resource("GET", "/", *response)
-    request = GetRequest(resource)
-
-    with pytest.raises(RequestError) as exc_info:
-        await request._send(url="/")
-
-    assert exc_info.value.message == "[short msg]: [long msg]"
-    assert exc_info.value.status == 200
-
-
-async def test_error_handled(mock_resource):
-    """HTTP error response with a body should raise RequestError"""
-
-    response = (
-        dict(error=dict(message="[short msg]", detail="[long msg]"), status="failure"),
-        401,
-    )
-
-    resource = await mock_resource("GET", "/", *response)
-    request = GetRequest(resource)
-
-    with pytest.raises(RequestError) as exc_info:
-        await request._send(url="/")
-
-    assert exc_info.value.message == "[short msg]: [long msg]"
-    assert exc_info.value.status == 401
-
-
 async def test_error_message_only(mock_resource):
     """HTTP error response with null detail should work"""
 
@@ -59,7 +23,7 @@ async def test_error_message_only(mock_resource):
 
 
 async def test_error_fallback_500(mock_resource):
-    """HTTP error response with non-dict body should raise ServerError"""
+    """Invalid content in response should be ignored, and the HTTP status message returned instead"""
 
     response = "asdf", 500
     resource = await mock_resource("GET", "/", *response)
@@ -73,7 +37,7 @@ async def test_error_fallback_500(mock_resource):
 
 
 async def test_error_fallback_503(mock_resource):
-    """HTTP error response with an empty (None) body should raise ServerError"""
+    """Null content in response should be ignored, and the HTTP status message returned instead"""
 
     response = None, 503
     resource = await mock_resource("GET", "/", *response)

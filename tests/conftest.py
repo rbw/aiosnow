@@ -14,6 +14,20 @@ class DefaultSchema(Schema):
 
 
 @pytest.fixture
+def mock_error():
+    def go(message, status, detail=None):
+        return dict(
+            error=dict(
+                message=message,
+                detail=detail,
+            ),
+            status="failure"
+        ), status
+
+    yield go
+
+
+@pytest.fixture
 def mock_client(aiohttp_client):
     async def go(mock_server):
         return await aiohttp_client(
@@ -38,6 +52,11 @@ def mock_app(mock_client):
         return app
 
     yield go
+
+
+@pytest.fixture
+async def dummy_resource(mock_resource):
+    return await mock_resource("GET", "/", None, None)
 
 
 @pytest.fixture

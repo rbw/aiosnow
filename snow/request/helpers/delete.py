@@ -16,5 +16,6 @@ class Deleter(RequestHelper):
         else:
             raise RequestError(
                 f"Unexpected response for DELETE request. "
-                f"Status: {response.status}, Text: {content}"
+                f"Status: {response.status}, Text: {content}",
+                response.status,
             )

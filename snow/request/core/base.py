@@ -134,7 +134,7 @@ class Request(ABC):
             raise ClientConnectionError(str(exc)) from exc
 
         if response.status == 204:
-            return response, {}
+            return response, None
 
         content_type = response.headers["content-type"]
         if not content_type.startswith(CONTENT_TYPE):
