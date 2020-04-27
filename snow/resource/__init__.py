@@ -1,7 +1,9 @@
-from typing import Iterable, Type, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Type, Union
 from urllib.parse import urlencode, urljoin
 
-from marshmallow.fields import Nested
+import marshmallow
 
 from snow.config import ConfigSchema
 from snow.consts import Joined
@@ -18,21 +20,24 @@ from . import fields
 from .query import Condition, QueryBuilder, select
 from .schema import PartialSchema, Schema, SchemaMeta
 
+if TYPE_CHECKING:
+    from snow import Application
+
 
 class Resource:
     """ServiceNow API Resource Model
 
     Args:
-        schema_cls (Schema): Schema class
-        app (Application): Application instance
+        schema_cls: Schema class
+        app: Application instance
 
     Attributes:
         config (ConfigSchema): Application config
-        url: API URL
-        fields: Schema fields
+        url (str): API URL
+        fields (dict): Schema fields
     """
 
-    def __init__(self, schema_cls: Union[Type[Schema], Schema], app):
+    def __init__(self, schema_cls: Type[Schema], app: Application):
         self.app = app
         self.session = app.get_session()
 
@@ -41,15 +46,12 @@ class Resource:
 
         # Build URL
         url_schema = "https://" if self.config.use_ssl else "http://"
-        base_url = url_schema + self.config.address
+        base_url = url_schema + str(self.config.address)
         self.url = urljoin(base_url, str(schema_cls.__location__))
 
         # Read Resource schema
-        self.schema_cls = schema_cls
+        self.schema_cls = schema_cls  # type: Type[Schema]
         self.fields = schema_cls.get_fields()
-        self.nested_fields = [
-            k for k, v in self.fields.items() if isinstance(v, Nested)
-        ]
         self.primary_key = self._get_primary_key()
         self._should_resolve = self.__should_resolve
 
@@ -60,30 +62,38 @@ class Resource:
         self.deleter = Deleter(self)
 
     @property
+    def nested_fields(self) -> list:
+        return [
+            k
+            for k, v in self.fields.items()
+            if isinstance(v, marshmallow.fields.Nested)
+        ]
+
+    @property
     def __should_resolve(self) -> bool:
         for f in self.fields.values():
             if (
                 isinstance(f, fields.BaseField) and f.joined != Joined.VALUE
-            ) or isinstance(f, Nested):
+            ) or isinstance(f, marshmallow.fields.Nested):
                 return True
 
         return False
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> Resource:
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, *_: list) -> None:
         await self.session.close()
 
     @property
-    def _pk_candidates(self):
+    def _pk_candidates(self) -> list:
         return [
             n
             for n, f in self.fields.items()
             if isinstance(f, fields.BaseField) and f.is_primary is True
         ]
 
-    def _get_primary_key(self):
+    def _get_primary_key(self) -> Union[str, None]:
         pks = self._pk_candidates
 
         if len(pks) > 1:
@@ -97,17 +107,17 @@ class Resource:
         return pks[0]
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self.schema_cls.__name__
 
-    def get_url(self, fragments=None):
+    def get_url(self, fragments: list = None) -> str:
         """Get request URL
 
         Args:
-            fragments (list): Path fragments
+            fragments: Path fragments
 
         Returns:
-            str: URL
+            URL
         """
 
         if fragments and not isinstance(fragments, list):
@@ -125,7 +135,9 @@ class Resource:
 
         return f"{url}{'?' + urlencode(params) if params else ''}"
 
-    def stream(self, selection=None, **kwargs) -> Iterable:
+    def stream(
+        self, selection: Union[QueryBuilder, None], **kwargs: Any
+    ) -> AsyncGenerator:
         """Stream-like async generator
 
         Fetches data in chunks using the ServiceNow pagination system.
@@ -141,12 +153,12 @@ class Resource:
             chunk_size (int): Number of records to fetch in one go
 
         Yields:
-            list: Chunk of records
+            Chunk of records
         """
 
         return self.reader.stream(select(selection).sysparms, **kwargs)
 
-    async def get(self, selection=None, **kwargs) -> dict:
+    async def get(self, selection: str = None, **kwargs: Any) -> list:
         """Buffered many
 
         Fetches data and stores in buffer.
@@ -160,19 +172,19 @@ class Resource:
             offset (int): Starting record index
 
         Returns:
-            list: Records
+            Records
         """
 
         return await self.reader.collect(select(selection).sysparms, **kwargs)
 
-    async def get_one(self, selection=None):
+    async def get_one(self, selection: str = None) -> dict:
         """Get one record
 
         Args:
             selection: Snow compatible query
 
         Returns:
-            dict: Record
+            Record
         """
 
         if not self.primary_key:
@@ -189,20 +201,20 @@ class Resource:
 
         return items[0]
 
-    async def get_pk_value(self, selection):
-        """Given a selection, return the resulting record's PK field's value
+    async def get_pk_value(self, sysparm_query: str) -> str:
+        """Given a query, return the resulting record's PK field's value
 
         Args:
-            selection: Snow compatible query
+            sysparm_query: Snow compatible query
 
         Returns:
-            str: PK field's value
+            PK field's value
         """
 
-        record = await self.get_one(selection)
+        record = await self.get_one(sysparm_query)
         return record[self.primary_key]
 
-    async def get_object_id(self, value):
+    async def get_object_id(self, value: Union[Condition, str]) -> str:
         """Get object id by str or Condition
 
         Immediately return if value is str.
@@ -211,43 +223,43 @@ class Resource:
             value: Condition or str
 
         Returns:
-            str: Object id
+            Object id
         """
 
         if isinstance(value, str):
             return value
         elif isinstance(value, Condition):
-            return await self.get_pk_value(value)
+            return await self.get_pk_value(value.__str__)
         else:
             raise SelectError(f"Selection must be of type {Condition} or {str}")
 
-    async def update(self, selection, payload) -> dict:
+    async def update(self, selection: Union[Condition, str], payload: dict) -> dict:
         """Update matching record
 
         Args:
             selection: Condition or ID
-            payload (dict): Update payload
+            payload: Update payload
 
         Returns:
-            dict: Updated record
+            Updated record
         """
 
         object_id = await self.get_object_id(selection)
         return await self.updater.patch(object_id, payload)
 
-    async def create(self, payload):
+    async def create(self, payload: dict) -> dict:
         """Create a new record
 
         Args:
-            payload (dict): New record payload
+            payload: New record payload
 
         Returns:
-            dict: Created record
+            Created record
         """
 
         return await self.creator.write(payload)
 
-    async def delete(self, selection):
+    async def delete(self, selection: Union[Condition, str]) -> dict:
         """Delete matching record
 
         Args:
@@ -256,5 +268,6 @@ class Resource:
         Returns:
             dict: {"result": <status>}
         """
+
         object_id = await self.get_object_id(selection)
         return await self.deleter.delete(object_id)

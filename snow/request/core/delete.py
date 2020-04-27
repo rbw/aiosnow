@@ -1,16 +1,25 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Tuple
+
+from aiohttp import ClientResponse
+
 from .base import Request
+
+if TYPE_CHECKING:
+    from snow import Resource
 
 
 class DeleteRequest(Request):
     __verb__ = "DELETE"
 
-    def __init__(self, resource, object_id):
+    def __init__(self, resource: Resource, object_id: str):
         super(DeleteRequest, self).__init__(resource)
         self.base_url = resource.get_url(fragments=[object_id])
 
-    async def send(self, **kwargs):
-        return await self._send(**kwargs)
+    async def send(self, *args: Any, **kwargs: Any) -> Tuple[ClientResponse, dict]:
+        return await self._send(*args, **kwargs)
 
     @property
-    def url(self):
+    def url(self) -> str:
         return self.base_url

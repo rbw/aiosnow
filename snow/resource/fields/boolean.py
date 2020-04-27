@@ -1,11 +1,11 @@
 import marshmallow
 
-from ..query import BooleanOperator
+from ..query import BooleanOperator, Condition
 from .base import BaseField
 
 
 class Boolean(marshmallow.fields.Boolean, BaseField):
-    def is_true(self):
+    def is_true(self) -> Condition:
         """
         Example: active.is_true()
 
@@ -14,7 +14,7 @@ class Boolean(marshmallow.fields.Boolean, BaseField):
 
         return self._condition(BooleanOperator.EQUALS, "true")
 
-    def is_falsy(self):
+    def is_falsy(self) -> Condition:
         """
         Example: active.is_falsy()
 

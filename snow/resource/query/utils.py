@@ -1,10 +1,12 @@
+from typing import Union
+
 from snow.exceptions import SelectError
 
 from .builder import QueryBuilder
 from .condition import Condition
 
 
-def select(value=None):
+def select(value: Union[QueryBuilder, Condition, str] = None) -> QueryBuilder:
     if value is None or isinstance(value, str):
         return QueryBuilder.from_raw(value or "")
     elif isinstance(value, QueryBuilder):

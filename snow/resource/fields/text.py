@@ -1,11 +1,11 @@
 import marshmallow
 
-from ..query import StringOperator
+from ..query import Condition, StringOperator
 from .base import BaseField
 
 
 class Text(marshmallow.fields.String, BaseField):
-    def equals(self, value):
+    def equals(self, value: str) -> Condition:
         """
         Example: short_description.equals("Network storage is unavailable")
 
@@ -16,7 +16,7 @@ class Text(marshmallow.fields.String, BaseField):
             StringOperator.EQUALS, value, field_operator=StringOperator.SAME
         )
 
-    def not_equals(self, value):
+    def not_equals(self, value: str) -> Condition:
         """
         Example: short_description.not_equals("Network storage is unavailable")
 
@@ -28,7 +28,7 @@ class Text(marshmallow.fields.String, BaseField):
             StringOperator.NOT_EQUALS, value, field_operator=StringOperator.DIFFERENT
         )
 
-    def starts_with(self, value):
+    def starts_with(self, value: str) -> Condition:
         """
         Example: short_description.starts_with("SAP")
 
@@ -37,7 +37,7 @@ class Text(marshmallow.fields.String, BaseField):
 
         return self._condition(StringOperator.STARTSWITH, value)
 
-    def ends_with(self, value):
+    def ends_with(self, value: str) -> Condition:
         """
         Example: short_description.ends_with("outage")
 
@@ -46,7 +46,7 @@ class Text(marshmallow.fields.String, BaseField):
 
         return self._condition(StringOperator.ENDSWITH, value)
 
-    def contains(self, value):
+    def contains(self, value: str) -> Condition:
         """
         Example: short_description.contains("SAP")
 
@@ -55,7 +55,7 @@ class Text(marshmallow.fields.String, BaseField):
 
         return self._condition(StringOperator.CONTAINS, value)
 
-    def not_contains(self, value):
+    def not_contains(self, value: str) -> Condition:
         """
         Example: short_description.not_contains("SAP")
 
@@ -64,7 +64,7 @@ class Text(marshmallow.fields.String, BaseField):
 
         return self._condition(StringOperator.NOT_CONTAINS, value)
 
-    def less_or_equals(self, value):
+    def less_or_equals(self, value: str) -> Condition:
         """
         Example: short_description.less_or_equals("s")
 
@@ -75,7 +75,7 @@ class Text(marshmallow.fields.String, BaseField):
 
         return self._condition(StringOperator.LESS_EQUALS, value)
 
-    def greater_or_equals(self, value):
+    def greater_or_equals(self, value: str) -> Condition:
         """
         Example: short_description.greater_or_equals("s")
 
@@ -86,7 +86,7 @@ class Text(marshmallow.fields.String, BaseField):
 
         return self._condition(StringOperator.GREATER_EQUALS, value)
 
-    def between(self, value1, value2):
+    def between(self, value1: str, value2: str) -> Condition:
         """
         Example: short_description.between("q", "t")
 

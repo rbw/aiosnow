@@ -1,3 +1,5 @@
+from typing import Any
+
 from marshmallow import Schema, ValidationError, fields, post_load
 
 
@@ -14,7 +16,7 @@ class ConfigSchema(Schema):
     class InternalConfig:
         """Internal Application config"""
 
-        def __init__(self, **config):
+        def __init__(self, **config: dict):
             for k, v in config.items():
                 setattr(self, k, v)
 
@@ -25,11 +27,11 @@ class ConfigSchema(Schema):
     use_ssl = fields.Boolean(missing=True)
     verify_ssl = fields.Boolean(missing=True)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         super(ConfigSchema, self).__init__(*args, **kwargs)
 
     @post_load
-    def make_object(self, data, **_):
+    def make_object(self, data: dict, **_: Any) -> InternalConfig:
         if {"basic_auth", "oauth"} <= set(data):
             raise ValidationError("Cannot use multiple authentication methods")
         elif "basic_auth" in data:
