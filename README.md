@@ -16,6 +16,12 @@ Documentation
 
 The Snow API reference, examples and more is available in the [documentation](https://python-snow.readthedocs.io/en/latest).
 
+Test it out
+---
+
+Check out some [ready-to-use examples](extras/examples) to quickly get a feel for the library.
+
+
 Development status
 ---
 
