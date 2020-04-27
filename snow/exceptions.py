@@ -38,6 +38,10 @@ class ServerError(RequestError):
     """The server returned an error in the response"""
 
 
+class UnexpectedResponseContent(RequestError):
+    """Unexpected content in response from server"""
+
+
 class IncompatiblePayloadField(SnowException):
     """An incompatible field was found in the payload"""
 
