@@ -1,4 +1,4 @@
-# snow: Asynchronous Python ServiceNow library
+# snow: Python asyncio library for ServiceNow
 
 [![image](https://badgen.net/pypi/v/snow)](https://pypi.org/project/snow)
 [![image](https://badgen.net/badge/python/3.7+?color=purple)](https://pypi.org/project/snow)
@@ -8,7 +8,8 @@
 
 
 Snow is a simple and lightweight yet powerful and extensible library for interacting with ServiceNow. It works
-with modern versions of Python and utilizes [asyncio](https://docs.python.org/3/library/asyncio.html).
+with modern versions of Python, utilizes [asyncio](https://docs.python.org/3/library/asyncio.html) and 
+can be used for simple scripting as well as for building high-concurrency backend applications on top of the ServiceNow platform.
 
 Documentation
 ---
