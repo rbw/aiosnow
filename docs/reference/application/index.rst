@@ -20,5 +20,5 @@ The :class:`snow.Application` expects a configuration dictionary and provides a 
 .. toctree::
     :hidden:
 
-    model
+    instance
     config

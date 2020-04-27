@@ -1,5 +1,5 @@
-Class
-=====
+Instance
+========
 
 .. automodule:: snow
    :members: Application
