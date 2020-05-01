@@ -10,10 +10,6 @@ class StreamExhausted(SnowException):
     """Signals there are no further items produced by the iterator"""
 
 
-class PayloadValidationError(SnowException):
-    """Local payload validation against a Resource Schema failed"""
-
-
 class NoAuthenticationMethod(SnowException):
     """No authentication method was provided"""
 
@@ -40,6 +36,14 @@ class ServerError(RequestError):
 
 class UnexpectedResponseContent(RequestError):
     """Unexpected content in response from server"""
+
+
+class UnexpectedPayloadType(SnowException):
+    """Raised when the request payload was of an unexpected type"""
+
+
+class PayloadValidationError(SnowException):
+    """Local payload validation against a Resource Schema failed"""
 
 
 class IncompatiblePayloadField(SnowException):

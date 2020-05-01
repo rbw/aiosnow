@@ -7,6 +7,7 @@ from snow.exceptions import (
     IncompatiblePayloadField,
     NoSchemaFields,
     UnknownPayloadField,
+    UnexpectedPayloadType
 )
 
 from .fields import BaseField
@@ -140,7 +141,7 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
 
             yield key, value
 
-    def dumps(self, obj: Any, *args: Any, many: bool = None, **kwargs: Any) -> str:
+    def dumps(self, obj: dict, *args: Any, many: bool = None, **kwargs: Any) -> str:
         """Dump payload
 
         Args:
@@ -151,6 +152,9 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
         Returns:
             JSON string
         """
+
+        if not isinstance(obj, dict):
+            raise UnexpectedPayloadType(f"Invalid payload: {type(obj)}, expected: {dict}")
 
         data = dict(self.__dump_payload(obj))
         return super().dumps(data)

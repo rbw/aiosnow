@@ -16,11 +16,11 @@ class PatchRequest(Request):
     def __init__(self, resource: Resource, object_id: str, payload: str):
         super(PatchRequest, self).__init__(resource)
         self.payload = payload
-        self.base_url = resource.get_url(fragments=[object_id])
+        self.object_id = object_id
 
     async def send(self, *args: Any, **kwargs: Any) -> Tuple[ClientResponse, dict]:
         return await self.send_resolve(data=self.payload, **kwargs)
 
     @property
     def url(self) -> str:
-        return self.base_url
+        return self.resource.get_url(fragments=[self.object_id])
