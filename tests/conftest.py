@@ -54,7 +54,9 @@ def mock_app(mock_client):
 @pytest.fixture
 def mock_resource(mock_server_app, mock_resource_raw):
     async def go(method, path="/", content=None, status=None):
-        server = mock_server_app(method, path, content or dict(result=""), status or 200)
+        server = mock_server_app(
+            method, path, content or dict(result=""), status or 200
+        )
         return await mock_resource_raw(connect_to=server)
 
     yield go

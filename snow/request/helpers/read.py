@@ -1,19 +1,15 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-import marshmallow
-
-from ..core import GetRequest
-from .base import RequestHelper
-
-from typing import Any, AsyncGenerator
+from typing import TYPE_CHECKING, Any, AsyncGenerator
 from urllib.parse import parse_qs
 
+import marshmallow
 from multidict import MultiDictProxy
 
 from snow.exceptions import StreamExhausted
 
+from ..core import GetRequest
+from .base import RequestHelper
 
 if TYPE_CHECKING:
     from snow.resource import Schema

@@ -6,8 +6,8 @@ import marshmallow
 from snow.exceptions import (
     IncompatiblePayloadField,
     NoSchemaFields,
+    UnexpectedPayloadType,
     UnknownPayloadField,
-    UnexpectedPayloadType
 )
 
 from .fields import BaseField
@@ -154,7 +154,9 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
         """
 
         if not isinstance(obj, dict):
-            raise UnexpectedPayloadType(f"Invalid payload: {type(obj)}, expected: {dict}")
+            raise UnexpectedPayloadType(
+                f"Invalid payload: {type(obj)}, expected: {dict}"
+            )
 
         data = dict(self.__dump_payload(obj))
         return super().dumps(data)

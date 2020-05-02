@@ -79,4 +79,3 @@ async def test_core_response_malformed(mock_resource):
 
     assert content == resp_content["result"]
     assert response.status == resp_status
-
