@@ -19,19 +19,7 @@ The Snow API reference, examples and more is available in the [documentation](ht
 Test it out
 ---
 
-Check out some [ready-to-use examples](extras/examples) to quickly get a feel for the library.
-
-
-Development status
----
-
-Alpha
-
-Contributing
----
-
-Check out the [contributing guidelines](CONTRIBUTING.md) if you want to help out with code or documentation.
-
+Check out some [fully functional examples](extras/examples) to quickly get a feel for the library.
 
 Funding
 -------
@@ -44,6 +32,17 @@ Consider leaving a [donation](https://paypal.vault13.org) if you like this softw
 - Directly contribute to faster releases, more features, and higher quality software.
 - Allow more time to be invested in documentation, issue triage, and community support.
 - Safeguard the future development of Snow.
+
+Development status
+---
+
+Alpha
+
+Contributing
+---
+
+Check out the [contributing guidelines](CONTRIBUTING.md) if you want to help out with code or documentation.
+
 
 Author
 ------

@@ -15,11 +15,11 @@ class DeleteRequest(Request):
 
     def __init__(self, resource: Resource, object_id: str):
         super(DeleteRequest, self).__init__(resource)
-        self.base_url = resource.get_url(fragments=[object_id])
+        self.object_id = object_id
 
     async def send(self, *args: Any, **kwargs: Any) -> Tuple[ClientResponse, dict]:
         return await self._send(*args, **kwargs)
 
     @property
     def url(self) -> str:
-        return self.base_url
+        return self.resource.get_url(fragments=[self.object_id])

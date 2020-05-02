@@ -6,7 +6,7 @@ from snow.exceptions import RequestError
 from snow.request import DeleteRequest
 
 
-async def test_core_delete(mock_resource):
+async def test_core_delete_success(mock_resource):
     object_id = "test"
     resp_content, resp_status = {}, 204
 
@@ -14,9 +14,16 @@ async def test_core_delete(mock_resource):
     request = DeleteRequest(resource, object_id)
     response, content = await request._send(url=f"/{object_id}")
 
-    assert urlparse(request.url).path.endswith(object_id)
     assert content == resp_content
     assert response.status == resp_status
+
+
+async def test_core_delete_path(mock_resource):
+    object_id = "some_id"
+    resource = await mock_resource("DELETE")
+    request = DeleteRequest(resource, object_id)
+
+    assert urlparse(request.url).path.endswith(object_id)
 
 
 async def test_core_delete_error(mock_error, mock_resource):
