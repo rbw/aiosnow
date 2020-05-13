@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Tuple
-
-from aiohttp import ClientResponse
+from typing import TYPE_CHECKING, Any
 
 from .base import Request
 
@@ -11,14 +9,18 @@ if TYPE_CHECKING:
 
 
 class DeleteRequest(Request):
-    __verb__ = "DELETE"
+    __method__ = "DELETE"
 
     def __init__(self, resource: Resource, object_id: str):
-        super(DeleteRequest, self).__init__(resource)
         self.object_id = object_id
+        super(DeleteRequest, self).__init__(resource)
 
-    async def send(self, *args: Any, **kwargs: Any) -> Tuple[ClientResponse, dict]:
-        return await self._send(*args, **kwargs)
+    def __repr__(self) -> str:
+        return self._format_repr()
+
+    async def send(self, *args: Any, **kwargs: Any) -> Any:
+        # kwargs["decode"] = False
+        return await self._send(*args, decode=False, **kwargs)
 
     @property
     def url(self) -> str:
