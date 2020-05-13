@@ -9,12 +9,21 @@ from snow.config import ConfigSchema
 from snow.consts import Joined
 from snow.exceptions import (
     NoItems,
+    PayloadValidationError,
+    RequestError,
     SchemaError,
     SelectError,
     SnowException,
     TooManyItems,
 )
-from snow.request import Creator, Deleter, Reader, Updater
+from snow.request import (
+    DeleteRequest,
+    GetRequest,
+    Pagestream,
+    PatchRequest,
+    PostRequest,
+)
+from snow.response import Response
 
 from . import fields
 from .query import Condition, QueryBuilder, select
@@ -50,16 +59,10 @@ class Resource:
         self.url = urljoin(base_url, str(schema_cls.__location__))
 
         # Read Resource schema
-        self.schema_cls = schema_cls  # type: Type[Schema]
+        self.schema = schema_cls(unknown=marshmallow.EXCLUDE)  # type: Schema
         self.fields = schema_cls.get_fields()
         self.primary_key = self._get_primary_key()
         self._should_resolve = self.__should_resolve
-
-        # Create helpers
-        self.reader = Reader(self)
-        self.updater = Updater(self)
-        self.creator = Creator(self)
-        self.deleter = Deleter(self)
 
     @property
     def nested_fields(self) -> list:
@@ -106,9 +109,12 @@ class Resource:
 
         return pks[0]
 
+    def dumps(self, data: dict) -> str:
+        return self.schema.dumps(data)
+
     @property
     def name(self) -> str:
-        return self.schema_cls.__name__
+        return self.schema.__class__.__name__
 
     def get_url(self, fragments: list = None) -> str:
         """Get request URL
@@ -135,7 +141,7 @@ class Resource:
 
         return f"{url}{'?' + urlencode(params) if params else ''}"
 
-    def stream(
+    async def stream(
         self, selection: Union[QueryBuilder, None], **kwargs: Any
     ) -> AsyncGenerator:
         """Stream-like async generator
@@ -156,9 +162,15 @@ class Resource:
             Chunk of records
         """
 
-        return self.reader.stream(select(selection).sysparms, **kwargs)
+        stream = Pagestream(self, query=select(selection).sysparms, **kwargs)
+        while not stream.exhausted:
+            async for response in stream.next():
+                for record in response.data:
+                    yield response, record
 
-    async def get(self, selection: str = None, **kwargs: Any) -> list:
+    async def get(
+        self, selection: Union[QueryBuilder, str] = None, **kwargs: Any
+    ) -> Response:
         """Buffered many
 
         Fetches data and stores in buffer.
@@ -175,9 +187,9 @@ class Resource:
             Records
         """
 
-        return await self.reader.collect(select(selection).sysparms, **kwargs)
+        return await GetRequest(self, query=select(selection).sysparms, **kwargs).send()
 
-    async def get_one(self, selection: str = None) -> dict:
+    async def get_one(self, selection: Union[QueryBuilder, str]) -> Response:
         """Get one record
 
         Args:
@@ -193,13 +205,13 @@ class Resource:
                 f'be queried: this schema lacks a field with "is_primary" set'
             )
 
-        items = await self.get(selection, limit=2)
-        if len(items) > 1:
+        response = await self.get(selection, limit=2)
+        if len(response) > 1:
             raise TooManyItems("Too many results: expected one, got at least 2")
-        elif len(items) == 0:
+        elif len(response) < 1:
             raise NoItems("Expected a single object in response, got none")
 
-        return items[0]
+        return response[0]
 
     async def get_pk_value(self, sysparm_query: str) -> str:
         """Given a query, return the resulting record's PK field's value
@@ -211,8 +223,8 @@ class Resource:
             PK field's value
         """
 
-        record = await self.get_one(sysparm_query)
-        return record[self.primary_key]
+        response = await self.get_one(sysparm_query)
+        return response.data[0][self.primary_key]
 
     async def get_object_id(self, value: Union[Condition, str]) -> str:
         """Get object id by str or Condition
@@ -231,9 +243,11 @@ class Resource:
         elif isinstance(value, Condition):
             return await self.get_pk_value(value.__str__)
         else:
-            raise SelectError(f"Selection must be of type {Condition} or {str}")
+            raise SelectError(
+                f"Selection must be of type {Condition} or {str}, not {type(value)}"
+            )
 
-    async def update(self, selection: Union[Condition, str], payload: dict) -> dict:
+    async def update(self, selection: Union[Condition, str], payload: dict) -> Response:
         """Update matching record
 
         Args:
@@ -245,9 +259,20 @@ class Resource:
         """
 
         object_id = await self.get_object_id(selection)
-        return await self.updater.patch(object_id, payload)
 
-    async def create(self, payload: dict) -> dict:
+        if not isinstance(payload, dict):
+            raise PayloadValidationError(
+                f"Expected payload as a {dict}, got: {type(payload)}"
+            )
+
+        try:
+            data = self.schema.dumps(payload)
+        except marshmallow.exceptions.ValidationError as e:
+            raise PayloadValidationError(e)
+
+        return await PatchRequest(self, object_id, data).send()
+
+    async def create(self, payload: dict) -> Response:
         """Create a new record
 
         Args:
@@ -257,9 +282,14 @@ class Resource:
             Created record
         """
 
-        return await self.creator.write(payload)
+        try:
+            data = self.schema.dumps(payload)
+        except marshmallow.exceptions.ValidationError as e:
+            raise PayloadValidationError(e)
 
-    async def delete(self, selection: Union[Condition, str]) -> dict:
+        return await PostRequest(self, data).send()
+
+    async def delete(self, selection: Union[Condition, str]) -> Response:
         """Delete matching record
 
         Args:
@@ -270,4 +300,14 @@ class Resource:
         """
 
         object_id = await self.get_object_id(selection)
-        return await self.deleter.delete(object_id)
+        response = await DeleteRequest(self, object_id).send()
+
+        if response.status != 204:
+            text = await response.text()
+            raise RequestError(
+                f"Unexpected response for DELETE request. "
+                f"Status: {response.status}, Text: {text}",
+                response.status,
+            )
+
+        return response

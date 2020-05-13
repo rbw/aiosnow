@@ -84,16 +84,16 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
 
         return fields
 
-    def __load_response(self, response: dict) -> Iterable[Tuple[str, str]]:
+    def __load_response(self, content: dict) -> Iterable[Tuple[str, str]]:
         """Yields deserialized response content items
 
         Args:
-            response: Response content to deserialize
+            content: Response content to deserialize
 
         Yields: <name>, <value>
         """
 
-        for key, value in response.items():
+        for key, value in content.items():
             field = self.registered_fields.get(key, None)
 
             if isinstance(field, BaseField):
@@ -162,7 +162,7 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
         return super().dumps(data)
 
     @marshmallow.pre_load
-    def _load_response(self, data: dict, **_: Any) -> dict:
+    def _load_response(self, data: Union[list, dict], **_: Any) -> Union[list, dict]:
         """Load response content
 
         Args:
@@ -172,7 +172,12 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
             dict(field_name=field_value, ...)
         """
 
-        return dict(self.__load_response(data or {}))
+        if isinstance(data, list):
+            return [dict(self.__load_response(r or {})) for r in data]
+        elif isinstance(data, dict):
+            return dict(self.__load_response(data or {}))
+        else:
+            raise TypeError(f"Response content must be {list} or {dict}, got: {type(data)}")
 
     @property
     def __location__(self) -> Optional[str]:

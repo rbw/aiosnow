@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Tuple
-from urllib.parse import urlencode
-
-from aiohttp import ClientResponse
+from typing import TYPE_CHECKING, Any
+from urllib.parse import urlencode, urlparse
 
 from .base import Request
 
@@ -12,18 +10,22 @@ if TYPE_CHECKING:
 
 
 class GetRequest(Request):
-    __verb__ = "GET"
+    __method__ = "GET"
 
     def __init__(
         self, resource: Resource, limit: int = 10000, offset: int = 0, query: str = None
     ):
-        super(GetRequest, self).__init__(resource)
         self.limit = limit
         self.offset = offset
         self.query = query
+        super(GetRequest, self).__init__(resource)
 
-    async def send(self, *args: Any, **kwargs: Any) -> Tuple[ClientResponse, dict]:
-        return await self.send_resolve(**kwargs)
+    def __repr__(self) -> str:
+        params = f"query: {self.query}, limit: {self.limit}, offset: {self.offset}"
+        return self._format_repr(params)
+
+    async def send(self, *args: Any, **kwargs: Any) -> Any:
+        return await self._send(**kwargs)
 
     @property
     def params(self) -> dict:

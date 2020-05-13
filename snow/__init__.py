@@ -8,6 +8,8 @@ from .config import ConfigSchema
 from .consts import Joined
 from .exceptions import ConfigurationException, NoAuthenticationMethod, UnexpectedSchema
 from .resource import QueryBuilder, Resource, Schema, select
+from .response import Response
+from .session import Session
 
 
 def load_config(config_data: dict) -> ConfigSchema:
@@ -48,7 +50,7 @@ class Application:
         else:
             raise NoAuthenticationMethod("No known authentication methods was provided")
 
-    def get_session(self) -> aiohttp.ClientSession:
+    def get_session(self) -> Session:
         """New client session
 
         Returns:
@@ -63,8 +65,8 @@ class Application:
         if self.config.use_ssl:
             connector_args["verify_ssl"] = self.config.verify_ssl
 
-        return aiohttp.ClientSession(
-            auth=self._auth, connector=aiohttp.TCPConnector(**connector_args),
+        return Session(
+            auth=self._auth, connector=aiohttp.TCPConnector(**connector_args)
         )
 
     def resource(self, schema: Type[Schema]) -> Resource:
