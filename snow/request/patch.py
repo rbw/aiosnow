@@ -26,4 +26,4 @@ class PatchRequest(Request):
 
     @property
     def url(self) -> str:
-        return self.resource.get_url(fragments=[self.object_id])
+        return self.resource.get_url(segments=[self.object_id])

@@ -19,9 +19,8 @@ class DeleteRequest(Request):
         return self._format_repr()
 
     async def send(self, *args: Any, **kwargs: Any) -> Any:
-        # kwargs["decode"] = False
         return await self._send(*args, decode=False, **kwargs)
 
     @property
     def url(self) -> str:
-        return self.resource.get_url(fragments=[self.object_id])
+        return self.resource.get_url(segments=[self.object_id])
