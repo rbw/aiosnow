@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "snow"
-version = "0.2.5"
+version = "0.3.0"
 description = "Python asyncio library for ServiceNow"
 authors = ["Robert Wikman <rbw@vault13.org>"]
 license = "MIT"
