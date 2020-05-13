@@ -7,9 +7,9 @@ async def test_core_get_success(mock_resource):
     resp_content, resp_status = dict(result={"test_key": "test_value"}), 200
 
     resource = await mock_resource("GET", "/", resp_content, resp_status)
-    response, content = await GetRequest(resource)._send(url="/")
+    response = await GetRequest(resource).send(url="/", transform=False)
 
-    assert content == resp_content["result"]
+    assert response.data == resp_content["result"]
     assert response.status == resp_status
 
 

@@ -12,7 +12,7 @@ async def test_core_unexpected_response_content(mock_resource):
     request = GetRequest(resource)
 
     with pytest.raises(UnexpectedResponseContent):
-        await request._send(url="/")
+        await request.send(url="/", transform=False)
 
 
 async def test_core_error_full(mock_resource, mock_error):
@@ -24,7 +24,7 @@ async def test_core_error_full(mock_resource, mock_error):
     request = GetRequest(resource)
 
     with pytest.raises(RequestError) as exc_info:
-        await request._send(url="/")
+        await request.send(url="/", transform=False)
 
     assert exc_info.value.message == "{message}: {detail}".format(
         **resp_content["error"]
@@ -41,7 +41,7 @@ async def test_core_error_message_only(mock_resource, mock_error):
     request = GetRequest(resource)
 
     with pytest.raises(RequestError) as exc_info:
-        await request._send(url="/")
+        await request.send(url="/", transform=False)
 
     assert exc_info.value.message == resp_content["error"]["message"]
     assert exc_info.value.status == resp_status
@@ -55,7 +55,7 @@ async def test_core_error_fallback_500(mock_resource):
     request = GetRequest(resource)
 
     with pytest.raises(ServerError) as exc_info:
-        await request._send(url="/")
+        await request.send(url="/", transform=False)
 
     assert exc_info.value.message == "Internal Server Error"
     assert exc_info.value.status == 500
@@ -65,9 +65,9 @@ async def test_core_response_204(mock_resource):
     resp_content, resp_status = dict(result={"dsa": "asdf"}), 204
 
     resource = await mock_resource("GET", "/", resp_content, resp_status)
-    response, content = await GetRequest(resource)._send(url="/")
+    response = await GetRequest(resource).send(url="/", transform=False)
 
-    assert content == {}
+    assert response.data == {}
     assert response.status == 204
 
 
@@ -75,7 +75,7 @@ async def test_core_response_malformed(mock_resource):
     resp_content, resp_status = dict(result=""), 200
 
     resource = await mock_resource("GET", "/", resp_content, resp_status)
-    response, content = await GetRequest(resource)._send(url="/")
+    response = await GetRequest(resource).send(url="/", transform=False)
 
-    assert content == resp_content["result"]
+    assert response.data == resp_content["result"]
     assert response.status == resp_status
