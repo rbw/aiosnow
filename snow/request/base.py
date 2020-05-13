@@ -48,11 +48,11 @@ class Request(ABC):
     def __method__(self) -> str:
         pass
 
-    def _format_repr(self, params=""):
+    def _format_repr(self, params: str = "") -> str:
         return f"<{self.__class__.__name__} {urlparse(self.url).path} [{params}]>"
 
     @property
-    def _request_id(self):
+    def _request_id(self) -> str:
         return hex(id(self))
 
     async def get_cached(self, url: str) -> dict:

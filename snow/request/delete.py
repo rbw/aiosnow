@@ -19,7 +19,8 @@ class DeleteRequest(Request):
         return self._format_repr()
 
     async def send(self, *args: Any, **kwargs: Any) -> Any:
-        return await self._send(*args, decode=False, **kwargs)
+        kwargs["decode"] = False
+        return await self._send(*args, **kwargs)
 
     @property
     def url(self) -> str:

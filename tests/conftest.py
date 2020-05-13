@@ -4,8 +4,8 @@ import pytest
 from aiohttp import web
 
 from snow import Application
-from snow.resource import Resource, Schema, fields
 from snow.request.response import Response
+from snow.resource import Resource, Schema, fields
 
 
 class DefaultSchema(Schema):
@@ -29,7 +29,9 @@ def mock_error():
 def mock_client(aiohttp_client):
     async def go(mock_server):
         return await aiohttp_client(
-            mock_server, server_kwargs={"skip_url_asserts": True}, response_class=Response
+            mock_server,
+            server_kwargs={"skip_url_asserts": True},
+            response_class=Response,
         )
 
     yield go
