@@ -116,18 +116,18 @@ class Resource:
     def name(self) -> str:
         return self.schema.__class__.__name__
 
-    def get_url(self, fragments: list = None) -> str:
+    def get_url(self, segments: list = None) -> str:
         """Get request URL
 
         Args:
-            fragments: Path fragments
+            segments: Path fragments
 
         Returns:
             URL
         """
 
-        if fragments and not isinstance(fragments, list):
-            raise SnowException(f"Expected a list of path fragments, got: {fragments}")
+        if segments and not isinstance(segments, list):
+            raise SnowException(f"Expected a list of path fragments, got: {segments}")
 
         params = dict(
             sysparm_fields=",".join(self.fields.keys()),
@@ -136,8 +136,8 @@ class Resource:
 
         url = self.url
 
-        if fragments:
-            url += "/" + "/".join(map(str, fragments))
+        if segments:
+            url += "/" + "/".join(map(str, segments))
 
         return f"{url}{'?' + urlencode(params) if params else ''}"
 
