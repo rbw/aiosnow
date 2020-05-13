@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
-from urllib.parse import urlencode, urlparse
+from urllib.parse import urlencode
 
 from .base import Request
 

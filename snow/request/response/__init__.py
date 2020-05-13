@@ -1,33 +1,18 @@
 from typing import Iterable, Union
 
 from aiohttp import ClientResponse, client_exceptions, http_exceptions, web_exceptions
-from marshmallow import EXCLUDE, Schema, fields
+from marshmallow import EXCLUDE
 
 from snow.exceptions import RequestError, ServerError, UnexpectedResponseContent
 
-
-class ErrorSchema(Schema):
-    """Defines the structure of the ServiceNow error response content"""
-
-    message = fields.String()
-    detail = fields.String(allow_none=True)
-
-
-class ContentSchema(Schema):
-    """Defines structure of the ServiceNow response content"""
-
-    error = fields.Nested(ErrorSchema)
-    result = fields.Raw()
-    status = fields.String(missing=None)
+from .schemas import ContentSchema, ErrorSchema
 
 
 class Response(ClientResponse):
     data: Union[list, dict]
 
     def __repr__(self) -> str:
-        return (
-            f"<{self.__class__.__name__} {hex(id(self))} {self.url.path} [{self.status} {self.reason}]>"
-        )
+        return f"<{self.__class__.__name__} {hex(id(self))} {self.url.path} [{self.status} {self.reason}]>"
 
     def __getitem__(self, item):
         return self.data[item]
