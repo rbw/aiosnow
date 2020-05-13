@@ -177,7 +177,9 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
         elif isinstance(data, dict):
             return dict(self.__load_response(data or {}))
         else:
-            raise TypeError(f"Response content must be {list} or {dict}, got: {type(data)}")
+            raise TypeError(
+                f"Response content must be {list} or {dict}, got: {type(data)}"
+            )
 
     @property
     def __location__(self) -> Optional[str]:

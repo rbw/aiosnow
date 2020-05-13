@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from snow.response import Response
-
 from .base import Request
 
 if TYPE_CHECKING:

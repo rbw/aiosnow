@@ -1,6 +1,7 @@
 from __future__ import annotations
-import time
+
 import logging
+import time
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Dict, Tuple
 from urllib.parse import urlparse
@@ -9,7 +10,7 @@ from aiohttp import client_exceptions
 
 from snow.consts import CONTENT_TYPE
 from snow.exceptions import ClientConnectionError, UnexpectedContentType
-from snow.response import Response
+from snow.request.response import Response
 from snow.session import Session
 
 if TYPE_CHECKING:

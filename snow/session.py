@@ -2,7 +2,7 @@ from typing import Any
 
 import aiohttp
 
-from .response import Response
+from snow.request.response import Response
 
 
 class Session(aiohttp.ClientSession):

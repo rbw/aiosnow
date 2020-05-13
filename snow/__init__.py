@@ -8,8 +8,8 @@ from .config import ConfigSchema
 from .consts import Joined
 from .exceptions import ConfigurationException, NoAuthenticationMethod, UnexpectedSchema
 from .resource import QueryBuilder, Resource, Schema, select
-from .response import Response
 from .session import Session
+from .request.response import Response
 
 
 def load_config(config_data: dict) -> ConfigSchema:

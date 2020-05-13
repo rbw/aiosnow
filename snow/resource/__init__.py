@@ -23,7 +23,7 @@ from snow.request import (
     PatchRequest,
     PostRequest,
 )
-from snow.response import Response
+from snow.request.response import Response
 
 from . import fields
 from .query import Condition, QueryBuilder, select
