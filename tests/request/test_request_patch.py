@@ -9,9 +9,9 @@ async def test_core_patch_success(mock_resource):
     resp_content, resp_status = dict(result={"test_key": "updated value"}), 200
 
     resource = await mock_resource("PATCH", "/", resp_content, resp_status)
-    response = await PatchRequest(
-        resource, object_id, json.dumps(resp_content)
-    ).send(url="/", transform=False)
+    response = await PatchRequest(resource, object_id, json.dumps(resp_content)).send(
+        url="/", transform=False
+    )
 
     assert response.data == resp_content["result"]
     assert response.status == resp_status

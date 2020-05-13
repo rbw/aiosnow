@@ -7,9 +7,9 @@ from marshmallow import ValidationError
 from .config import ConfigSchema
 from .consts import Joined
 from .exceptions import ConfigurationException, NoAuthenticationMethod, UnexpectedSchema
+from .request.response import Response
 from .resource import QueryBuilder, Resource, Schema, select
 from .session import Session
-from .request.response import Response
 
 
 def load_config(config_data: dict) -> ConfigSchema:

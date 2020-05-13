@@ -1,4 +1,4 @@
-from typing import Iterable, Union
+from typing import Iterable, Union, Any
 
 from aiohttp import ClientResponse, client_exceptions, http_exceptions, web_exceptions
 from marshmallow import EXCLUDE
@@ -14,7 +14,7 @@ class Response(ClientResponse):
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} {hex(id(self))} {self.url.path} [{self.status} {self.reason}]>"
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: Any) -> Any:
         return self.data[item]
 
     def __iter__(self) -> Iterable:
