@@ -27,6 +27,10 @@ class Response(ClientResponse):
         data = await self.json()
 
         if not isinstance(data, dict):
+            if self.status == 204:
+                self.data = {}
+                return
+
             await self._handle_error()
 
         content = ContentSchema(unknown=EXCLUDE, many=False).load(data)
