@@ -8,17 +8,21 @@ from snow.exceptions import ConfigurationException
 
 
 class BaseConfigSchema(Schema):
-    class InternalConfig:
-        """Internal Application config"""
+    class ConfigSegment:
+        """Internal config segment"""
+
+        def __repr__(self) -> str:
+            return f"<{self.__class__.__name__} {self.__config}>"
 
         def __init__(self, **config: dict):
+            self.__config = config
             for k, v in config.items():
                 setattr(self, k, v)
 
     @post_load
     def make_object(self, data: dict, **_: Any) -> Any:
         try:
-            return self.InternalConfig(**data)
+            return self.ConfigSegment(**data)
         except ValidationError as exc:
             raise ConfigurationException from exc
 
@@ -46,7 +50,7 @@ class SessionConfig(BaseConfigSchema):
     def make_object(self, data: dict, **_: Any) -> Any:
         if {"basic_auth", "oauth"} <= set(data):
             raise ValidationError("Cannot use multiple authentication methods")
-        elif data["basic_auth"]:
+        elif data.get("basic_auth"):
             pass
         else:
             raise ValidationError("No supported authentication method provided")
@@ -63,7 +67,7 @@ class ConfigSchema(BaseConfigSchema):
 
     address = fields.String(required=True)
     session = fields.Nested(
-        SessionConfig, required=False
+        SessionConfig, required=False, allow_none=True
     )  # type: SessionConfig # type: ignore
 
     def __init__(self, *args: Any, **kwargs: Any):
