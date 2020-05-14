@@ -6,7 +6,7 @@ from marshmallow import ValidationError
 
 from .config import ConfigSchema
 from .consts import Joined
-from .exceptions import ConfigurationException, NoAuthenticationMethod, UnexpectedSchema
+from .exceptions import ConfigurationException, NoAuthenticationMethod, UnexpectedSchema, NoSchemaLocation
 from .request.response import Response
 from .resource import QueryBuilder, Resource, Schema, select
 from .session import Session
@@ -86,9 +86,15 @@ class Application:
             raise UnexpectedSchema(
                 f"Invalid schema class: {schema}, must be of type {Schema}"
             )
-        if not re.match(r"^/.*", str(schema.__location__)):
+
+        try:
+            location = schema.snow_meta.location
+        except (NotImplementedError, AttributeError):
+            raise NoSchemaLocation(f"The {schema.__name__}.Meta.location attribute must be set")
+
+        if not re.match(r"^/.*", location):
             raise UnexpectedSchema(
-                f"Unexpected path in {schema.__name__}.__location__: {schema.__location__}"
+                f"Unexpected path in {schema.__name__}.Meta.location: {location}"
             )
 
         return Resource(schema, self)
