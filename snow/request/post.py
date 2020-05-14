@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 class PostRequest(Request):
-    __method__ = "POST"
+    _method = "POST"
 
     def __init__(self, resource: Resource, payload: str):
         self.payload = payload
