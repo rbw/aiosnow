@@ -1,7 +1,7 @@
 import pytest
 
 from snow import Application, Session
-from snow.exceptions import InvalidSessionType, ConfigurationException
+from snow.exceptions import ConfigurationException, InvalidSessionType
 
 
 def test_app_session_invalid_type():
@@ -13,6 +13,21 @@ def test_app_session_invalid_type():
     with pytest.raises(InvalidSessionType):
         Application(**fail_str)
         Application(**fail_int)
+
+
+def test_app_session_mutual_exclusive():
+    """Passing both a session and session factory configuration should raise ConfigurationException"""
+
+    session = Session()
+
+    with pytest.raises(ConfigurationException):
+        Application("test.service-now.com", session=session, basic_auth=("a", "b"))
+
+    with pytest.raises(ConfigurationException):
+        Application("test.service-now.com", session=session, use_ssl=False)
+
+    with pytest.raises(ConfigurationException):
+        Application("test.service-now.com", session=session, verify_ssl=True)
 
 
 def test_app_session_no_auth_method():
