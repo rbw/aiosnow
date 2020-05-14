@@ -2,6 +2,10 @@ class SnowException(Exception):
     pass
 
 
+class InvalidSessionType(SnowException):
+    """Invalid session type provided to Application"""
+
+
 class ConfigurationException(SnowException):
     """Configuration error"""
 
@@ -52,6 +56,10 @@ class IncompatiblePayloadField(SnowException):
 
 class UnknownPayloadField(SnowException):
     """A field unknown to the schema was found in the payload"""
+
+
+class IncompatibleSession(SnowException):
+    """Raised if a custom session object passed to snow.Application is not of snow.Session type"""
 
 
 class UnexpectedSchema(SnowException):

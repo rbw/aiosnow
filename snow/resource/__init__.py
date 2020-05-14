@@ -54,7 +54,7 @@ class Resource:
         self.config = self.app.config
 
         # Build URL
-        url_schema = "https://" if self.config.use_ssl else "http://"
+        url_schema = "https://" if self.config.session.use_ssl else "http://"
         base_url = url_schema + str(self.config.address)
         self.url = urljoin(base_url, str(schema_cls.__location__))
 

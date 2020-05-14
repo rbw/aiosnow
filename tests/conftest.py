@@ -38,15 +38,16 @@ def mock_client(aiohttp_client):
 
 
 @pytest.fixture
-def mock_app(mock_client):
+def mock_app_raw():
+    return Application(
+        address="test.service-now.com", basic_auth=("test", "test"), use_ssl=False
+    )
+
+
+@pytest.fixture
+def mock_app(mock_app_raw, mock_client):
     async def go(connect_to):
-        app = Application(
-            config_data=dict(
-                address="test.service-now.com",
-                basic_auth=("test", "test"),
-                use_ssl=False,
-            )
-        )
+        app = mock_app_raw
         get_session = await mock_client(connect_to)
         app.get_session = lambda: get_session
         return app

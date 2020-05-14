@@ -1,10 +1,29 @@
+from __future__ import annotations
+
 from typing import Any
 
 from marshmallow import Schema, ValidationError, fields, post_load
+from snow.exceptions import ConfigurationException
 
 
-class ConfigSchema(Schema):
-    """Snow config schema
+class BaseConfigSchema(Schema):
+    class InternalConfig:
+        """Internal Application config"""
+
+        def __init__(self, **config: dict):
+            for k, v in config.items():
+                setattr(self, k, v)
+
+    @post_load
+    def make_object(self, data: dict, **_: Any) -> Any:
+        try:
+            return self.InternalConfig(**data)
+        except ValidationError as exc:
+            raise ConfigurationException from exc
+
+
+class SessionConfig(BaseConfigSchema):
+    """Session config schema
 
     Attributes:
         address (str): Instance address, e.g. my_instance.service-now.com
@@ -13,30 +32,41 @@ class ConfigSchema(Schema):
         verify_ssl (bool): Whether to validate SSL certificates, defaults to True
     """
 
-    class InternalConfig:
-        """Internal Application config"""
+    def __init__(self, *args: Any, **kwargs: Any):
+        super(SessionConfig, self).__init__(*args, **kwargs)
 
-        def __init__(self, **config: dict):
-            for k, v in config.items():
-                setattr(self, k, v)
-
-    address = fields.String(required=True)
     basic_auth = fields.Tuple(
-        tuple_fields=(fields.String(), fields.String()), required=False
+        tuple_fields=(fields.String(), fields.String()), required=False, allow_none=True
     )
     use_ssl = fields.Boolean(missing=True)
     verify_ssl = fields.Boolean(missing=True)
 
-    def __init__(self, *args: Any, **kwargs: Any):
-        super(ConfigSchema, self).__init__(*args, **kwargs)
-
     @post_load
-    def make_object(self, data: dict, **_: Any) -> InternalConfig:
+    def make_object(self, data: dict, **_: Any) -> Any:
         if {"basic_auth", "oauth"} <= set(data):
             raise ValidationError("Cannot use multiple authentication methods")
-        elif "basic_auth" in data:
+        elif data["basic_auth"]:
             pass
         else:
             raise ValidationError("No supported authentication method provided")
 
-        return ConfigSchema.InternalConfig(**data)
+        return super().make_object(data)
+
+
+class ConfigSchema(BaseConfigSchema):
+    """Snow config schema
+
+    Attributes:
+        session (bool): Session config
+    """
+
+    address = fields.String(required=True)  # type: str
+    session = fields.Nested(
+        SessionConfig, required=False
+    )  # type: SessionConfig # type: ignore
+
+    def __init__(self, *args: Any, **kwargs: Any):
+        super(ConfigSchema, self).__init__(*args, **kwargs)
+
+    def load(self, *args: Any, **kwargs: Any) -> ConfigSchema:
+        return super().load(*args, **kwargs)
