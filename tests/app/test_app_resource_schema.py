@@ -15,6 +15,17 @@ def test_schema_missing_location(mock_app_raw):
         app.resource(TestSchema)
 
 
+def test_schema_invalid_type(mock_app_raw):
+    """Schema of unknown type should raise UnexpectedSchema"""
+
+    class TestSchema:
+        test = fields.Text()
+
+    app = mock_app_raw
+    with pytest.raises(UnexpectedSchema):
+        app.resource(TestSchema)
+
+
 def test_schema_valid_location(mock_app_raw):
     """Schema with a valid location should work"""
 
