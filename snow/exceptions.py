@@ -2,10 +2,6 @@ class SnowException(Exception):
     pass
 
 
-class InvalidSessionType(SnowException):
-    """Invalid session type provided to Application"""
-
-
 class ConfigurationException(SnowException):
     """Configuration error"""
 
