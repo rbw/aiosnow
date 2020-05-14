@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from marshmallow import Schema, ValidationError, fields, post_load
+
 from snow.exceptions import ConfigurationException
 
 
@@ -60,7 +61,7 @@ class ConfigSchema(BaseConfigSchema):
         session (bool): Session config
     """
 
-    address = fields.String(required=True)  # type: str
+    address = fields.String(required=True)
     session = fields.Nested(
         SessionConfig, required=False
     )  # type: SessionConfig # type: ignore
