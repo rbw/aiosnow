@@ -1,7 +1,10 @@
 import pytest
 
+import aiohttp
+
 from snow import Application, Session
-from snow.exceptions import ConfigurationException, InvalidSessionType
+from snow.request.response import Response
+from snow.exceptions import ConfigurationException, IncompatibleSession
 
 
 def test_app_session_invalid_type():
@@ -10,7 +13,7 @@ def test_app_session_invalid_type():
     fail_str = dict(address="test.service-now.com", session="test")
     fail_int = dict(address="test.service-now.com", session=123)
 
-    with pytest.raises(InvalidSessionType):
+    with pytest.raises(IncompatibleSession):
         Application(**fail_str)
         Application(**fail_int)
 
@@ -61,4 +64,22 @@ def test_app_session_object():
     session = Session()
     app = Application("test.service-now.com", session=session)
 
-    assert app.get_session() == session
+    assert app.get_session() == app._preconf_session == session
+
+
+def test_app_session_invalid_response_class():
+    """Compatible user-provided Session objects should be returned from Application.get_session"""
+
+    session = aiohttp.ClientSession()
+
+    with pytest.raises(IncompatibleSession):
+        Application("test.service-now.com", session=session)
+
+
+def test_app_session_response_class():
+    """Compatible user-provided Session objects should be returned from Application.get_session"""
+
+    session = aiohttp.ClientSession(response_class=Response)
+    app = Application("test.service-now.com", session=session)
+
+    assert app.get_session()._response_class == Response
