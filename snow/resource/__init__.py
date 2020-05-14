@@ -22,8 +22,8 @@ from snow.request import (
     Pagestream,
     PatchRequest,
     PostRequest,
+    Response
 )
-from snow.request.response import Response
 
 from . import fields
 from .query import Condition, QueryBuilder, select
