@@ -45,7 +45,7 @@ class Request(ABC):
 
     @property
     @abstractmethod
-    def __method__(self) -> str:
+    def _method(self) -> str:
         pass
 
     def _format_repr(self, params: str = "") -> str:
@@ -104,7 +104,7 @@ class Request(ABC):
         headers.update(**headers_extra or {})
         kwargs["headers"] = headers
 
-        method = kwargs.pop("method", self.__method__)
+        method = kwargs.pop("method", self._method)
         url = kwargs.pop("url", self.url)
 
         try:

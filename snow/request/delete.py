@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 class DeleteRequest(Request):
-    __method__ = "DELETE"
+    _method = "DELETE"
 
     def __init__(self, resource: Resource, object_id: str):
         self.object_id = object_id

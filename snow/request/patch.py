@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 class PatchRequest(Request):
-    __method__ = "PATCH"
+    _method = "PATCH"
 
     def __init__(self, resource: Resource, object_id: str, payload: str):
         self.payload = payload

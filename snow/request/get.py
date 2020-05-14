@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 
 class GetRequest(Request):
-    __method__ = "GET"
+    _method = "GET"
 
     def __init__(
         self, resource: Resource, limit: int = 10000, offset: int = 0, query: str = None
