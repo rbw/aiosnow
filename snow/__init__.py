@@ -27,7 +27,11 @@ class Application:
         - ClientSession factory
 
     Args:
-        session: Session config dictionary or a Custom snow.Session object
+        address: Instance TCP address, example: my-instance.service-now.com
+        basic_auth: Tuple of (username, password)
+        use_ssl: Whether to use SSL
+        verify_ssl: Whether to verify SSL certificates
+        session: Custom aiohttp.ClientSession object
 
     Attributes:
         config: Application configuration object
@@ -39,22 +43,31 @@ class Application:
         self,
         address: str,
         basic_auth: tuple = None,
-        use_ssl: bool = True,
-        verify_ssl: bool = True,
+        use_ssl: bool = None,
+        verify_ssl: bool = None,
         session: Session = None,
     ):
-        app_config = dict(address=address)
+        app_config = dict(address=address, session={})
 
         if session:
-            if not isinstance(session, Session):
+            if not isinstance(session, aiohttp.ClientSession):
                 raise InvalidSessionType(
-                    f"The snow.Application expects session to be a {Session}, not {session}"
+                    f"The snow.Application expects session to be a {aiohttp.ClientSession}, not {session}"
+                )
+
+            session_config_params = [basic_auth, use_ssl, verify_ssl]
+            if any([p is not None for p in session_config_params]):
+                raise ConfigurationException(
+                    f"Application Session factory configuration params {session_config_params} "
+                    f"cannot be used with a custom Session object."
                 )
 
             self._preconf_session = session
         else:
             app_config["session"] = dict(
-                basic_auth=basic_auth, use_ssl=use_ssl, verify_ssl=verify_ssl
+                basic_auth=basic_auth,
+                use_ssl=use_ssl or True,
+                verify_ssl=verify_ssl or True,
             )
 
         try:
