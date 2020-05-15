@@ -139,7 +139,9 @@ class Application:
         try:
             location = schema.snow_meta.location
         except (NotImplementedError, AttributeError):
-            raise NoSchemaLocation(f"The {schema.__name__}.Meta.location attribute must be set")
+            raise NoSchemaLocation(
+                f"The {schema.__name__}.Meta.location attribute must be set"
+            )
 
         if not re.match(r"^/.*", location):
             raise UnexpectedSchema(

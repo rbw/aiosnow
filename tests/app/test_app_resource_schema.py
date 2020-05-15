@@ -1,7 +1,7 @@
 import pytest
 
-from snow.resource import Schema, fields
 from snow.exceptions import NoSchemaLocation, UnexpectedSchema
+from snow.resource import Schema, fields
 
 
 def test_schema_missing_location(mock_app_raw):
