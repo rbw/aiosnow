@@ -1,5 +1,5 @@
 import warnings
-from typing import Any, Dict, Iterable, Optional, Tuple, Union
+from typing import Any, Dict, Iterable, Tuple, Union
 
 import marshmallow
 
@@ -26,6 +26,9 @@ class SchemaMeta(marshmallow.schema.SchemaMeta):
         attrs.update(fields)
         cls = super().__new__(mcs, name, bases, attrs)
 
+        if getattr(cls, "Meta"):
+            cls.snow_meta = cls.Meta()
+
         for name, field in fields.items():
             value = field
 
@@ -50,10 +53,17 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
     """Resource schema
 
     Attributes:
-        __location__: API path
+        snow_meta: Schema Meta object
     """
 
     joined_with: str = ""
+
+    class Meta:
+        @property
+        def location(self) -> str:
+            raise NotImplementedError
+
+    snow_meta: Meta
 
     def __init__(self, *args: Any, joined_with: str = None, **kwargs: Any):
         self.registered_fields = self.get_fields()
@@ -181,12 +191,7 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
                 f"Response content must be {list} or {dict}, got: {type(data)}"
             )
 
-    @property
-    def __location__(self) -> Optional[str]:
-        raise NotImplementedError
-
 
 class PartialSchema(Schema):
-    @property
-    def __location__(self) -> None:
-        return
+    class Meta:
+        location = None
