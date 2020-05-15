@@ -10,8 +10,8 @@ from aiohttp import client_exceptions
 
 from snow.consts import CONTENT_TYPE
 from snow.exceptions import ClientConnectionError, UnexpectedContentType
-from snow.request.response import Response
-from snow.session import Session
+
+from .response import Response
 
 if TYPE_CHECKING:
     from snow import Resource
@@ -21,7 +21,7 @@ _cache: dict = {}
 
 
 class Request(ABC):
-    session: Session
+    session: Any
     log = logging.getLogger("snow.request")
 
     def __init__(self, resource: Resource):
@@ -45,7 +45,7 @@ class Request(ABC):
 
     @property
     @abstractmethod
-    def __method__(self) -> str:
+    def _method(self) -> str:
         pass
 
     def _format_repr(self, params: str = "") -> str:
@@ -104,7 +104,7 @@ class Request(ABC):
         headers.update(**headers_extra or {})
         kwargs["headers"] = headers
 
-        method = kwargs.pop("method", self.__method__)
+        method = kwargs.pop("method", self._method)
         url = kwargs.pop("url", self.url)
 
         try:

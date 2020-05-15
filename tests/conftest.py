@@ -40,11 +40,7 @@ def mock_client(aiohttp_client):
 @pytest.fixture
 def mock_app_raw():
     return Application(
-        config_data=dict(
-            address="test.service-now.com",
-            basic_auth=("test", "test"),
-            use_ssl=False,
-        )
+        address="test.service-now.com", basic_auth=("test", "test"), use_ssl=False
     )
 
 

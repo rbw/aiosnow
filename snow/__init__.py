@@ -1,19 +1,21 @@
 import re
-from typing import Type
+from typing import Dict, Type
 
 import aiohttp
 from marshmallow import ValidationError
 
-from .config import ConfigSchema
-from .consts import Joined
-from .exceptions import ConfigurationException, NoAuthenticationMethod, UnexpectedSchema, NoSchemaLocation
-from .request.response import Response
-from .resource import QueryBuilder, Resource, Schema, select
-from .session import Session
-
-
-def load_config(config_data: dict) -> ConfigSchema:
-    return ConfigSchema().load(config_data)
+from snow.config import ConfigSchema
+from snow.consts import Joined
+from snow.exceptions import (
+    ConfigurationException,
+    IncompatibleSession,
+    NoAuthenticationMethod,
+    NoSchemaLocation,
+    UnexpectedSchema,
+)
+from snow.request import Response
+from snow.resource import QueryBuilder, Resource, Schema, select
+from snow.session import Session
 
 
 class Application:
@@ -25,15 +27,59 @@ class Application:
         - ClientSession factory
 
     Args:
-        config_data: Config dictionary
+        address: Instance TCP address, example: my-instance.service-now.com
+        basic_auth: Tuple of (username, password)
+        use_ssl: Whether to use SSL
+        verify_ssl: Whether to verify SSL certificates
+        session: Custom aiohttp.ClientSession object
 
     Attributes:
         config: Application configuration object
     """
 
-    def __init__(self, config_data: dict):
+    _preconf_session = None
+
+    def __init__(
+        self,
+        address: str,
+        basic_auth: tuple = None,
+        use_ssl: bool = None,
+        verify_ssl: bool = None,
+        session: aiohttp.ClientSession = None,
+    ):
+        app_config: Dict = dict(address=address)
+
+        if session:
+            if not isinstance(session, aiohttp.ClientSession):
+                raise IncompatibleSession(
+                    f"The snow.Application expects :session: to be a Snow-compatible "
+                    f"{aiohttp.ClientSession}, not {session}"
+                )
+
+            resp_cls = getattr(session, "_response_class")
+            if resp_cls != Response:
+                raise IncompatibleSession(
+                    f"The {session} passed to {self} must have its :response_class: "
+                    f"set to {Response}, not {resp_cls}"
+                )
+
+            session_config_params = [basic_auth, use_ssl, verify_ssl]
+            if any([p is not None for p in session_config_params]):
+                raise ConfigurationException(
+                    f"Application Session factory configuration params {session_config_params} "
+                    f"cannot be used with a custom Session object."
+                )
+
+            self._preconf_session = session
+        else:
+            app_config["session"] = dict(
+                basic_auth=basic_auth,
+                use_ssl=use_ssl or True,
+                verify_ssl=verify_ssl or True,
+            )
+
         try:
-            self.config = load_config(config_data)
+            self.config = ConfigSchema(many=False).load(app_config)
         except ValidationError as e:
             raise ConfigurationException(e)
 
@@ -45,12 +91,12 @@ class Application:
             aiohttp-compatible authentication object
         """
 
-        if self.config.basic_auth:
-            return aiohttp.BasicAuth(*self.config.basic_auth)  # type: ignore
+        if self.config.session.basic_auth:
+            return aiohttp.BasicAuth(*self.config.session.basic_auth)  # type: ignore
         else:
             raise NoAuthenticationMethod("No known authentication methods was provided")
 
-    def get_session(self) -> Session:
+    def get_session(self) -> aiohttp.ClientSession:
         """New client session
 
         Returns:
@@ -60,10 +106,13 @@ class Application:
             NoAuthenticationMethod
         """
 
-        connector_args = {}  # type: dict
+        if self._preconf_session:
+            return self._preconf_session
 
-        if self.config.use_ssl:
-            connector_args["verify_ssl"] = self.config.verify_ssl
+        connector_args: dict = {}
+
+        if self.config.session.use_ssl:
+            connector_args["verify_ssl"] = self.config.session.verify_ssl
 
         return Session(
             auth=self._auth, connector=aiohttp.TCPConnector(**connector_args)
