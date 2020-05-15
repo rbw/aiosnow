@@ -10,8 +10,8 @@ from aiohttp import client_exceptions
 
 from snow.consts import CONTENT_TYPE
 from snow.exceptions import ClientConnectionError, UnexpectedContentType
-from snow.request.response import Response
-from snow.session import Session
+
+from .response import Response
 
 if TYPE_CHECKING:
     from snow import Resource
@@ -21,7 +21,7 @@ _cache: dict = {}
 
 
 class Request(ABC):
-    session: Session
+    session: Any
     log = logging.getLogger("snow.request")
 
     def __init__(self, resource: Resource):

@@ -54,6 +54,10 @@ class UnknownPayloadField(SnowException):
     """A field unknown to the schema was found in the payload"""
 
 
+class IncompatibleSession(SnowException):
+    """Raised if a custom session object passed to snow.Application is not of snow.Session type"""
+
+
 class UnexpectedSchema(SnowException):
     """Schema not of snow.resource.schema.Schema type"""
 
