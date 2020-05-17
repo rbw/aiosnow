@@ -1,6 +1,0 @@
-Delete
-======
-
-.. toctree::
-
-    basic
