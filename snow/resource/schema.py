@@ -10,7 +10,8 @@ from snow.exceptions import (
     UnknownPayloadField,
 )
 
-from .fields import BaseField
+
+from .fields import BaseField, mapped
 
 
 class SchemaMeta(marshmallow.schema.SchemaMeta):
@@ -53,7 +54,9 @@ class SchemaMeta(marshmallow.schema.SchemaMeta):
 
 class Nested(marshmallow.fields.Nested):
     def __init__(self, parent_name: str, nested_cls: type, *args: Any, **kwargs: Any):
-        for name, field in getattr(nested_cls, "_declared_fields").items():
+        fields = getattr(nested_cls, "_declared_fields", {})
+
+        for name, field in fields.items():
             field.name = f"{parent_name}.{name}"
             setattr(self, name, field)
 
@@ -160,7 +163,10 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
                 elif isinstance(value, dict) and {"value", "display_value"} <= set(
                     value.keys()
                 ):
-                    value = value[field.joined.value]
+                    if isinstance(field, mapped.MappedField):
+                        value = value["value"], value["display_value"]
+                    else:
+                        value = value[field.joined.value]
             elif isinstance(field, Nested):
                 pass
             else:  # Unknown field

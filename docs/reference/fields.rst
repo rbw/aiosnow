@@ -10,36 +10,86 @@ Text
 
 .. automodule:: snow.resource.fields.text
    :members:
-   :undoc-members:
+   
 
 Numeric
 -------
 
 .. automodule:: snow.resource.fields.numeric
    :members:
-   :undoc-members:
+   
 
 Boolean
 -------
 
 .. automodule:: snow.resource.fields.boolean
    :members:
-   :undoc-members:
+   
 
-..
-    Nested
-    ------
 
-    .. automodule:: snow.resource.fields.nested
-       :members:
-       :undoc-members:
+NumericMap
+----------
+
+Converts nested mapping to a named tuple with id and query capabilities of type `Numeric <#numeric>`_: (id <Text>, text <Text>)
+
+.. note::
+
+    This Field has `Numeric <#numeric>`_ querying capabilities.
+
+Response content of:
+
+.. code-block:: json
+
+    {
+       "impact":{
+          "value":2,
+          "display_value":"2 - Medium"
+       }
+    }
+
+Gets deserialized into:
+
+.. code-block:: python
+
+    Mapping(id=2, text="2 - Medium")
+
+
+
+TextMap
+-------
+
+Converts nested mapping to a named tuple with id and query capabilities of type `Text <#text>`_: (id <Text>, text <Text>)
+
+.. note::
+
+    This Field has `Text <#text>`_ querying capabilities.
+
+Response content of:
+
+.. code-block:: json
+
+    {
+       "impact":{
+          "value":2,
+          "display_value":"2 - Medium"
+       }
+    }
+
+Gets deserialized into:
+
+.. code-block:: python
+
+    Mapping(id="2", text="2 - Medium")
+
+
+
 
 Datetime
 --------
 
 .. automodule:: snow.resource.fields.datetime
    :members:
-   :undoc-members:
+   
 
 
 Choice
@@ -47,7 +97,7 @@ Choice
 
 .. automodule:: snow.resource.fields.choice
    :members:
-   :undoc-members:
+   
 
 
 Email
@@ -55,11 +105,12 @@ Email
 
 .. automodule:: snow.resource.fields.email
    :members:
-   :undoc-members:
+   
 
 Reference
 ---------
 
 .. automodule:: snow.resource.fields.reference
    :members:
-   :undoc-members:
+   
+
