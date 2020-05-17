@@ -137,7 +137,7 @@ class Application:
             )
 
         try:
-            location = schema.snow_meta.location
+            location = str(schema.snow_meta.location)
         except (NotImplementedError, AttributeError):
             raise NoSchemaLocation(
                 f"The {schema.__name__}.Meta.location attribute must be set"

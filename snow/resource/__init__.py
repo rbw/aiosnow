@@ -56,11 +56,11 @@ class Resource:
         # Build URL
         url_schema = "https://" if self.config.session.use_ssl else "http://"
         base_url = url_schema + str(self.config.address)
-        self.url = urljoin(base_url, str(schema_cls.Meta.location))
+        self.url = urljoin(base_url, str(schema_cls.snow_meta.location))
 
         # Read Resource schema
-        self.schema = schema_cls(unknown=marshmallow.EXCLUDE)  # type: Schema
-        self.fields = schema_cls.get_fields()
+        self.schema = schema_cls(unknown=marshmallow.EXCLUDE)
+        self.fields = self.schema.snow_fields
         self.primary_key = self._get_primary_key()
         self._should_resolve = self.__should_resolve
 

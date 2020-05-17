@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from marshmallow import Schema, ValidationError, fields, post_load
@@ -7,12 +8,21 @@ from marshmallow import Schema, ValidationError, fields, post_load
 from snow.exceptions import ConfigurationException
 
 
+class ConfigEncoder(json.JSONEncoder):
+    def default(self, o):
+        return o.__dict__
+
+
 class BaseConfigSchema(Schema):
     class ConfigSegment:
         """Internal config segment"""
 
         def __repr__(self) -> str:
-            return f"<{self.__class__.__name__} {self.__config}>"
+            return json.dumps(self.__config, cls=ConfigEncoder, indent=4)
+
+        @property
+        def __dict__(self) -> dict:
+            return self.__config
 
         def __init__(self, **config: dict):
             self.__config = config

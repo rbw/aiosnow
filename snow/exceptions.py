@@ -79,7 +79,7 @@ class NoSchemaLocation(SnowException):
 
 
 class NoSchemaFields(SnowException):
-    """The schema lacks fields definitions"""
+    """The schema lacks definition"""
 
 
 class TooManyItems(SnowException):
