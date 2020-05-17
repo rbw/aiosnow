@@ -11,15 +11,27 @@ Snow is a simple and lightweight yet powerful and extensible library for interac
 with modern versions of Python, utilizes [asyncio](https://docs.python.org/3/library/asyncio.html) and 
 can be used for simple scripting as well as for building high-concurrency backend applications on top of the ServiceNow platform.
 
+*Example code*
+```python
+import snow
+from snow.schemas import IncidentMapped as Incident
+
+app = snow.Application("<name>.service-now.com", basic_auth=("admin", "passw0rd"))
+
+async with app.resource(Incident) as r:
+    response = await r.get_one(Incident.number == "INC012345")
+    print(response["description"])
+```
+
 Documentation
 ---
 
-The Snow API reference, examples and more is available in the [documentation](https://python-snow.readthedocs.io/en/latest).
+The Snow API reference and more is available in the [documentation](https://python-snow.readthedocs.io/en/latest).
 
-Test it out
+Examples
 ---
 
-Check out some [fully functional examples](extras/examples) to quickly get a feel for the library.
+Check out some [usage examples](examples) to quickly get a feel for the library.
 
 Funding
 -------
