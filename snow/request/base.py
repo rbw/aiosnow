@@ -4,7 +4,7 @@ import logging
 import time
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Dict, Tuple
-from urllib.parse import urlparse
+from urllib.parse import urlencode, urlparse
 
 from aiohttp import client_exceptions
 
@@ -26,6 +26,7 @@ class Request(ABC):
 
     def __init__(self, resource: Resource):
         self.resource = resource
+        self.schema = resource.schema
         self.session = resource.session
         self.headers_default = {"Content-type": CONTENT_TYPE}
         self.base_url = resource.get_url()
@@ -58,6 +59,7 @@ class Request(ABC):
     async def get_cached(self, url: str) -> dict:
         if url not in _cache:
             record_id = urlparse(url).path.split("/")[-1]
+
             response = await self._send(
                 method="GET", url=url, resolve=False, transform=False
             )
@@ -88,7 +90,15 @@ class Request(ABC):
                 nested[field_name] = None
                 continue
 
-            nested[field_name] = await self.get_cached(item["link"])
+            params = dict(
+                sysparm_fields=",".join(
+                    getattr(self.schema, field_name).nested.__dict__.keys()
+                ),
+            )
+
+            nested[field_name] = await self.get_cached(
+                f"{item['link']}?{urlencode(params)}"
+            )
 
         return nested
 
@@ -133,7 +143,6 @@ class Request(ABC):
             raise ClientConnectionError(str(exc)) from exc
 
         if transform:
-            schema = self.resource.schema
-            response.data = schema.load(content, many=isinstance(content, list))
+            response.data = self.schema.load(content, many=isinstance(content, list))
 
         return response

@@ -22,6 +22,45 @@ class BaseField(marshmallow.fields.Field):
         super(BaseField, self).__init__(*args, **kwargs)
         self.allow_none = kwargs.pop("allow_none", True)
 
+    def __eq__(self, other):
+        return self.equals(other)
+
+    def __ne__(self, other):
+        return self.not_equals(other)
+
+    def __lt__(self, other):
+        return self.less_than(other)
+
+    def __le__(self, other):
+        return self.less_or_equals(other)
+
+    def __gt__(self, other):
+        return self.greater_than(other)
+
+    def __ge__(self, other):
+        return self.greater_or_equals(other)
+
+    def equals(self, other):
+        raise NotImplementedError
+
+    def not_equals(self, other):
+        raise NotImplementedError
+
+    def less_than(self, other):
+        raise NotImplementedError
+
+    def less_or_equals(self, other):
+        raise NotImplementedError
+
+    def greater_than(self, other):
+        raise NotImplementedError
+
+    def greater_or_equals(self, other):
+        raise NotImplementedError
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} [maps_to={self.joined}, primary={self.is_primary}]>"
+
     def _condition(
         self, operator: str, value: Union[str, int] = None, field_operator: str = ""
     ) -> Condition:
