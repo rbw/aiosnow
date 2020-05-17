@@ -1,6 +1,0 @@
-Create
-======
-
-.. toctree::
-
-    basic

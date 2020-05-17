@@ -3,22 +3,13 @@ Application
 
 The :class:`snow.Application` expects a configuration dictionary and provides a factory for producing resources.
 
-*Example – Simple Application*
-
-.. code-block:: python
-
-    from snow import Application
-
-    config = dict(
-        address="https://my-instance.service-now.com",
-        basic_auth=("<username>", "<password>")
-    )
-
-    app = Application(config)
+.. automodule:: snow
+   :members: Application
+   :exclude-members: get_session
 
 
 .. toctree::
     :hidden:
 
-    instance
     config
+    example
