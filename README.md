@@ -14,13 +14,13 @@ can be used for simple scripting as well as for building high-concurrency backen
 *Example code*
 ```python
 import snow
-from snow.schemas import IncidentMapped as Incident
+from snow.schemas import IncidentExpanded as Incident
 
 app = snow.Application("<name>.service-now.com", basic_auth=("admin", "passw0rd"))
 
 async with app.resource(Incident) as r:
     response = await r.get_one(Incident.number == "INC012345")
-    print(response["description"])
+    print(response["number"], response["assignment_group"]["name"])
 ```
 
 Documentation
