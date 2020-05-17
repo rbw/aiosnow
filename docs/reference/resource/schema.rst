@@ -40,7 +40,7 @@ The library comes with a set of standard schemas, available in *snow.schemas*.
 Nesting
 *******
 
-Schemas can be nested using the PartialSchema class.
+Schemas can be nested using the :class:`~snow.resource.schema.PartialSchema` class.
 When used with a Resource, related objects are automatically resolved.
 
 .. code-block:: python

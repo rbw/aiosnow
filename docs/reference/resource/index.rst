@@ -9,7 +9,7 @@ by passing a :class:`~snow.resource.schema.Schema` to the :meth:`snow.Applicatio
 .. code-block:: python
 
     import snow
-    from snow.schemas import IncidentSimple as inc
+    from snow.schemas import IncidentSimple as Incident
 
     app = snow.Application(
         "https://my-instance.service-now.com",
@@ -17,10 +17,10 @@ by passing a :class:`~snow.resource.schema.Schema` to the :meth:`snow.Applicatio
     )
 
     # Create new Resource model using the built-in Incident schema
-    async with app.resource(inc) as r:
+    async with app.resource(Incident) as r:
         # Get incident with number INC01234
-        response = await r.get_one(inc.number == "INC01234")
-        print(response.__dict__)
+        response = await r.get_one(Incident.number == "INC01234")
+        print(response["description"])
 
 **Contents**
 
