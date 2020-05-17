@@ -3,14 +3,18 @@
 Config
 ======
 
-The :class:`snow.Application` takes a config argument; once validated and transformed, the end result is a configuration object in :data:`snow.Application.config`.
+The :class:`snow.Application` takes a set of configuration parameters, once validated and transformed, the end result is a configuration object in :data:`snow.Application.config`.
 
 
-.. rubric:: Schema
+*Snow Application configuration options*
 
 
-The Config Schema is used for validation and transformation of the input configuration that was passed to a :class:`snow.Application`.
-
-.. automodule:: snow.config
-   :members: ConfigSchema
-   :exclude-members: opts, OPTIONS_CLASS, post_load, InternalConfig
+========== ======== ======= ============= ===========================
+Name       Required Default Type          Description
+========== ======== ======= ============= ===========================
+address    True     None    String        Instance TCP address
+basic_auth False    None    Tuple         Basic auth credentials
+use_ssl    True     True    Boolean       Whether to use SSL
+verify_ssl True     True    Boolean       Verify SSL certificates
+session    False    None    ClientSession Custom ClientSession object
+========== ======== ======= ============= ===========================

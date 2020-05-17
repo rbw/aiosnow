@@ -40,6 +40,7 @@ Table of Contents
 
    self
    funding
+   examples
 
 .. toctree::
    :caption: Reference
@@ -47,11 +48,6 @@ Table of Contents
 
    reference/application/index
    reference/resource/index
+   reference/fields
+   reference/schemas
    reference/exceptions
-
-.. toctree::
-   :caption: Samples
-   :maxdepth: 2
-
-   samples/app
-   samples/operations/index

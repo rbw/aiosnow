@@ -22,7 +22,7 @@ from snow.request import (
     Pagestream,
     PatchRequest,
     PostRequest,
-    Response
+    Response,
 )
 
 from . import fields

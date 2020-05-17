@@ -1,6 +1,0 @@
-Update
-======
-
-.. toctree::
-
-    basic

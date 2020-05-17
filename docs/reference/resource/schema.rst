@@ -10,6 +10,8 @@ Schemas are used for:
     - Response content deserialization
     - Validation
 
+The library comes with a set of standard schemas, available in *snow.schemas*.
+
 
 .. automodule:: snow.resource.schema
    :members: Schema
@@ -24,7 +26,8 @@ Schemas are used for:
 
 
     class Incident(Schema):
-        __location__ = "/api/now/table/incident"
+        class Meta:
+            location = "/api/now/table/incident"
 
         sys_id = fields.Text(is_primary=True)
         number = fields.Text()
@@ -47,7 +50,8 @@ When used with a Resource, related objects are automatically resolved.
         manager = fields.Text()
 
     class Incident(Schema):
-        __location__ = "/api/now/table/incident"
+        class Meta:
+            location = "/api/now/table/incident"
 
         sys_id = fields.Text(is_primary=True)
         number = fields.Text()
@@ -57,12 +61,3 @@ When used with a Resource, related objects are automatically resolved.
         assignment_group = AssignmentGroup
         opened_at = fields.Datetime()
 
-Fields
-******
-
-Schema Fields are classes used when defining a Schema, which is used in (de)serialization, validation,
-selection and more. Also, once instantiated, the field becomes compatible with the Snow query system.
-
-.. toctree::
-
-    fields
