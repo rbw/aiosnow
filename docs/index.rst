@@ -49,5 +49,5 @@ Table of Contents
    reference/application/index
    reference/resource/index
    reference/fields
-   reference/schemas
+   reference/schemas/index
    reference/exceptions

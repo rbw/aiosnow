@@ -41,9 +41,12 @@ class Resource:
         app: Application instance
 
     Attributes:
-        config (ConfigSchema): Application config
         url (str): API URL
-        fields (dict): Schema fields
+        config (ConfigSchema): Application config
+        session (ClientSession): Session for performing requests
+        schema (Schema): Resource Schema
+        fields (dict): Fields declared in Schema
+        primary_key (str): Schema primary key
     """
 
     def __init__(self, schema_cls: Type[Schema], app: Application):
@@ -58,7 +61,7 @@ class Resource:
         base_url = url_schema + str(self.config.address)
         self.url = urljoin(base_url, str(schema_cls.snow_meta.location))
 
-        # Read Resource schema
+        # Read Schema
         self.schema = schema_cls(unknown=marshmallow.EXCLUDE)
         self.fields = self.schema.snow_fields
         self.primary_key = self._get_primary_key()

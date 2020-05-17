@@ -65,6 +65,9 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
 
     Attributes:
         snow_meta: Schema Meta object
+        snow_fields (dict): Fields declared in schema
+        nested_fields (list): List of nested field names
+        joined_with (str): Sets parent.child in queries for Nested fields
     """
 
     joined_with: str = ""
@@ -85,7 +88,7 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
         if joined_with:
             self.joined_with = joined_with
 
-            # Enable automatic dot-walking of joined fields
+            # Enable dot-walking of joined fields
             for field in self.snow_fields.values():
                 field.name = f"{joined_with}.{field.name}"
 
@@ -195,8 +198,7 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
 
         Args:
             obj: The object to serialize
-            many: Whether to serialize `obj` as a collection. If `None`, the value
-            for `self.many` is used.
+            many: Whether to serialize `obj` as a collection. If `None`, the value for `self.many` is used.
 
         Returns:
             JSON string
