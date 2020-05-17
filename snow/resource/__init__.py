@@ -112,7 +112,7 @@ class Resource:
 
         return pks[0]
 
-    def dumps(self, data: dict) -> str:
+    def dumps(self, data: Union[dict, Response]) -> str:
         return self.schema.dumps(data)
 
     @property

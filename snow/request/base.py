@@ -86,8 +86,10 @@ class Request(ABC):
 
         for field_name in self.resource.nested_fields:
             item = content[field_name]
-            if not item or "link" not in item:
-                nested[field_name] = None
+            if not item:
+                continue
+            elif "link" not in item:
+                nested[field_name] = item
                 continue
 
             params = dict(
