@@ -1,19 +1,16 @@
-from __future__ import annotations
+from typing import Any
 
-from typing import TYPE_CHECKING, Any
-
-from .base import Request
-
-if TYPE_CHECKING:
-    from snow import Resource
+from . import methods
+from .base import BaseRequest
 
 
-class DeleteRequest(Request):
-    _method = "DELETE"
+class DeleteRequest(BaseRequest):
+    _method = methods.DELETE
 
-    def __init__(self, resource: Resource, object_id: str):
+    def __init__(self, object_id: str, *args: Any, **kwargs: Any):
         self.object_id = object_id
-        super(DeleteRequest, self).__init__(resource)
+        super(DeleteRequest, self).__init__(*args, **kwargs)
+        self.url_segments.append(object_id)
 
     def __repr__(self) -> str:
         return self._format_repr()
@@ -21,7 +18,3 @@ class DeleteRequest(Request):
     async def send(self, *args: Any, **kwargs: Any) -> Any:
         kwargs["decode"] = False
         return await self._send(*args, **kwargs)
-
-    @property
-    def url(self) -> str:
-        return self.resource.get_url(segments=[self.object_id])
