@@ -2,63 +2,63 @@ from typing import Any, Union
 
 import marshmallow
 
-from snow.consts import Joined
+from snow.consts import NestedField
 from snow.exceptions import SnowException, UnexpectedValue
+from snow.query import BaseOperator, Condition
 
-from ..query import BaseOperator, Condition
-from ._utils import serialize_list
+from .utils import serialize_list
 
 
 class BaseField(marshmallow.fields.Field):
     def __init__(
         self,
         *args: Any,
-        pluck: Joined = Joined.VALUE,
+        pluck: NestedField = NestedField.VALUE,
         is_primary: bool = False,
         **kwargs: Any,
     ):
-        self.joined = Joined(pluck)
+        self.joined = NestedField(pluck)
         self.is_primary = is_primary
         super(BaseField, self).__init__(*args, **kwargs)
         self.allow_none = kwargs.pop("allow_none", True)
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> Any:
         return self.equals(other)
 
-    def __ne__(self, other):
+    def __ne__(self, other: Any) -> Any:
         return self.not_equals(other)
 
-    def __lt__(self, other):
+    def __lt__(self, other: Any) -> Condition:
         return self.less_than(other)
 
-    def __le__(self, other):
+    def __le__(self, other: Any) -> Condition:
         return self.less_or_equals(other)
 
-    def __gt__(self, other):
+    def __gt__(self, other: Any) -> Condition:
         return self.greater_than(other)
 
-    def __ge__(self, other):
+    def __ge__(self, other: Any) -> Condition:
         return self.greater_or_equals(other)
 
-    def equals(self, other):
+    def equals(self, other: Any) -> Condition:
         raise NotImplementedError
 
-    def not_equals(self, other):
+    def not_equals(self, other: Any) -> Condition:
         raise NotImplementedError
 
-    def less_than(self, other):
+    def less_than(self, other: Any) -> Condition:
         raise NotImplementedError
 
-    def less_or_equals(self, other):
+    def less_or_equals(self, other: Any) -> Condition:
         raise NotImplementedError
 
-    def greater_than(self, other):
+    def greater_than(self, other: Any) -> Condition:
         raise NotImplementedError
 
-    def greater_or_equals(self, other):
+    def greater_or_equals(self, other: Any) -> Condition:
         raise NotImplementedError
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<{self.__class__.__name__} [maps_to={self.joined}, primary={self.is_primary}]>"
 
     def _condition(

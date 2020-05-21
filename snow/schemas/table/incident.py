@@ -1,9 +1,9 @@
-from snow.resource import Schema, fields
+from snow.model.schema import TableSchema, fields
 
 
-class IncidentPlain(Schema):
+class IncidentSchema(TableSchema):
     class Meta:
-        location = "/api/now/table/incident"
+        table_name = "incident"
 
     sys_id = fields.Text(is_primary=True)
     number = fields.Text()

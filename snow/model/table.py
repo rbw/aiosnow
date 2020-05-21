@@ -1,148 +1,72 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Type, Union
-from urllib.parse import urlencode, urljoin
+from typing import Any, AsyncGenerator, Type, Union
 
+import aiohttp
 import marshmallow
 
 from snow.config import ConfigSchema
-from snow.consts import Joined
 from snow.exceptions import (
     NoItems,
     PayloadValidationError,
     RequestError,
     SchemaError,
     SelectError,
-    SnowException,
     TooManyItems,
 )
-from snow.request import (
-    DeleteRequest,
-    GetRequest,
-    Pagestream,
-    PatchRequest,
-    PostRequest,
-    Response,
-)
+from snow.query import Condition, QueryBuilder, select
+from snow.request import Pagestream, Response, methods
 
-from . import fields
-from .query import Condition, QueryBuilder, select
-from .schema import PartialSchema, Schema, SchemaMeta
-
-if TYPE_CHECKING:
-    from snow import Application
+from .base import BaseModel
+from .schema.table import TableSchema
 
 
-class Resource:
-    """ServiceNow API Resource Model
+class TableModel(BaseModel):
+    """Table API model
 
     Args:
         schema_cls: Schema class
-        app: Application instance
+        instance_url: Instance URL
+        session: Snow-compatible aiohttp.ClientSession
+        config: Config object
 
     Attributes:
-        url (str): API URL
         config (ConfigSchema): Application config
+        api_url (str): Table API URL
+        instance_url (str): Instance URL
         session (ClientSession): Session for performing requests
         schema (Schema): Resource Schema
         fields (dict): Fields declared in Schema
         primary_key (str): Schema primary key
     """
 
-    def __init__(self, schema_cls: Type[Schema], app: Application):
-        self.app = app
-        self.session = app.get_session()
+    _schema_type = TableSchema
+    api_url: str
 
-        # Configure self
-        self.config = self.app.config
-
-        # Build URL
-        url_schema = "https://" if self.config.session.use_ssl else "http://"
-        base_url = url_schema + str(self.config.address)
-        self.url = urljoin(base_url, str(schema_cls.snow_meta.location))
-
-        # Read Schema
-        self.schema = schema_cls(unknown=marshmallow.EXCLUDE)
-        self.fields = self.schema.snow_fields
-        self.primary_key = self._get_primary_key()
-        self._should_resolve = self.__should_resolve
-
-    @property
-    def nested_fields(self) -> list:
-        return [
-            k
-            for k, v in self.fields.items()
-            if isinstance(v, marshmallow.fields.Nested)
-        ]
-
-    @property
-    def __should_resolve(self) -> bool:
-        for f in self.fields.values():
-            if (
-                isinstance(f, fields.BaseField) and f.joined != Joined.VALUE
-            ) or isinstance(f, marshmallow.fields.Nested):
-                return True
-
-        return False
-
-    async def __aenter__(self) -> Resource:
-        return self
-
-    async def __aexit__(self, *_: list) -> None:
-        await self.session.close()
-
-    @property
-    def _pk_candidates(self) -> list:
-        return [
-            n
-            for n, f in self.fields.items()
-            if isinstance(f, fields.BaseField) and f.is_primary is True
-        ]
-
-    def _get_primary_key(self) -> Union[str, None]:
-        pks = self._pk_candidates
-
-        if len(pks) > 1:
-            raise SchemaError(
-                f"Multiple primary keys (is_primary) supplied "
-                f"in {self.name}. Maximum allowed is 1."
-            )
-        elif len(pks) == 0:
-            return None
-
-        return pks[0]
-
-    def dumps(self, data: Union[dict, Response]) -> str:
-        return self.schema.dumps(data)
-
-    @property
-    def name(self) -> str:
-        return self.schema.__class__.__name__
-
-    def get_url(self, segments: list = None) -> str:
-        """Get request URL
-
-        Args:
-            segments: Path fragments
-
-        Returns:
-            URL
-        """
-
-        if segments and not isinstance(segments, list):
-            raise SnowException(f"Expected a list of path fragments, got: {segments}")
-
-        params = dict(
-            sysparm_fields=",".join(self.fields.keys()),
-            sysparm_display_value="all" if self._should_resolve else "false",
+    def __init__(
+        self,
+        schema_cls: Type[TableSchema],
+        instance_url: str,
+        session: aiohttp.ClientSession,
+        config: ConfigSchema,
+    ):
+        super(TableModel, self).__init__(schema_cls, instance_url, session, config)
+        self.api_url = (
+            self.instance_url + "/api/now/table/" + self.schema.snow_meta.table_name
         )
+        self.nested_fields = self._nested_fields
 
-        url = self.url
+    @property
+    def _nested_fields(self) -> dict:
+        nested = {}
+        for k, v in self.fields.items():
+            if not isinstance(v, marshmallow.fields.Nested):
+                continue
 
-        if segments:
-            url += "/" + "/".join(map(str, segments))
+            nested_cls = getattr(v, "nested")
+            nested[k] = nested_cls.get_fields()
 
-        return f"{url}{'?' + urlencode(params) if params else ''}"
+        return nested
 
     async def stream(
         self, selection: Union[QueryBuilder, None], **kwargs: Any
@@ -170,27 +94,6 @@ class Resource:
             async for response in stream.next():
                 for record in response.data:
                     yield response, record
-
-    async def get(
-        self, selection: Union[QueryBuilder, str] = None, **kwargs: Any
-    ) -> Response:
-        """Buffered many
-
-        Fetches data and stores in buffer.
-
-        Note: It's recommended to use the stream method when dealing with large
-        number of records.
-
-        Keyword Args:
-            selection: Snow compatible query
-            limit (int): Maximum number of records to return
-            offset (int): Starting record index
-
-        Returns:
-            Records
-        """
-
-        return await GetRequest(self, query=select(selection).sysparms, **kwargs).send()
 
     async def get_one(self, selection: Union[QueryBuilder, str]) -> Response:
         """Get one record
@@ -250,6 +153,32 @@ class Resource:
                 f"Selection must be of type {Condition} or {str}, not {type(value)}"
             )
 
+    async def get(
+        self, selection: Union[QueryBuilder, str] = None, **kwargs: Any
+    ) -> Response:
+        """Buffered many
+
+        Fetches data and stores in buffer.
+
+        Note: It's recommended to use the stream method when dealing with large
+        number of records.
+
+        Keyword Args:
+            selection: Snow compatible query
+            limit (int): Maximum number of records to return
+            offset (int): Starting record index
+
+        Returns:
+            Response
+        """
+
+        return await self.request(
+            methods.GET,
+            query=select(selection).sysparms,
+            nested_fields=self.nested_fields,
+            **kwargs,
+        )
+
     async def update(self, selection: Union[Condition, str], payload: dict) -> Response:
         """Update matching record
 
@@ -258,7 +187,7 @@ class Resource:
             payload: Update payload
 
         Returns:
-            Updated record
+            Response
         """
 
         object_id = await self.get_object_id(selection)
@@ -273,7 +202,7 @@ class Resource:
         except marshmallow.exceptions.ValidationError as e:
             raise PayloadValidationError(e)
 
-        return await PatchRequest(self, object_id, data).send()
+        return await self.request(methods.PATCH, object_id=object_id, payload=data,)
 
     async def create(self, payload: dict) -> Response:
         """Create a new record
@@ -282,7 +211,7 @@ class Resource:
             payload: New record payload
 
         Returns:
-            Created record
+            Response
         """
 
         try:
@@ -290,7 +219,7 @@ class Resource:
         except marshmallow.exceptions.ValidationError as e:
             raise PayloadValidationError(e)
 
-        return await PostRequest(self, data).send()
+        return await self.request(methods.POST, payload=data,)
 
     async def delete(self, selection: Union[Condition, str]) -> Response:
         """Delete matching record
@@ -299,11 +228,11 @@ class Resource:
             selection: Condition or ID
 
         Returns:
-            dict: {"result": <status>}
+            Response
         """
 
         object_id = await self.get_object_id(selection)
-        response = await DeleteRequest(self, object_id).send()
+        response = await self.request(methods.DELETE, object_id=object_id,)
 
         if response.status != 204:
             text = await response.text()

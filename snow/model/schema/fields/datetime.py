@@ -1,6 +1,7 @@
 import marshmallow
 
-from ..query import Condition, DateTimeOperator
+from snow.query import Condition, DateTimeOperator
+
 from .base import BaseField
 
 

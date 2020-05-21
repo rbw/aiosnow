@@ -1,6 +1,7 @@
 import marshmallow
 
-from ..query import Condition, NumericOperator
+from snow.query import Condition, NumericOperator
+
 from .base import BaseField
 
 

@@ -7,7 +7,7 @@ from snow.consts import SORT_ASCENDING, SORT_DESCENDING
 from .condition import Condition
 
 if TYPE_CHECKING:
-    from snow.resource.fields import BaseField
+    from snow.model.schema.fields import BaseField
 
 
 class QueryBuilder:

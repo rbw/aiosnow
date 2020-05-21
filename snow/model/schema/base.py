@@ -10,11 +10,10 @@ from snow.exceptions import (
     UnknownPayloadField,
 )
 
-
 from .fields import BaseField, mapped
 
 
-class SchemaMeta(marshmallow.schema.SchemaMeta):
+class BaseSchemaMeta(marshmallow.schema.SchemaMeta):
     def __new__(mcs, name: str, bases: tuple, attrs: dict) -> Any:
         base_cls = bases[0]
         fields = getattr(base_cls, "_declared_fields", {})
@@ -22,7 +21,7 @@ class SchemaMeta(marshmallow.schema.SchemaMeta):
         for key, value in attrs.items():
             if isinstance(value, BaseField):
                 fields[key] = value
-            elif isinstance(value, SchemaMeta):
+            elif isinstance(value, BaseSchemaMeta):
                 fields[key] = Nested(key, value, allow_none=True, required=False)
 
         attrs.update(fields)
@@ -33,21 +32,6 @@ class SchemaMeta(marshmallow.schema.SchemaMeta):
                 field.name = name
 
             setattr(cls, name, field)
-
-        if hasattr(cls, "snow_meta"):
-            location = (
-                hasattr(cls.Meta, "location") and getattr(cls.Meta, "location") or None
-            )
-
-            if not location and hasattr(base_cls, "Meta"):
-                location = (
-                    hasattr(base_cls.Meta, "location")
-                    and base_cls.Meta.location
-                    or None
-                )
-
-            if isinstance(location, str):
-                cls.snow_meta = type("Meta", (), dict(location=location))
 
         return cls
 
@@ -63,45 +47,32 @@ class Nested(marshmallow.fields.Nested):
         super(Nested, self).__init__(nested_cls, *args, **kwargs)
 
 
-class Schema(marshmallow.Schema, metaclass=SchemaMeta):
-    """Resource schema
+class BaseSchema(marshmallow.Schema, metaclass=BaseSchemaMeta):
+    """Abstract base schema
 
     Attributes:
-        snow_meta: Schema Meta object
+        snow_meta: Schema config object
         snow_fields (dict): Fields declared in schema
         nested_fields (list): List of nested field names
-        joined_with (str): Sets parent.child in queries for Nested fields
     """
 
-    joined_with: str = ""
-
     class Meta:
-        @property
-        def location(self) -> str:
-            raise NotImplementedError
+        """Concrete Model-specific configuration"""
 
-    snow_meta: Meta = None
+    snow_meta: Any = None
 
-    def __init__(self, *args: Any, joined_with: str = None, **kwargs: Any):
+    def __init__(self, *args: Any, **kwargs: Any):
         self.snow_fields = self.get_fields()
         self.nested_fields = [
             k for k, v in self.snow_fields.items() if isinstance(v, Nested)
         ]
-
-        if joined_with:
-            self.joined_with = joined_with
-
-            # Enable dot-walking of joined fields
-            for field in self.snow_fields.values():
-                field.name = f"{joined_with}.{field.name}"
-
-        super(Schema, self).__init__(*args, **kwargs)
+        super(BaseSchema, self).__init__(*args, **kwargs)
 
     @classmethod
     def get_fields(cls) -> dict:
         fields = {}
         for name, field in cls.__dict__.items():
-            if name.startswith("_") or name == "opts":
+            if name.startswith("_") or name in ["opts", "snow_meta"]:
                 continue
 
             fields[name] = field
@@ -112,9 +83,9 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
         return fields
 
     @property
-    def _snow_fields(self):
+    def _snow_fields(self) -> Iterable:
         for name, field in self.__dict__.items():
-            if not isinstance(field, (BaseField, SchemaMeta)):
+            if not isinstance(field, (BaseField, BaseSchemaMeta)):
                 continue
 
             yield name, field
@@ -217,8 +188,3 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
 
         data = dict(self.__dump_payload(obj))
         return super().dumps(data)
-
-
-class PartialSchema(Schema):
-    class Meta:
-        location = None
