@@ -13,14 +13,21 @@ can be used for simple scripting as well as for building high-concurrency backen
 
 *Example code*
 ```python
-import snow
-from snow.schemas import IncidentExpanded as Incident
 
-app = snow.Application("<name>.service-now.com", basic_auth=("admin", "passw0rd"))
+from snow import Snow
+from snow.schemas.table import IncidentSchema as Incident
 
-async with app.resource(Incident) as r:
-    response = await r.get_one(Incident.number == "INC012345")
-    print(response["number"], response["assignment_group"]["name"])
+app = Snow(
+    "https://my-instance.service-now.com",
+    basic_auth=("<username>", "<password>")
+)
+
+# Create a TableModel object using the built-in Incident schema
+async with app.get_table(Incident) as inc:
+    # Get incident with number INC01234
+    response = await inc.get_one(Incident.number == "INC01234")
+    print(response["description"])
+
 ```
 
 Documentation
@@ -48,7 +55,9 @@ Consider leaving a [donation](https://paypal.vault13.org) if you like this softw
 Development status
 ---
 
-Alpha
+The fundamental components (models, client code, error handling, documentation, etc) of the library is considered complete.
+However, automatic testing and real-world use is somewhat lacking, i.e. there are most likely bugs lurking about,
+and the software should be considered Alpha, shortly Beta.
 
 Contributing
 ---
