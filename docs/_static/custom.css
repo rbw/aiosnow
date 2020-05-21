@@ -7,6 +7,10 @@ body {
     overflow-y: scroll !important;
 }
 
+div.body h2 {
+    font-size: 150% !important;
+}
+
 .section h2 {
     border-bottom: 1px dashed #d0d0d0;
 }

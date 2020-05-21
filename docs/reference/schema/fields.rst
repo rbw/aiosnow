@@ -1,28 +1,35 @@
-.. _reference-fields:
+.. _fields-root:
 
 Fields
 ======
 
-Fields are used when defining :ref:`Resource Schemas <reference-schema>` and comes with type-specific query builders.
+Fields are used when defining a concrete Schema and comes with type-specific query builders.
+
+They are used in:
+    - Concrete Model definitions
+    - Building and serializing queries
+    - Request field selection
+    - Request payload serialization
+    - Response content deserialization
 
 Text
 ----
 
-.. automodule:: snow.resource.fields.text
+.. automodule:: snow.model.schema.fields.text
    :members:
    
 
 Numeric
 -------
 
-.. automodule:: snow.resource.fields.numeric
+.. automodule:: snow.model.schema.fields.numeric
    :members:
    
 
 Boolean
 -------
 
-.. automodule:: snow.resource.fields.boolean
+.. automodule:: snow.model.schema.fields.boolean
    :members:
    
 
@@ -87,7 +94,7 @@ Gets deserialized into:
 Datetime
 --------
 
-.. automodule:: snow.resource.fields.datetime
+.. automodule:: snow.model.schema.fields.datetime
    :members:
    
 
@@ -95,7 +102,7 @@ Datetime
 Choice
 ------
 
-.. automodule:: snow.resource.fields.choice
+.. automodule:: snow.model.schema.fields.choice
    :members:
    
 
@@ -103,14 +110,5 @@ Choice
 Email
 -----
 
-.. automodule:: snow.resource.fields.email
+.. automodule:: snow.model.schema.fields.email
    :members:
-   
-
-Reference
----------
-
-.. automodule:: snow.resource.fields.reference
-   :members:
-   
-
