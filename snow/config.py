@@ -9,8 +9,8 @@ from snow.exceptions import ConfigurationException
 
 
 class ConfigEncoder(json.JSONEncoder):
-    def default(self, o):
-        return o.__dict__
+    def default(self, o: BaseConfigSchema.ConfigSegment) -> dict:
+        return o.as_dict()
 
 
 class BaseConfigSchema(Schema):
@@ -20,8 +20,7 @@ class BaseConfigSchema(Schema):
         def __repr__(self) -> str:
             return json.dumps(self.__config, cls=ConfigEncoder, indent=4)
 
-        @property
-        def __dict__(self) -> dict:
+        def as_dict(self) -> dict:
             return self.__config
 
         def __init__(self, **config: dict):

@@ -74,8 +74,8 @@ class SelectError(SnowException):
     """Raised on query builder issues"""
 
 
-class NoSchemaLocation(SnowException):
-    """Raised if a snow.resource.Schema doesn't have an inner Meta location property set"""
+class UnexpectedModelSchema(SnowException):
+    """Raised if an unexpected Schema was passed to Model"""
 
 
 class NoSchemaFields(SnowException):

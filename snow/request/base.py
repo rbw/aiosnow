@@ -3,41 +3,46 @@ from __future__ import annotations
 import logging
 import time
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Dict, Tuple
+from typing import Any, List, Tuple, Union
 from urllib.parse import urlencode, urlparse
 
-from aiohttp import client_exceptions
+from aiohttp import ClientSession, client_exceptions
 
 from snow.consts import CONTENT_TYPE
 from snow.exceptions import ClientConnectionError, UnexpectedContentType
 
 from .response import Response
 
-if TYPE_CHECKING:
-    from snow import Resource
 
-
-_cache: dict = {}
-
-
-class Request(ABC):
-    session: Any
+class BaseRequest(ABC):
+    session: Union[ClientSession, Any]
     log = logging.getLogger("snow.request")
 
-    def __init__(self, resource: Resource):
-        self.resource = resource
-        self.schema = resource.schema
-        self.session = resource.session
+    def __init__(
+        self, api_url: str, session: Union[ClientSession, Any], fields: list = None,
+    ):
+        self.api_url = api_url
+        self.session = session
+        self.fields = fields or []
+        self.url_segments: List[str] = []
         self.headers_default = {"Content-type": CONTENT_TYPE}
-        self.base_url = resource.get_url()
+
+    @property
+    def url_params(self) -> dict:
+        return dict(sysparm_display_value="all", sysparm_fields=",".join(self.fields),)
+
+    @property
+    def url(self) -> str:
+        api_url = self.api_url
+
+        if self.url_segments:
+            # Append path segments
+            api_url += "/" + "/".join(map(str, self.url_segments))
+
+        return f"{api_url}?{urlencode(self.url_params)}"
 
     @abstractmethod
     def __repr__(self) -> str:
-        pass
-
-    @property
-    @abstractmethod
-    def url(self) -> str:
         pass
 
     @abstractmethod
@@ -49,68 +54,15 @@ class Request(ABC):
     def _method(self) -> str:
         pass
 
-    def _format_repr(self, params: str = "") -> str:
-        return f"<{self.__class__.__name__} {urlparse(self.url).path} [{params}]>"
-
     @property
     def _request_id(self) -> str:
         return hex(id(self))
 
-    async def get_cached(self, url: str) -> dict:
-        if url not in _cache:
-            record_id = urlparse(url).path.split("/")[-1]
-
-            response = await self._send(
-                method="GET", url=url, resolve=False, transform=False
-            )
-            self.log.debug(f"Caching response for: {record_id}")
-            _cache[url] = response.data
-
-        return _cache[url]
-
-    async def _get_joined(self, content: dict) -> dict:
-        if not self.resource.nested_fields:
-            pass
-        elif isinstance(content, dict):
-            nested = await self._resolve_nested(content)
-            content.update(nested)
-        elif isinstance(content, list):
-            for idx, record in enumerate(content):
-                nested = await self._resolve_nested(record)
-                content[idx].update(nested)
-
-        return content
-
-    async def _resolve_nested(self, content: dict) -> dict:
-        nested: Dict[Any, Any] = {}
-
-        for field_name in self.resource.nested_fields:
-            item = content[field_name]
-            if not item:
-                continue
-            elif "link" not in item:
-                nested[field_name] = item
-                continue
-
-            params = dict(
-                sysparm_fields=",".join(
-                    getattr(self.schema, field_name).nested.__dict__.keys()
-                ),
-            )
-
-            nested[field_name] = await self.get_cached(
-                f"{item['link']}?{urlencode(params)}"
-            )
-
-        return nested
+    def _format_repr(self, params: str = "") -> str:
+        return f"<{self.__class__.__name__} {urlparse(self.url).path} [{params}]>"
 
     async def _send(
-        self,
-        headers_extra: dict = None,
-        decode: bool = True,
-        transform: bool = True,
-        resolve: bool = True,
-        **kwargs: Any,
+        self, headers_extra: dict = None, decode: bool = True, **kwargs: Any,
     ) -> Response:
         headers = self.headers_default
         headers.update(**headers_extra or {})
@@ -124,27 +76,19 @@ class Request(ABC):
             self.log.debug(f"REQ_{req_id}: {self}")
             response = await self.session.request(method, url, **kwargs)
             self.log.debug(f"REQ_{req_id}: {response}")
-
-            if not decode:
-                response.data = await response.read()
-                return response
-            elif not response.content_type.startswith(CONTENT_TYPE):
-                raise UnexpectedContentType(
-                    f"Unexpected content-type in response: "
-                    f"{response.content_type}, expected: {CONTENT_TYPE}, "
-                    f"probable causes: instance down or REST API disabled"
-                )
-
-            await response.load()
-            content = response.data
-
-            if resolve:
-                content = await self._get_joined(content)
-
         except client_exceptions.ClientConnectionError as exc:
             raise ClientConnectionError(str(exc)) from exc
 
-        if transform:
-            response.data = self.schema.load(content, many=isinstance(content, list))
+        if not response.content_type.startswith(CONTENT_TYPE):
+            raise UnexpectedContentType(
+                f"Unexpected content-type in response: "
+                f"{response.content_type}, expected: {CONTENT_TYPE}, "
+                f"probable causes: instance down or REST API disabled"
+            )
+
+        if decode:
+            await response.load()
+        else:
+            response.data = await response.read()
 
         return response
