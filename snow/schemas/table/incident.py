@@ -1,4 +1,5 @@
-from snow.model.schema import TableSchema, fields
+from snow.model import fields
+from snow.models.table import TableSchema
 
 
 class IncidentSchema(TableSchema):

@@ -17,8 +17,8 @@ from snow.exceptions import (
 from snow.query import Condition, QueryBuilder, select
 from snow.request import Pagestream, Response, methods
 
-from .base import BaseModel
-from .schema.table import TableSchema
+from snow.model import BaseModel
+from .schema import TableSchema
 
 
 class TableModel(BaseModel):
@@ -41,7 +41,6 @@ class TableModel(BaseModel):
     """
 
     _schema_type = TableSchema
-    api_url: str
 
     def __init__(
         self,
@@ -51,10 +50,11 @@ class TableModel(BaseModel):
         config: ConfigSchema,
     ):
         super(TableModel, self).__init__(schema_cls, instance_url, session, config)
-        self.api_url = (
-            self.instance_url + "/api/now/table/" + self.schema.snow_meta.table_name
-        )
         self.nested_fields = self._nested_fields
+
+    @property
+    def api_url(self) -> str:
+        return self.instance_url + "/api/now/table/" + self.schema.snow_meta.table_name
 
     @property
     def _nested_fields(self) -> dict:

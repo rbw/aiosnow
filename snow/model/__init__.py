@@ -1,2 +1,2 @@
-from .schema import BaseSchema, PartialSchema, TableSchema
-from .table import TableModel
+from .schema import BaseSchema, PartialSchema, fields
+from .base import BaseModel

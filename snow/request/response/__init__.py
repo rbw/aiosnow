@@ -23,7 +23,9 @@ class Response(ClientResponse):
         - url: Request URL
     """
 
-    data: Union[list, dict]
+    def __init__(self, *args: Any, **kwargs: Any):
+        super(Response, self).__init__(*args, **kwargs)
+        self.data: Union[list, dict, None] = None
 
     def __repr__(self) -> str:
         if isinstance(self.data, list):
