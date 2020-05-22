@@ -3,15 +3,22 @@ import json
 import pytest
 from aiohttp import web
 
-from snow import Application
+from snow.app import Snow
+from snow.config import ConfigSchema
+from snow.model.base import BaseModel, BaseSchema, fields
 from snow.request.response import Response
-from snow.resource import Resource, Schema, fields
+from snow.utils import get_url
 
 
-class DefaultSchema(Schema):
-    __location__ = "/test"
-
+class TestSchema(BaseSchema):
     test = fields.Text()
+
+
+class TestModel(BaseModel):
+    pass
+
+
+TEST_TCP_ADDRESS = "127.0.0.1"
 
 
 @pytest.fixture
@@ -26,58 +33,7 @@ def mock_error():
 
 
 @pytest.fixture
-def mock_client(aiohttp_client):
-    async def go(mock_server):
-        return await aiohttp_client(
-            mock_server,
-            server_kwargs={"skip_url_asserts": True},
-            response_class=Response,
-        )
-
-    yield go
-
-
-@pytest.fixture
-def mock_app_raw():
-    return Application(
-        address="test.service-now.com", basic_auth=("test", "test"), use_ssl=False
-    )
-
-
-@pytest.fixture
-def mock_app(mock_app_raw, mock_client):
-    async def go(connect_to):
-        app = mock_app_raw
-        get_session = await mock_client(connect_to)
-        app.get_session = lambda: get_session
-        return app
-
-    yield go
-
-
-@pytest.fixture
-def mock_resource(mock_server_app, mock_resource_raw):
-    async def go(method, path="/", content=None, status=None, schema=None):
-        server = mock_server_app(
-            method, path, content or dict(result=""), status or 200
-        )
-        return await mock_resource_raw(server, path, schema)
-
-    yield go
-
-
-@pytest.fixture
-def mock_resource_raw(mock_app):
-    async def go(connect_to, url, schema=None):
-        resource = Resource(schema or DefaultSchema, await mock_app(connect_to))
-        resource.url = url
-        return resource
-
-    yield go
-
-
-@pytest.fixture
-def mock_server_app():
+def mock_server():
     def go(method, path, content, status):
         async def handler(_):
             return web.Response(
@@ -87,5 +43,53 @@ def mock_server_app():
         app = web.Application()
         app.router.add_route(method, path, handler)
         return app
+
+    yield go
+
+
+@pytest.fixture
+def mock_session(aiohttp_client, mock_server):
+    async def go(server_method="GET", server_path="/", content="", status=0):
+        server = mock_server(server_method, server_path, content, status)
+        return await aiohttp_client(
+            server, server_kwargs={"skip_url_asserts": True}, response_class=Response,
+        )
+
+    yield go
+
+
+@pytest.fixture
+def mock_app():
+    return Snow(
+        address="test.service-now.com", basic_auth=("test", "test"), use_ssl=False
+    )
+
+
+@pytest.fixture
+def mock_model(mock_session, mock_model_raw):
+    async def go(
+        server_method="GET",
+        server_path="/",
+        content=None,
+        status=0,
+        model=TestModel,
+        schema=TestSchema,
+    ):
+        session = await mock_session(
+            server_method, server_path, content or dict(result=""), status
+        )
+        return await mock_model_raw(session, server_path, model, schema)
+
+    yield go
+
+
+@pytest.fixture
+def mock_model_raw():
+    async def go(session, path, model, schema):
+        config = ConfigSchema(many=False).load(dict(address=TEST_TCP_ADDRESS))
+        url = get_url(address=config.address, use_ssl=False)
+        return model(
+            schema_cls=schema, instance_url=url + path, session=session, config=config,
+        )
 
     yield go

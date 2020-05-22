@@ -1,47 +1,45 @@
-from urllib.parse import urlparse
-
 from snow.request import GetRequest
 
 
-async def test_core_get_success(mock_resource):
+async def test_core_get_success(mock_session):
     resp_content, resp_status = dict(result={"test_key": "test_value"}), 200
-
-    resource = await mock_resource("GET", "/", resp_content, resp_status)
-    response = await GetRequest(resource).send(url="/", transform=False)
+    session = await mock_session(
+        server_method="GET",
+        server_path="/test",
+        content=resp_content,
+        status=resp_status,
+    )
+    response = await GetRequest(api_url="/test", session=session).send()
 
     assert response.data == resp_content["result"]
     assert response.status == resp_status
 
 
-async def test_core_get_path(mock_resource):
-    resource = await mock_resource("GET", "/")
-    request = GetRequest(resource)
-
-    assert urlparse(request.url).path == urlparse(resource.url).path
-
-
-async def test_core_get_params_query(mock_resource):
+async def test_core_get_params_query(mock_session):
     query = "k1=v1^k2=v2"
-    request = GetRequest(await mock_resource("GET"), query=query)
-    assert request.params["sysparm_query"] == query
+    session = await mock_session(server_method="GET", server_path="/test")
+    request = GetRequest(api_url="/test", session=session, query=query)
+    assert request.url_params["sysparm_query"] == query
 
 
-async def test_core_get_params_limit(mock_resource):
+async def test_core_get_params_limit(mock_session):
     limit = 15
-    request = GetRequest(await mock_resource("GET"), limit)
-    assert request.params["sysparm_limit"] == limit
+    session = await mock_session(server_method="GET", server_path="/test")
+    request = GetRequest(api_url="/test", session=session, limit=limit)
+    assert request.url_params["sysparm_limit"] == limit
 
 
-async def test_core_params_offset(mock_resource):
+async def test_core_params_offset(mock_session):
     offset = 20
-    request = GetRequest(await mock_resource("GET"), offset=offset)
-    assert request.params["sysparm_offset"] == offset
+    session = await mock_session(server_method="GET", server_path="/test")
+    request = GetRequest(api_url="/test", session=session, offset=offset)
+    assert request.url_params["sysparm_offset"] == offset
 
 
-async def test_core_get_params_page(mock_resource):
+async def test_core_get_params_page(mock_session):
     limit = 15
     offset = 10
-
-    request = GetRequest(await mock_resource("GET"), limit, offset)
-    assert request.params["sysparm_limit"] == limit
-    assert request.params["sysparm_offset"] == offset
+    session = await mock_session(server_method="GET", server_path="/test")
+    request = GetRequest(api_url="/test", session=session, limit=limit, offset=offset)
+    assert request.url_params["sysparm_limit"] == limit
+    assert request.url_params["sysparm_offset"] == offset
