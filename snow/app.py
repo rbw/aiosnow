@@ -10,9 +10,10 @@ from snow.exceptions import (
     IncompatibleSession,
     NoAuthenticationMethod,
 )
-from snow.model import TableModel, TableSchema
+from snow.models.table import TableModel, TableSchema
 from snow.request import Response
 from snow.session import Session
+from snow.utils import get_url
 
 
 class Snow:
@@ -75,6 +76,8 @@ class Snow:
         except ValidationError as e:
             raise ConfigurationException(e)
 
+        self.url = get_url(str(self.config.address), bool(use_ssl))
+
     @property
     def _auth(self) -> aiohttp.BasicAuth:
         """Get authentication object built using config
@@ -106,11 +109,6 @@ class Snow:
         return Session(
             auth=self._auth, connector=aiohttp.TCPConnector(**connector_args)
         )
-
-    @property
-    def url(self) -> str:
-        url_schema = "https://" if self.config.session.use_ssl else "http://"
-        return url_schema + str(self.config.address)
 
     def resource(self, schema: Type[TableSchema]) -> TableModel:
         warnings.warn(

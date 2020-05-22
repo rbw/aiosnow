@@ -1,0 +1,25 @@
+.. _fields-root:
+
+Fields
+======
+
+Fields are used when defining a concrete Schema and comes with type-specific query builders.
+
+They are used in:
+    - Concrete Model definitions
+    - Building and serializing queries
+    - Request field selection
+    - Request payload serialization
+    - Response content deserialization
+
+.. toctree::
+   :maxdepth: 2
+
+   text
+   numeric
+   datetime
+   boolean
+   numericmap
+   textmap
+   email
+   choice

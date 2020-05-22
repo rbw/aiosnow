@@ -1,6 +1,6 @@
 from typing import Any
 
-from .base import BaseSchema, BaseSchemaMeta
+from snow.model.schema.base import BaseSchema, BaseSchemaMeta
 
 
 class TableSchemaMeta(BaseSchemaMeta):

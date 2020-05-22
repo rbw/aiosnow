@@ -2,7 +2,7 @@ Base
 ====
 
 The :class:`~snow.model.base.BaseModel` cannot be used directly, instead it serves as an abstract base for concrete models,
-such as the :class:`~snow.model.table.TableModel`.
+such as the :class:`~snow.models.table.TableModel`.
 
 API
 ---

@@ -58,10 +58,6 @@ class IncompatibleSession(SnowException):
     """Raised if a custom session object passed to snow.Application is not of snow.Session type"""
 
 
-class UnexpectedSchema(SnowException):
-    """Schema not of snow.resource.schema.Schema type"""
-
-
 class UnexpectedValue(SnowException):
     """Typically raised when a Snow method receives unexpected input"""
 
@@ -72,6 +68,10 @@ class SchemaError(SnowException):
 
 class SelectError(SnowException):
     """Raised on query builder issues"""
+
+
+class InvalidContentMethod(SnowException):
+    """Raised if the response content was incorrectly accessed"""
 
 
 class UnexpectedModelSchema(SnowException):

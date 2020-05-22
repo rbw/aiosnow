@@ -46,7 +46,9 @@ class GetRequest(BaseRequest):
 
         return _cache[url]
 
-    async def _expand_nested(self, content: Union[dict, list]) -> Union[dict, list]:
+    async def _expand_nested(
+        self, content: Union[dict, list, None]
+    ) -> Union[dict, list, None]:
         if not self.nested_fields:
             pass
         elif isinstance(content, dict):

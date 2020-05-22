@@ -1,8 +1,8 @@
 Example
 =======
 
-This example illustrates how a custom :class:`~snow.model.schema.table.TableSchema` can be used with the :meth:`~snow.Snow.get_table`
-factory method for producing a :class:`~snow.model.table.TableModel`.
+This example illustrates how a custom :class:`~snow.models.table.TableSchema` can be used with the :meth:`~snow.Snow.get_table`
+factory method for producing a :class:`~snow.models.table.TableModel`.
 
 .. code-block:: python
 
@@ -25,7 +25,7 @@ factory method for producing a :class:`~snow.model.table.TableModel`.
         basic_auth=("<username>", "<password>")
     )
 
-    # Product a TableModel object using the built-in Incident schema
+    # Produce a TableModel object using the built-in Incident schema
     async with app.get_table(Incident) as r:
         # Get incident with number INC01234
         response = await r.get_one(Incident.number == "INC01234")

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import Any, Dict, Type, Union
 
 import aiohttp
@@ -27,7 +27,7 @@ req_cls_map = {
 }
 
 
-class BaseModel(ABC):
+class BaseModel:
     """Abstract base model
 
     Args:
