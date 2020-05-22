@@ -6,6 +6,7 @@ import marshmallow
 from snow.exceptions import (
     IncompatiblePayloadField,
     NoSchemaFields,
+    UnexpectedModelSchema,
     UnexpectedPayloadType,
     UnknownPayloadField,
 )
@@ -66,6 +67,9 @@ class BaseSchema(marshmallow.Schema, metaclass=BaseSchemaMeta):
         self.nested_fields = [
             k for k, v in self.snow_fields.items() if isinstance(v, Nested)
         ]
+        if not self.snow_meta:
+            raise UnexpectedModelSchema("Bah")
+
         super(BaseSchema, self).__init__(*args, **kwargs)
 
     @classmethod

@@ -76,7 +76,7 @@ class ConfigSchema(BaseConfigSchema):
 
     address = fields.String(required=True)
     session = fields.Nested(
-        SessionConfig, required=False, allow_none=True
+        SessionConfig, default={}, allow_none=True
     )  # type: SessionConfig # type: ignore
 
     def __init__(self, *args: Any, **kwargs: Any):

@@ -14,10 +14,10 @@ from snow.exceptions import (
     SelectError,
     TooManyItems,
 )
+from snow.model import BaseModel
 from snow.query import Condition, QueryBuilder, select
 from snow.request import Pagestream, Response, methods
 
-from snow.model import BaseModel
 from .schema import TableSchema
 
 
@@ -95,7 +95,7 @@ class TableModel(BaseModel):
                 for record in response.data:
                     yield response, record
 
-    async def get_one(self, selection: Union[QueryBuilder, str]) -> Response:
+    async def get_one(self, selection: Union[QueryBuilder, str]) -> dict:
         """Get one record
 
         Args:
@@ -130,7 +130,7 @@ class TableModel(BaseModel):
         """
 
         response = await self.get_one(sysparm_query)
-        return response.data[0][self.primary_key]
+        return response[self.primary_key]
 
     async def get_object_id(self, value: Union[Condition, str]) -> str:
         """Get object id by str or Condition
