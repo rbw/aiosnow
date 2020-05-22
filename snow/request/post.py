@@ -7,7 +7,7 @@ from .base import BaseRequest
 class PostRequest(BaseRequest):
     _method = methods.POST
 
-    def __init__(self, payload: str, *args: Any, **kwargs: Any):
+    def __init__(self, *args: Any, payload: str, **kwargs: Any):
         self.payload = payload
         super(PostRequest, self).__init__(*args, **kwargs)
 

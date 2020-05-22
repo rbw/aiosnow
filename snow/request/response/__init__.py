@@ -3,7 +3,12 @@ from typing import Any, Iterable, Union
 from aiohttp import ClientResponse, client_exceptions, http_exceptions, web_exceptions
 from marshmallow import EXCLUDE
 
-from snow.exceptions import RequestError, ServerError, UnexpectedResponseContent
+from snow.exceptions import (
+    InvalidContentMethod,
+    RequestError,
+    ServerError,
+    UnexpectedResponseContent,
+)
 
 from .schemas import ContentSchema, ErrorSchema
 
@@ -23,7 +28,9 @@ class Response(ClientResponse):
         - url: Request URL
     """
 
-    data: Union[list, dict]
+    def __init__(self, *args: Any, **kwargs: Any):
+        super(Response, self).__init__(*args, **kwargs)
+        self.data: Union[list, dict, None] = None
 
     def __repr__(self) -> str:
         if isinstance(self.data, list):
@@ -38,11 +45,19 @@ class Response(ClientResponse):
             f"[{self.status} {self.reason}] {content_overview}>"
         )
 
-    def __getitem__(self, key: Any) -> Any:
-        return self.data[key]
+    def __getitem__(self, name: Any) -> Any:
+        if isinstance(self.data, dict):
+            return self.data[name]
+
+        return Response.__getitem__(self, name)
 
     def __iter__(self) -> Iterable:
-        yield from self.data
+        if isinstance(self.data, list):
+            yield from self.data
+        elif isinstance(self.data, dict):
+            yield from self.data.keys()
+        else:
+            raise InvalidContentMethod(f"Cannot iterate over type: {type(self.data)}")
 
     def __len__(self) -> int:
         if isinstance(self.data, list):

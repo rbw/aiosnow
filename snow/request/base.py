@@ -3,23 +3,24 @@ from __future__ import annotations
 import logging
 import time
 from abc import ABC, abstractmethod
-from typing import Any, List, Tuple, Union
+from typing import Any, List, Tuple
 from urllib.parse import urlencode, urlparse
 
-from aiohttp import ClientSession, client_exceptions
+from aiohttp import client_exceptions
 
 from snow.consts import CONTENT_TYPE
 from snow.exceptions import ClientConnectionError, UnexpectedContentType
+from snow.session import Session
 
 from .response import Response
 
 
 class BaseRequest(ABC):
-    session: Union[ClientSession, Any]
+    session: Session
     log = logging.getLogger("snow.request")
 
     def __init__(
-        self, api_url: str, session: Union[ClientSession, Any], fields: list = None,
+        self, api_url: str, session: Session, fields: list = None,
     ):
         self.api_url = api_url
         self.session = session

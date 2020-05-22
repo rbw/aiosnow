@@ -1,7 +1,7 @@
 Response
 ========
 
-Concrete Models' API methods, such as :meth:`~snow.model.table.TableModel.get_one` of :class:`~snow.model.table.TableModel`,
+Concrete Models' API methods, such as :meth:`~snow.models.table.TableModel.get_one` of :class:`~snow.models.table.TableModel`,
 returns this object as response to HTTP requests.
 
 Some facts about this object:

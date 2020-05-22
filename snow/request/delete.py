@@ -7,7 +7,7 @@ from .base import BaseRequest
 class DeleteRequest(BaseRequest):
     _method = methods.DELETE
 
-    def __init__(self, object_id: str, *args: Any, **kwargs: Any):
+    def __init__(self, *args: Any, object_id: str, **kwargs: Any):
         self.object_id = object_id
         super(DeleteRequest, self).__init__(*args, **kwargs)
         self.url_segments.append(object_id)

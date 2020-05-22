@@ -13,16 +13,8 @@ API
    :members: Snow
    :exclude-members: get_session
 
-Example
--------
 
-A simple Snow application
+.. toctree::
+   :hidden:
 
-.. code-block:: python
-
-    from snow import Snow
-
-    app = Snow(
-        "https://my-instance.service-now.com",
-        basic_auth=("<username>", "<password>")
-    )
+   example

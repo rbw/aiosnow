@@ -7,11 +7,11 @@ from .base import BaseRequest
 class PatchRequest(BaseRequest):
     _method = methods.PATCH
 
-    def __init__(self, object_id: str, payload: str, *args: Any, **kwargs: Any):
+    def __init__(self, *args: Any, object_id: str, payload: str, **kwargs: Any):
+        super(PatchRequest, self).__init__(*args, **kwargs)
         self.payload = payload
         self.object_id = object_id
         self.url_segments.append(object_id)
-        super(PatchRequest, self).__init__(*args, **kwargs)
 
     def __repr__(self) -> str:
         return self._format_repr(
