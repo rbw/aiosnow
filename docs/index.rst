@@ -44,12 +44,12 @@ Table of Contents
 
 .. toctree::
    :caption: Reference
-   :titlesonly:
    :maxdepth: 3
+   :titlesonly:
 
-   reference/snow
+   reference/app/index
    reference/schema/index
-   reference/model/index
+   reference/models/index
    reference/response
    reference/exceptions
 

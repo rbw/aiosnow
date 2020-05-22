@@ -1,8 +1,8 @@
 Example
 =======
 
-This example illustrates how a custom :class:`~snow.model.schema.table.TableSchema` can be used with the :meth:`~snow.Snow.get_table`
-factory method for producing a :class:`~snow.model.table.TableModel`.
+This example illustrates how a custom :class:`~snow.models.table.TableSchema` can be used with the :meth:`~snow.Snow.get_table`
+factory method for producing a :class:`~snow.models.table.TableModel`.
 
 .. code-block:: python
 
