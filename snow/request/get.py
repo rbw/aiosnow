@@ -22,7 +22,7 @@ class GetRequest(BaseRequest):
         **kwargs: Any,
     ):
         self.nested_fields = nested_fields or {}
-        self.nested_attrs = self._get_nested_attrs()
+        self.nested_attrs = list(self._nested_attrs)
         self._limit = offset + limit
         self._offset = offset
         self.query = query
@@ -42,7 +42,8 @@ class GetRequest(BaseRequest):
     def limit(self) -> int:
         return self._limit
 
-    def _get_nested_attrs(self) -> Iterable:
+    @property
+    def _nested_attrs(self) -> Iterable:
         for f in self.nested_fields.values():
             yield from f.keys()
 
