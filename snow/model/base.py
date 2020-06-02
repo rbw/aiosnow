@@ -64,8 +64,19 @@ class BaseModel:
 
         # Read Schema
         self.schema = schema_cls(unknown=marshmallow.EXCLUDE)
-        self.fields = self.schema.snow_fields
+        self.fields = self._get_return_fields()
         self.primary_key = self._get_primary_key()
+
+    def _get_return_fields(self) -> dict:
+        if not self.schema.snow_meta.return_only:
+            return self.schema.snow_fields
+
+        selected = {}
+
+        for name in self.schema.snow_meta.return_only:
+            selected[name] = self.schema.snow_fields[name]
+
+        return selected
 
     @property
     @abstractmethod

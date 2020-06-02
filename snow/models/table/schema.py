@@ -19,8 +19,16 @@ class TableSchemaMeta(BaseSchemaMeta):
                 or None
             )
 
-        if isinstance(table_name, str):
-            cls.snow_meta = type("Meta", (), dict(table_name=table_name))
+        cls.snow_meta = type(
+            "Meta",
+            (),
+            dict(
+                table_name=table_name,
+                return_only=hasattr(cls.Meta, "return_only")
+                and getattr(cls.Meta, "return_only")
+                or None,
+            ),
+        )
 
         return cls
 
