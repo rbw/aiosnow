@@ -5,10 +5,14 @@ These are fully functional examples, for developers to quickly get a feel for th
 How-to
 ---
 
-With Python 3.7+, follow the [installation instructions](https://python-snow.readthedocs.io/en/latest/#installation), then modify the desired example code as needed and execute.
+With Python 3.7+, [install snow](https://python-snow.readthedocs.io/en/latest/#installation), then
+ modify the desired example code if needed and configure and execute `run.py`:
 
+```bash
+$ python run.py
+```
 
-Index
+Examples
 ---
 
-*create-update-delete.py:* creates a new record, updates then deletes
+*read.nested*: Fetch Incident records with nested AssignmentGroup using a Pagestream
