@@ -22,7 +22,7 @@ app = Snow(
     basic_auth=("<username>", "<password>")
 )
 
-# Create a TableModel object using the built-in Incident schema
+# Make a TableModel object from the built-in Incident schema
 async with app.get_table(Incident) as inc:
     # Get incident with number INC01234
     response = await inc.get_one(Incident.number == "INC01234")
