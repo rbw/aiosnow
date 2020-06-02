@@ -6,7 +6,6 @@ import marshmallow
 from snow.exceptions import (
     IncompatiblePayloadField,
     NoSchemaFields,
-    UnexpectedModelSchema,
     UnexpectedPayloadType,
     UnknownPayloadField,
 )
@@ -67,8 +66,6 @@ class BaseSchema(marshmallow.Schema, metaclass=BaseSchemaMeta):
         self.nested_fields = [
             k for k, v in self.snow_fields.items() if isinstance(v, Nested)
         ]
-        if not self.snow_meta:
-            raise UnexpectedModelSchema("Bah")
 
         super(BaseSchema, self).__init__(*args, **kwargs)
 
@@ -141,7 +138,7 @@ class BaseSchema(marshmallow.Schema, metaclass=BaseSchemaMeta):
                     if isinstance(field, mapped.MappedField):
                         value = value["value"], value["display_value"]
                     else:
-                        value = value[field.joined.value]
+                        value = value[field.pluck.value]
             elif isinstance(field, Nested):
                 pass
             else:  # Unknown field

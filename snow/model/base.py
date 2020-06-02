@@ -79,7 +79,7 @@ class BaseModel:
 
     def _deserialize(self, content: Union[dict, list]) -> Union[dict, list]:
         if not isinstance(content, (dict, list)):
-            raise ValueError(f"Cannot transform type {type(content)}")
+            raise ValueError(f"Cannot deserialize type {type(content)}")
 
         return self.schema.load(content, many=isinstance(content, list))
 

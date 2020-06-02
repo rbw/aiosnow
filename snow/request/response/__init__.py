@@ -34,9 +34,9 @@ class Response(ClientResponse):
 
     def __repr__(self) -> str:
         if isinstance(self.data, list):
-            content_overview = f"Content: List of {len(self.data)} items"
+            content_overview = f"Content: List ({len(self.data)} items)"
         elif self.data and isinstance(self.data, dict):
-            content_overview = "Content: Object contained in a dictionary"
+            content_overview = "Content: Dictionary object"
         else:
             content_overview = "Content: Unknown"
 
@@ -47,9 +47,9 @@ class Response(ClientResponse):
 
     def __getitem__(self, name: Any) -> Any:
         if isinstance(self.data, dict):
-            return self.data[name]
+            return self.data.get(name)
 
-        return Response.__getitem__(self, name)
+        return None
 
     def __iter__(self) -> Iterable:
         if isinstance(self.data, list):

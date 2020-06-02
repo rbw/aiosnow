@@ -1,48 +1,64 @@
-from __future__ import annotations
-
 from typing import Any, AsyncGenerator
-from urllib.parse import parse_qs
 
-from multidict import MultiDictProxy
-
-from snow.exceptions import StreamExhausted
+from snow.consts import DEFAULT_LIMIT, DEFAULT_PAGE_SIZE
 from snow.request import GetRequest
 
 
 class Pagestream(GetRequest):
+    """Snow Pagestream
+
+    The Pagestream object behaves much like a stream, it's memory friendly and yields deserialized
+    chunks of records using the ServiceNow pagination system.
+
+    Attributes:
+        page_size (int): Number of records in each page
+    """
+
     exhausted = False
 
-    def __init__(self, *args: Any, chunk_size: int = 500, **kwargs: Any):
+    def __init__(self, *args: Any, page_size: int = DEFAULT_PAGE_SIZE, **kwargs: Any):
+        self._limit_total = kwargs.pop("limit", DEFAULT_LIMIT)
+        self._offset_initial = kwargs.get("offset", 0)
         super(Pagestream, self).__init__(*args, **kwargs)
-        self._chunk_size = chunk_size
-        self._fields = None
+        self._limit = page_size
 
-    @property
-    def _page_size(self) -> int:
-        if self._offset + self._chunk_size >= self.limit:
-            return self.limit - self._offset
+    def __repr__(self) -> str:
+        params = (
+            f"query: {self.query or None}, limit: {self._limit_total}, "
+            f"offset: {self.offset}, page_size: {self._limit}"
+        )
+        return self._format_repr(params)
 
-        return self._chunk_size
+    async def get_next(self, **kwargs: Any) -> AsyncGenerator:
+        if self.exhausted:
+            return
 
-    def _prepare_next(self, links: MultiDictProxy) -> None:
-        if "next" in links:
-            url_next = str(links["next"]["url"])
-            query = parse_qs(url_next)  # type: Any
-            offset_next = int(query.get("sysparm_offset")[0])
+        offset_limit = self._limit_total + self._offset_initial
 
-            if offset_next >= self.limit:
-                raise StreamExhausted
-        else:
-            raise StreamExhausted
-
-        self._offset = offset_next
-
-    async def next(self, **kwargs: Any) -> AsyncGenerator:
-        response = await self._send(**kwargs)
-
-        try:
-            self._prepare_next(response.links)
-        except StreamExhausted:
+        # Max number of records is less than or equals the
+        # requested page size: set exhausted adjust the page size
+        if offset_limit <= self.limit:
+            self._limit = self._limit_total
             self.exhausted = True
+        # Offset is greater or equals the offset limit: set exhausted
+        # and adjust the final page size
+        elif self.offset >= offset_limit:
+            self.exhausted = True
+            if self.offset == offset_limit:  # No need to fetch an empty page
+                return
+
+            # Adjust limit to get the last X records
+            # This could be a fraction of a really large page
+            self._limit = offset_limit - self._limit_total
+            self.log.debug(
+                f"{self._req_id}: Limit of {self.limit} records reached, setting exhausted"
+            )
+
+        response = await self.send(**kwargs)
+        self._offset += self._limit
+
+        if "next" not in response.links:
+            self.exhausted = True
+            self.log.debug(f"{self._req_id}: No more pages, setting exhausted")
 
         yield response

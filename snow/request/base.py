@@ -27,6 +27,7 @@ class BaseRequest(ABC):
         self.fields = fields or []
         self.url_segments: List[str] = []
         self.headers_default = {"Content-type": CONTENT_TYPE}
+        self._req_id = f"REQ_{hex(int(round(time.time() * 1000)))}"
 
     @property
     def url_params(self) -> dict:
@@ -73,10 +74,8 @@ class BaseRequest(ABC):
         url = kwargs.pop("url", self.url)
 
         try:
-            req_id = hex(int(round(time.time() * 1000)))
-            self.log.debug(f"REQ_{req_id}: {self}")
+            self.log.debug(f"{self._req_id}: {self}")
             response = await self.session.request(method, url, **kwargs)
-            self.log.debug(f"REQ_{req_id}: {response}")
         except client_exceptions.ClientConnectionError as exc:
             raise ClientConnectionError(str(exc)) from exc
 
@@ -91,5 +90,7 @@ class BaseRequest(ABC):
             await response.load()
         else:
             response.data = await response.read()
+
+        self.log.debug(f"{self._req_id}: {response}")
 
         return response
