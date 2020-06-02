@@ -23,14 +23,24 @@ class GetRequest(BaseRequest):
     ):
         self.nested_fields = nested_fields or {}
         self.nested_attrs = self._get_nested_attrs()
-        self.limit = limit
-        self.offset = offset
+        self._limit = offset + limit
+        self._offset = offset
         self.query = query
         super(GetRequest, self).__init__(*args, **kwargs)
 
     def __repr__(self) -> str:
-        params = f"query: {self.query}, limit: {self.limit}, offset: {self.offset}"
+        params = (
+            f"query: {self.query or None}, limit: {self.limit}, offset: {self.offset}"
+        )
         return self._format_repr(params)
+
+    @property
+    def offset(self) -> int:
+        return self._offset
+
+    @property
+    def limit(self) -> int:
+        return self._limit
 
     def _get_nested_attrs(self) -> Iterable:
         for f in self.nested_fields.values():
@@ -67,7 +77,7 @@ class GetRequest(BaseRequest):
 
         for field_name in self.nested_fields.keys():
             item = content[field_name]
-            if not item:
+            if not item or not item["display_value"]:
                 continue
             elif "link" not in item:
                 nested[field_name] = item
