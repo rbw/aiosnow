@@ -8,8 +8,6 @@ class AssignmentGroup(PartialSchema):
 
 
 class Incident(IncidentSchema):
-    number = fields.Text()
-    impact = fields.Numeric()
     assignment_group = AssignmentGroup
 
 
@@ -20,10 +18,10 @@ async def main(app):
             & Incident.impact.greater_or_equals(1)
         ).order_asc(Incident.number)
 
-        async for _, record in inc.stream(query, limit=194, page_size=43):
-            ag = record["assignment_group"]
+        for response in await inc.get(query):
+            ag = response["assignment_group"]
             text = "{number} is assigned to group: {ag_name} ({ag_id})".format(
-                number=record["number"],
+                number=response["number"],
                 ag_id=ag["sys_id"],
                 ag_name=ag["name"]
             )
