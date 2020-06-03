@@ -3,8 +3,8 @@ from snow.schemas.table import IncidentSchema
 
 
 class AssignmentGroup(PartialSchema):
-    sys_id = fields.Text()
-    name = fields.Text()
+    sys_id = fields.String()
+    name = fields.String()
 
 
 class Incident(IncidentSchema):
