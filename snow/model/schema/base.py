@@ -130,15 +130,13 @@ class BaseSchema(marshmallow.Schema, metaclass=BaseSchemaMeta):
                 continue
 
             if isinstance(field, BaseField):
-                if isinstance(value, str):
-                    pass
-                elif isinstance(value, dict) and {"value", "display_value"} <= set(
+                if isinstance(value, dict) and {"value", "display_value"} <= set(
                     value.keys()
                 ):
                     if isinstance(field, mapped.MappedField):
-                        value = value["value"], value["display_value"]
+                        value = value["value"] or None, value["display_value"] or None
                     else:
-                        value = value[field.pluck.value]
+                        value = value[field.pluck.value] or None
             elif isinstance(field, Nested):
                 pass
             else:  # Unknown field

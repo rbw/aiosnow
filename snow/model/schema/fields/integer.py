@@ -1,3 +1,7 @@
+import warnings
+
+from typing import Any
+
 import marshmallow
 
 from snow.query import Condition, NumericOperator
@@ -5,7 +9,7 @@ from snow.query import Condition, NumericOperator
 from .base import BaseField
 
 
-class Numeric(marshmallow.fields.Integer, BaseField):
+class Integer(marshmallow.fields.Integer, BaseField):
     def equals(self, value: int) -> Condition:
         """
         Example: reassignment_count.equals(0)
@@ -88,3 +92,12 @@ class Numeric(marshmallow.fields.Integer, BaseField):
 
         value = f"{value1}@{value2}"
         return self._condition(NumericOperator.BETWEEN, value)
+
+
+class Numeric(Integer):
+    def __init__(self, *args: Any, **kwargs: Any):
+        warnings.warn(
+            "Numeric is deprecated, please use Integer instead",
+            DeprecationWarning,
+        )
+        super(Numeric, self).__init__(*args, **kwargs)

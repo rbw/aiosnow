@@ -1,3 +1,7 @@
+import warnings
+
+from typing import Any
+
 import marshmallow
 
 from snow.query import Condition, StringOperator
@@ -5,7 +9,7 @@ from snow.query import Condition, StringOperator
 from .base import BaseField
 
 
-class Text(marshmallow.fields.String, BaseField):
+class String(marshmallow.fields.String, BaseField):
     def equals(self, value: str) -> Condition:
         """
         Example: short_description.equals("Network storage is unavailable")
@@ -96,3 +100,12 @@ class Text(marshmallow.fields.String, BaseField):
 
         value = f"{value1}@{value2}"
         return self._condition(StringOperator.BETWEEN, value)
+
+
+class Text(String):
+    def __init__(self, *args: Any, **kwargs: Any):
+        warnings.warn(
+            "Text is deprecated, please use String instead",
+            DeprecationWarning,
+        )
+        super(Text, self).__init__(*args, **kwargs)
