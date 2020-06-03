@@ -20,7 +20,8 @@ class BaseField(marshmallow.fields.Field):
         self.pluck = Pluck(pluck)
         self.is_primary = is_primary
         super(BaseField, self).__init__(*args, **kwargs)
-        self.allow_none = kwargs.pop("allow_none", True)
+        self.allow_none = True
+        self.missing = None
 
     def __eq__(self, other: Any) -> Any:
         return self.equals(other)

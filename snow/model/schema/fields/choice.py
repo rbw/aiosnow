@@ -1,11 +1,11 @@
 from .base import BaseField
-from .numeric import Numeric
-from .text import Text
+from .integer import Integer
+from .string import String
 
 
-class NumericChoice(Numeric, BaseField):
+class NumericChoice(Integer, BaseField):
     pass
 
 
-class TextChoice(Text, BaseField):
+class TextChoice(String, BaseField):
     pass
