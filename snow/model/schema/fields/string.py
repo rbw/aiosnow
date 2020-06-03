@@ -1,5 +1,4 @@
 import warnings
-
 from typing import Any
 
 import marshmallow
@@ -105,7 +104,6 @@ class String(marshmallow.fields.String, BaseField):
 class Text(String):
     def __init__(self, *args: Any, **kwargs: Any):
         warnings.warn(
-            "Text is deprecated, please use String instead",
-            DeprecationWarning,
+            "Text is deprecated, please use String instead", DeprecationWarning,
         )
         super(Text, self).__init__(*args, **kwargs)
