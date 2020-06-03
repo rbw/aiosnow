@@ -1,5 +1,4 @@
 import warnings
-
 from typing import Any
 
 import marshmallow
@@ -17,7 +16,7 @@ class DateTime(marshmallow.fields.DateTime, BaseField):
 
         "AttributeError: 'NoneType' object has no attribute 'opts'"
 
-        @TODO - find out why DateTime schema parent fails to resolve"""
+        @TODO - find out why DateTime schema parent fails to resolve for DateTime and remove this override"""
 
         self.format = (
             self.format
@@ -96,7 +95,6 @@ class DateTime(marshmallow.fields.DateTime, BaseField):
 class Datetime(DateTime):
     def __init__(self, *args: Any, **kwargs: Any):
         warnings.warn(
-            "Datetime is deprecated, please use DateTime instead",
-            DeprecationWarning,
+            "Datetime is deprecated, please use DateTime instead", DeprecationWarning,
         )
         super(Datetime, self).__init__(*args, **kwargs)

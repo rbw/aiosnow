@@ -8,9 +8,7 @@ class TableSchemaMeta(BaseSchemaMeta):
         base_cls = bases[0]
         cls = super().__new__(mcs, name, bases, attrs)
 
-        table_name = (
-            hasattr(cls.Meta, "table_name") and cls.Meta.table_name or None
-        )
+        table_name = hasattr(cls.Meta, "table_name") and cls.Meta.table_name or None
 
         if not table_name and hasattr(base_cls, "Meta"):
             table_name = (
