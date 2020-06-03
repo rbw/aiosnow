@@ -12,7 +12,7 @@ async def test_models_table_schema_meta_valid(mock_model):
         class Meta:
             table_name = "test"
 
-        test = fields.Text()
+        test = fields.String()
 
     await mock_model(model=TableModel, schema=TestSchema)
 
@@ -21,7 +21,7 @@ async def test_models_table_schema_invalid_type(mock_model):
     """Schema of unknown type should raise UnexpectedSchema"""
 
     class TestSchema:
-        test = fields.Text()
+        test = fields.String()
 
     with pytest.raises(UnexpectedModelSchema):
         await mock_model(model=TableModel, schema=TestSchema)
@@ -34,7 +34,7 @@ async def test_models_table_schema_meta_invalid(mock_model):
         class Meta:
             pass
 
-        test = fields.Text()
+        test = fields.String()
 
-    with pytest.raises(UnexpectedModelSchema):
+    with pytest.raises(NotImplementedError):
         await mock_model(model=TableModel, schema=TestSchema)

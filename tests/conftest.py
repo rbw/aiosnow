@@ -11,7 +11,7 @@ from snow.utils import get_url
 
 
 class TestSchema(BaseSchema):
-    test = fields.Text()
+    test = fields.String()
 
 
 class TestModel(BaseModel):

@@ -16,7 +16,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.7"
 aiohttp = "^3.6.2"
-marshmallow = "^3.2.2"
+marshmallow = "^3.6.1"
 
 [tool.poetry.dev-dependencies]
 twine = "^1.13"
