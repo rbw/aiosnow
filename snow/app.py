@@ -36,7 +36,7 @@ class Snow:
         self,
         address: str,
         basic_auth: tuple = None,
-        use_ssl: bool = None,
+        use_ssl: bool = True,
         verify_ssl: bool = None,
         session: aiohttp.ClientSession = None,
     ):
@@ -56,7 +56,7 @@ class Snow:
                     f"set to {Response}, not {resp_cls}"
                 )
 
-            session_config_params = [basic_auth, use_ssl, verify_ssl]
+            session_config_params = [basic_auth, verify_ssl]
             if any([p is not None for p in session_config_params]):
                 raise ConfigurationException(
                     f"Application Session factory configuration params {session_config_params} "
@@ -76,7 +76,7 @@ class Snow:
         except ValidationError as e:
             raise ConfigurationException(e)
 
-        self.url = get_url(str(self.config.address), bool(self.config.session.use_ssl))
+        self.url = get_url(str(self.config.address), bool(use_ssl))
 
     @property
     def _auth(self) -> aiohttp.BasicAuth:
