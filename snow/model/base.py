@@ -101,7 +101,10 @@ class BaseModel:
 
         req_cls = req_cls_map[method]
         response = await req_cls(*args, **kwargs).send()
-        response.data = self._deserialize(response.data)
+
+        if method != methods.DELETE:
+            response.data = self._deserialize(response.data)
+
         return response
 
     async def __aenter__(self) -> BaseModel:
