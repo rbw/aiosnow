@@ -44,5 +44,6 @@ lint:
 
 reformat:
 	poetry run autoflake --in-place --recursive snow tests
-	poetry run black snow tests
+	poetry run black snow tests examples
 	poetry run isort --multi-line=3 --trailing-comma --force-grid-wrap=0 --combine-as --line-width 88 --recursive --apply snow tests
+
