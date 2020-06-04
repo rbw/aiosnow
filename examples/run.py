@@ -1,15 +1,19 @@
 import logging
 import asyncio
+import sys
 from importlib import import_module
 from snow import Snow
 
 
-logging.basicConfig(level=logging.DEBUG)
-
 # Config
 ADDRESS = "<instance_name>.service-now.com"
 CREDENTIALS = "<username>", "<password>"
-EXAMPLE = "table.create"
+DEBUG = True
+
+
+if len(sys.argv) != 2:
+    print(f"Usage: run.py <example path>")
+    sys.exit(1)
 
 
 def run_example(path):
@@ -21,5 +25,8 @@ def run_example(path):
     asyncio.run(example)
 
 
+if DEBUG:
+    logging.basicConfig(level=logging.DEBUG)
+
 app = Snow(ADDRESS, basic_auth=CREDENTIALS)
-run_example(EXAMPLE)
+run_example(sys.argv[1])
