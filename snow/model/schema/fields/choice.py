@@ -3,9 +3,9 @@ from .integer import Integer
 from .string import String
 
 
-class NumericChoice(Integer, BaseField):
+class IntegerChoice(Integer, BaseField):
     pass
 
 
-class TextChoice(String, BaseField):
+class StringChoice(String, BaseField):
     pass

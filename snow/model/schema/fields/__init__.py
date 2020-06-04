@@ -1,6 +1,6 @@
 from .base import BaseField
 from .boolean import Boolean
-from .choice import NumericChoice, TextChoice
+from .choice import IntegerChoice, StringChoice
 from .datetime import DateTime, Datetime
 from .email import Email
 from .integer import Integer, Numeric
