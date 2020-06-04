@@ -10,7 +10,8 @@ from snow.exceptions import (
     UnknownPayloadField,
 )
 
-from .fields import BaseField, mapped
+from .fields.base import BaseField
+from .fields.mapped import MappedField
 
 
 class BaseSchemaMeta(marshmallow.schema.SchemaMeta):
@@ -133,7 +134,7 @@ class BaseSchema(marshmallow.Schema, metaclass=BaseSchemaMeta):
                 if isinstance(value, dict) and {"value", "display_value"} <= set(
                     value.keys()
                 ):
-                    if isinstance(field, mapped.MappedField):
+                    if isinstance(field, MappedField):
                         value = value["value"] or None, value["display_value"] or None
                     else:
                         value = value[field.pluck.value] or None

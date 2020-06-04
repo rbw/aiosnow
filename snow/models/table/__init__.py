@@ -205,7 +205,7 @@ class TableModel(BaseModel):
         """Update matching record
 
         Args:
-            selection: Condition or ID
+            selection: Condition or ID of object to update
             payload: Update payload
 
         Returns:

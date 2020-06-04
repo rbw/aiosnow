@@ -82,6 +82,7 @@ class Response(ClientResponse):
             await self._handle_error()
 
         content = ContentSchema(unknown=EXCLUDE, many=False).load(data)
+
         if "error" in content:
             err = content["error"]
             msg = (
