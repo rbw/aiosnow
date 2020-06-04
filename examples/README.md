@@ -9,7 +9,7 @@ $ python run.py table.read.nested
 ```
 
 Read
-****
+----
 
 | path               | description |
 |--------------------|-------------|
@@ -19,14 +19,14 @@ Read
 |table.read.selective|Fetch records with a subset of fields of the built-in IncidentSchema schema|
 
 Create
-******
+------
 
 | path                 | description |
 |----------------------|-------------|
 |table.create|Create a new Incident record|
 
 Update
-******
+------
 
 | path                 | description |
 |----------------------|-------------|
@@ -34,7 +34,7 @@ Update
 |table.update.by_number|Update an Incident record by number|
 
 Delete
-******
+------
 
 | path                 | description |
 |----------------------|-------------|
