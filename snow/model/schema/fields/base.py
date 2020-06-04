@@ -2,8 +2,8 @@ from typing import Any, Union
 
 import marshmallow
 
-from snow.consts import NestedField
 from snow.exceptions import SnowException, UnexpectedValue
+from snow.model.schema.helpers import Pluck
 from snow.query import BaseOperator, Condition
 
 from .utils import serialize_list
@@ -13,14 +13,15 @@ class BaseField(marshmallow.fields.Field):
     def __init__(
         self,
         *args: Any,
-        pluck: NestedField = NestedField.VALUE,
+        pluck: Pluck = Pluck.VALUE,
         is_primary: bool = False,
         **kwargs: Any,
     ):
-        self.joined = NestedField(pluck)
+        self.pluck = Pluck(pluck)
         self.is_primary = is_primary
         super(BaseField, self).__init__(*args, **kwargs)
-        self.allow_none = kwargs.pop("allow_none", True)
+        self.allow_none = True
+        self.missing = None
 
     def __eq__(self, other: Any) -> Any:
         return self.equals(other)
@@ -59,7 +60,7 @@ class BaseField(marshmallow.fields.Field):
         raise NotImplementedError
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} [maps_to={self.joined}, primary={self.is_primary}]>"
+        return f"<{self.__class__.__name__} [maps_to={self.pluck}, primary={self.is_primary}]>"
 
     def _condition(
         self, operator: str, value: Union[str, int] = None, field_operator: str = ""

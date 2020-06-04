@@ -64,8 +64,19 @@ class BaseModel:
 
         # Read Schema
         self.schema = schema_cls(unknown=marshmallow.EXCLUDE)
-        self.fields = self.schema.snow_fields
+        self.fields = self._get_return_fields()
         self.primary_key = self._get_primary_key()
+
+    def _get_return_fields(self) -> dict:
+        if not self.schema.snow_meta.return_only:
+            return self.schema.snow_fields
+
+        selected = {}
+
+        for name in self.schema.snow_meta.return_only:
+            selected[name] = self.schema.snow_fields[name]
+
+        return selected
 
     @property
     @abstractmethod
@@ -79,7 +90,7 @@ class BaseModel:
 
     def _deserialize(self, content: Union[dict, list]) -> Union[dict, list]:
         if not isinstance(content, (dict, list)):
-            raise ValueError(f"Cannot transform type {type(content)}")
+            raise ValueError(f"Cannot deserialize type {type(content)}")
 
         return self.schema.load(content, many=isinstance(content, list))
 
@@ -90,7 +101,10 @@ class BaseModel:
 
         req_cls = req_cls_map[method]
         response = await req_cls(*args, **kwargs).send()
-        response.data = self._deserialize(response.data)
+
+        if method != methods.DELETE:
+            response.data = self._deserialize(response.data)
+
         return response
 
     async def __aenter__(self) -> BaseModel:

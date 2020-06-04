@@ -6,12 +6,12 @@ import marshmallow
 from snow.exceptions import (
     IncompatiblePayloadField,
     NoSchemaFields,
-    UnexpectedModelSchema,
     UnexpectedPayloadType,
     UnknownPayloadField,
 )
 
-from .fields import BaseField, mapped
+from .fields.base import BaseField
+from .fields.mapped import MappedField
 
 
 class BaseSchemaMeta(marshmallow.schema.SchemaMeta):
@@ -67,8 +67,6 @@ class BaseSchema(marshmallow.Schema, metaclass=BaseSchemaMeta):
         self.nested_fields = [
             k for k, v in self.snow_fields.items() if isinstance(v, Nested)
         ]
-        if not self.snow_meta:
-            raise UnexpectedModelSchema("Bah")
 
         super(BaseSchema, self).__init__(*args, **kwargs)
 
@@ -133,15 +131,13 @@ class BaseSchema(marshmallow.Schema, metaclass=BaseSchemaMeta):
                 continue
 
             if isinstance(field, BaseField):
-                if isinstance(value, str):
-                    pass
-                elif isinstance(value, dict) and {"value", "display_value"} <= set(
+                if isinstance(value, dict) and {"value", "display_value"} <= set(
                     value.keys()
                 ):
-                    if isinstance(field, mapped.MappedField):
-                        value = value["value"], value["display_value"]
+                    if isinstance(field, MappedField):
+                        value = value["value"] or None, value["display_value"] or None
                     else:
-                        value = value[field.joined.value]
+                        value = value[field.pluck.value] or None
             elif isinstance(field, Nested):
                 pass
             else:  # Unknown field

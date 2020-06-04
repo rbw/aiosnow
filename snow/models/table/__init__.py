@@ -13,6 +13,8 @@ from snow.exceptions import (
     SchemaError,
     SelectError,
     TooManyItems,
+    UnexpectedModelSchema,
+    UnexpectedResponseContent,
 )
 from snow.model import BaseModel
 from snow.query import Condition, QueryBuilder, select
@@ -50,6 +52,12 @@ class TableModel(BaseModel):
         config: ConfigSchema,
     ):
         super(TableModel, self).__init__(schema_cls, instance_url, session, config)
+        meta = self.schema.snow_meta
+        if not getattr(meta, "table_name", None) or not meta.table_name:
+            raise UnexpectedModelSchema(
+                f"Missing Meta.table_name in {self.__class__.__name__}"
+            )
+
         self.nested_fields = self._nested_fields
 
     @property
@@ -69,7 +77,7 @@ class TableModel(BaseModel):
         return nested
 
     async def stream(
-        self, selection: Union[QueryBuilder, None], **kwargs: Any
+        self, selection: Union[QueryBuilder, str] = None, **kwargs: Any
     ) -> AsyncGenerator:
         """Stream-like async generator
 
@@ -89,9 +97,18 @@ class TableModel(BaseModel):
             Chunk of records
         """
 
-        stream = Pagestream(self, query=select(selection).sysparms, **kwargs)
+        stream = Pagestream(
+            api_url=self.api_url,
+            query=select(selection).sysparms,
+            session=self.session,
+            fields=self.fields.keys(),
+            nested_fields=self.nested_fields,
+            **kwargs,
+        )
+
         while not stream.exhausted:
-            async for response in stream.next():
+            async for response in stream.get_next():
+                response.data = self._deserialize(response.data)
                 for record in response.data:
                     yield response, record
 
@@ -112,12 +129,17 @@ class TableModel(BaseModel):
             )
 
         response = await self.get(selection, limit=2)
-        if len(response) > 1:
+        if not isinstance(response.data, list):
+            raise UnexpectedResponseContent(
+                f"Expected a {list} in response to get_one(), got: {type(response.data)}",
+                status=response.status,
+            )
+        elif len(response) > 1:
             raise TooManyItems("Too many results: expected one, got at least 2")
         elif len(response) < 1:
             raise NoItems("Expected a single object in response, got none")
 
-        return response[0]
+        return response.data[0]
 
     async def get_pk_value(self, sysparm_query: str) -> str:
         """Given a query, return the resulting record's PK field's value
@@ -183,7 +205,7 @@ class TableModel(BaseModel):
         """Update matching record
 
         Args:
-            selection: Condition or ID
+            selection: Condition or ID of object to update
             payload: Update payload
 
         Returns:

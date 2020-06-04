@@ -8,9 +8,7 @@ class TableSchemaMeta(BaseSchemaMeta):
         base_cls = bases[0]
         cls = super().__new__(mcs, name, bases, attrs)
 
-        table_name = (
-            hasattr(cls.Meta, "table_name") and getattr(cls.Meta, "table_name") or None
-        )
+        table_name = hasattr(cls.Meta, "table_name") and cls.Meta.table_name or None
 
         if not table_name and hasattr(base_cls, "Meta"):
             table_name = (
@@ -19,8 +17,16 @@ class TableSchemaMeta(BaseSchemaMeta):
                 or None
             )
 
-        if isinstance(table_name, str):
-            cls.snow_meta = type("Meta", (), dict(table_name=table_name))
+        cls.snow_meta = type(
+            "Meta",
+            (),
+            dict(
+                table_name=table_name,
+                return_only=hasattr(cls.Meta, "return_only")
+                and cls.Meta.return_only
+                or None,
+            ),
+        )()
 
         return cls
 
@@ -40,6 +46,11 @@ class TableSchema(BaseSchema, metaclass=TableSchemaMeta):
         @property
         def table_name(self) -> str:
             """Table name"""
+            raise NotImplementedError
+
+        @property
+        def return_only(self) -> list:
+            """Return only these fields"""
             raise NotImplementedError
 
     snow_meta: Meta

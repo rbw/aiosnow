@@ -15,11 +15,11 @@ They are used in:
 .. toctree::
    :maxdepth: 2
 
-   text
-   numeric
+   string
+   integer
    datetime
    boolean
-   numericmap
-   textmap
+   integermap
+   stringmap
    email
    choice

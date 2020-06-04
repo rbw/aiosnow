@@ -1,8 +1,8 @@
 from .base import BaseField
 from .boolean import Boolean
-from .choice import NumericChoice, TextChoice
-from .datetime import Datetime
+from .choice import IntegerChoice, StringChoice
+from .datetime import DateTime, Datetime
 from .email import Email
-from .mapped import NumericMap, TextMap
-from .numeric import Numeric
-from .text import Text
+from .integer import Integer, Numeric
+from .mapped import IntegerMap, StringMap
+from .string import String, Text

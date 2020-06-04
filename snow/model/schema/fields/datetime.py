@@ -1,3 +1,6 @@
+import warnings
+from typing import Any
+
 import marshmallow
 
 from snow.query import Condition, DateTimeOperator
@@ -5,7 +8,22 @@ from snow.query import Condition, DateTimeOperator
 from .base import BaseField
 
 
-class Datetime(marshmallow.fields.DateTime, BaseField):
+class DateTime(marshmallow.fields.DateTime, BaseField):
+    def _bind_to_schema(self, field_name: str, schema: marshmallow.Schema) -> None:
+        """Removing this override causes marshmallow schema-field registration to fail
+        because self.root resolves to None when inheriting schemas? This
+        seems exclusive to the DateTime type, and could be a marshmallow bug.
+
+        "AttributeError: 'NoneType' object has no attribute 'opts'"
+
+        @TODO - find out why DateTime schema parent fails to resolve for DateTime and remove this override"""
+
+        self.format = (
+            self.format
+            or getattr(schema.opts, self.SCHEMA_OPTS_VAR_NAME)
+            or self.DEFAULT_FORMAT
+        )
+
     def on(self, value: str) -> Condition:
         """
         Example: sla_due.on("2019-12-24 02:03:04")
@@ -72,3 +90,11 @@ class Datetime(marshmallow.fields.DateTime, BaseField):
         """
 
         return self._condition(DateTimeOperator.BETWEEN, f"{value1}@{value2}")
+
+
+class Datetime(DateTime):
+    def __init__(self, *args: Any, **kwargs: Any):
+        warnings.warn(
+            "Datetime is deprecated, please use DateTime instead", DeprecationWarning,
+        )
+        super(Datetime, self).__init__(*args, **kwargs)
