@@ -76,7 +76,7 @@ class Snow:
         except ValidationError as e:
             raise ConfigurationException(e)
 
-        self.url = get_url(str(self.config.address), bool(use_ssl))
+        self.url = get_url(str(self.config.address), bool(self.config.session.use_ssl))
 
     @property
     def _auth(self) -> aiohttp.BasicAuth:
