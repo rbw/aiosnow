@@ -27,9 +27,6 @@ def test_app_session_mutual_exclusive():
         Snow("test.service-now.com", session=session, basic_auth=("a", "b"))
 
     with pytest.raises(ConfigurationException):
-        Snow("test.service-now.com", session=session, use_ssl=False)
-
-    with pytest.raises(ConfigurationException):
         Snow("test.service-now.com", session=session, verify_ssl=True)
 
 
