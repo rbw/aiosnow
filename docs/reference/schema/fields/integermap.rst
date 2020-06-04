@@ -1,11 +1,11 @@
-NumericMap
+IntegerMap
 ----------
 
-Converts nested mapping to a named tuple with id and query capabilities of type `Numeric <#numeric>`_: (id <Text>, text <Text>)
+Converts nested mapping to a named tuple with id and query capabilities of type `Integer <#numeric>`_: (id <String>, string <String>)
 
 .. note::
 
-    This Field has `Numeric <#numeric>`_ querying capabilities.
+    This Field has `Integer <#numeric>`_ querying capabilities.
 
 Response content of:
 
