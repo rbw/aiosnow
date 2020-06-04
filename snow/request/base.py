@@ -10,8 +10,8 @@ from aiohttp import client_exceptions
 
 from snow.consts import CONTENT_TYPE
 from snow.exceptions import ClientConnectionError, UnexpectedContentType
-from snow.session import Session
 from snow.request import methods
+from snow.session import Session
 
 from .response import Response
 
@@ -77,12 +77,14 @@ class BaseRequest(ABC):
         try:
             self.log.debug(f"{self._req_id}: {self}")
             response = await self.session.request(method, url, **kwargs)
+            self.log.debug(f"{self._req_id}: {response}")
         except client_exceptions.ClientConnectionError as exc:
             raise ClientConnectionError(str(exc)) from exc
 
         if method == methods.DELETE and response.status == 204:
-            pass
-        elif not response.content_type.startswith(CONTENT_TYPE):
+            return response
+
+        if not response.content_type.startswith(CONTENT_TYPE):
             raise UnexpectedContentType(
                 f"Unexpected content-type in response: "
                 f"{response.content_type}, expected: {CONTENT_TYPE}, "
@@ -93,7 +95,5 @@ class BaseRequest(ABC):
             await response.load()
         else:
             response.data = await response.read()
-
-        self.log.debug(f"{self._req_id}: {response}")
 
         return response
