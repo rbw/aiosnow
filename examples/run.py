@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.DEBUG)
 # Config
 ADDRESS = "<instance_name>.service-now.com"
 CREDENTIALS = "<username>", "<password>"
-EXAMPLE = "read.nested"
+EXAMPLE = "table.create"
 
 
 def run_example(path):

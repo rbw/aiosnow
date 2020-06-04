@@ -9,11 +9,7 @@ class Incident(IncidentSchema):
 
 async def main(app):
     async with app.get_table(Incident) as inc:
-        query = select(
-            Incident.number.starts_with("INC001")
-        ).order_asc(Incident.number)
+        query = select(Incident.number.starts_with("INC001")).order_asc(Incident.number)
 
-        response = await inc.get(query, limit=10)
-
-        for record in response:
+        for record in await inc.get(query, limit=10):
             print(record)
