@@ -1,3 +1,4 @@
+from abc import ABC
 from typing import Any, Tuple, Union
 
 import marshmallow
@@ -6,9 +7,9 @@ from .integer import Integer
 from .string import String
 
 
-class Mapping:
-    id = None
-    text = None
+class Mapping(ABC):
+    id: Union[str, int, None] = None
+    text: Union[str, None] = None
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} [id={self.id}, text={self.text}]>"
