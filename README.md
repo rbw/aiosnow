@@ -33,7 +33,7 @@ asyncio.run(main())
 
 ```
 
-Check out the [examples directory](examples) for more examples.
+Check out the [examples directory](examples) for more.
 
 Documentation
 ---
