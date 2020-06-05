@@ -8,37 +8,38 @@
 
 
 Snow is a simple and lightweight yet powerful and extensible library for interacting with ServiceNow. It works
-with modern versions of Python, utilizes [asyncio](https://docs.python.org/3/library/asyncio.html) and 
+with modern versions of Python, utilizes [asyncio](https://docs.python.org/3/library/asyncio.html) and
 can be used for simple scripting as well as for building high-concurrency backend applications on top of the ServiceNow platform.
+Also, its API is fully type annotated and documented.
 
 *Example code*
 ```python
 
+import asyncio
+
 from snow import Snow
 from snow.schemas.table import IncidentSchema as Incident
 
-app = Snow(
-    "https://my-instance.service-now.com",
-    basic_auth=("<username>", "<password>")
-)
+app = Snow("<instance>.service-now.com", basic_auth=("<username>", "<password>"))
 
-# Make a TableModel object from the built-in Incident schema
-async with app.get_table(Incident) as inc:
-    # Get incident with number INC01234
-    response = await inc.get_one(Incident.number == "INC01234")
-    print(response["description"])
+async def main():
+    # Make a TableModel object from the built-in Incident schema
+    async with app.get_table(Incident) as inc:
+        # Get high-priority incidents
+        for response in await inc.get(Incident.priority <= 3, limit=5):
+            print(f"Number: {response['number']}, Priority: {response['priority'].text}")
+
+asyncio.run(main())
 
 ```
+
+Check out the [examples directory](examples) for more examples.
 
 Documentation
 ---
 
 The Snow API reference and more is available in the [documentation](https://python-snow.readthedocs.io/en/latest).
 
-Examples
----
-
-Check out some [usage examples](examples) to quickly get a feel for the library.
 
 Funding
 -------
