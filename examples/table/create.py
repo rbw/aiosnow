@@ -1,9 +1,4 @@
-from snow.model import fields
-from snow.schemas.table import IncidentSchema
-
-
-class Incident(IncidentSchema):
-    priority = fields.IntegerMap()
+from snow.schemas.table import IncidentSchema as Incident
 
 
 async def main(app):
