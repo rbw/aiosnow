@@ -77,7 +77,7 @@ class TableModel(BaseModel):
         return nested
 
     async def stream(
-        self, selection: Union[QueryBuilder, str] = None, **kwargs: Any
+        self, selection: Union[QueryBuilder, Condition, str] = None, **kwargs: Any
     ) -> AsyncGenerator:
         """Stream-like async generator
 
@@ -112,7 +112,7 @@ class TableModel(BaseModel):
                 for record in response.data:
                     yield response, record
 
-    async def get_one(self, selection: Union[QueryBuilder, str]) -> dict:
+    async def get_one(self, selection: Union[QueryBuilder, Condition, str]) -> dict:
         """Get one record
 
         Args:
@@ -176,7 +176,7 @@ class TableModel(BaseModel):
             )
 
     async def get(
-        self, selection: Union[QueryBuilder, str] = None, **kwargs: Any
+        self, selection: Union[QueryBuilder, Condition, str] = None, **kwargs: Any
     ) -> Response:
         """Buffered many
 

@@ -1,11 +1,11 @@
 StringMap
 ---------
 
-Converts nested mapping to a named tuple with id and query capabilities of type `String <#string>`_: (id <String>, string <String>)
+Converts nested mapping to a named tuple with id and query capabilities of type :ref:`String <fields-string>`: (id <String>, string <String>)
 
 .. note::
 
-    This Field has `String <#string>`_ querying capabilities.
+    This Field has :ref:`String <fields-string>` querying capabilities.
 
 Response content of:
 
