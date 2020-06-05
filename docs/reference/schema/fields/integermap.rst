@@ -1,11 +1,11 @@
 IntegerMap
 ----------
 
-Converts nested mapping to a named tuple with id and query capabilities of type `Integer <#numeric>`_: (id <String>, string <String>)
+Converts nested mapping to a named tuple with id and query capabilities of type :ref:`Integer <fields-integer>`: (id <Integer>, string <String>)
 
 .. note::
 
-    This Field has `Integer <#numeric>`_ querying capabilities.
+    This Field has :ref:`Integer <fields-integer>` querying capabilities.
 
 Response content of:
 
