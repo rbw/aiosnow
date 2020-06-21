@@ -1,5 +1,5 @@
-Datetime
+DateTime
 --------
 
 .. automodule:: snow.model.schema.fields.datetime
-   :members: Datetime
+   :members: DateTime

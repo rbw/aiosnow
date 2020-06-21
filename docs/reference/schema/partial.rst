@@ -29,4 +29,4 @@ TableSchema with nested assignment_group
         short_description = fields.Text()
         impact = fields.Numeric()
         assignment_group = AssignmentGroup
-        opened_at = fields.Datetime()
+        opened_at = fields.DateTime()

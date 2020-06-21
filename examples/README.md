@@ -13,7 +13,7 @@ Read
 
 | path               | description |
 |--------------------|-------------|
-|table.read.nested   |Query Incident records with nested AssignmentGroup and |
+|table.read.nested   |Query Incident records with nested AssignmentGroup|
 |table.read.stream   |Fetch Incident records using a Pagestream|
 |table.read.one      |Fetch a single Incident by number|
 |table.read.selective|Fetch records with a subset of fields of the built-in IncidentSchema schema|

@@ -18,7 +18,7 @@ factory method for producing a :class:`~snow.models.table.TableModel`.
         short_description = fields.Text()
         impact = fields.NumericMap()
         assignment_group = fields.TextMap()
-        opened_at = fields.Datetime()
+        opened_at = fields.DateTime()
 
     app = Snow(
         "https://my-instance.service-now.com",
