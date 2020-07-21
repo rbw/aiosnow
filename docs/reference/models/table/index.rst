@@ -1,8 +1,8 @@
 Table
 =====
 
-Objects of this type are typically created via :meth:`~aiosnow.Snow.get_table`
-(given a :class:`~aiosnow.models.table.TableSchema`) and provides an interface for working with the ServiceNow Table API.
+Objects of this type are typically created via :meth:`~aiosnow.Client.get_table`
+(given a :class:`~aiosnow.models.TableSchema`) and provides an interface for working with the ServiceNow Table API.
 
 
 API

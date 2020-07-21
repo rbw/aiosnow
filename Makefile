@@ -5,7 +5,7 @@ endif
 .PHONY: lint clean publish install check test
 
 help:
-	@echo "\n%% Snow dev tools %%"
+	@echo "\n%% aiosnow dev tools %%"
 	@echo - install: create venv and install dependencies
 	@echo - update: update dependencies
 	@echo - shell: activate virtual environment

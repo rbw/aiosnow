@@ -14,7 +14,7 @@ from .schemas import ContentSchema, ErrorSchema
 
 
 class Response(ClientResponse):
-    """Snow Response class
+    """Aiosnow Response class
 
     Deserializes the response content received from a ServiceNow API
 

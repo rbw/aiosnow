@@ -1,13 +1,13 @@
 Example
 -------
 
-A simple Snow application
+A simple aiosnow application
 
 .. code-block:: python
 
-    from aiosnow import Snow
+    from aiosnow import Client
 
-    app = Snow(
+    app = Client(
         "https://my-instance.service-now.com",
         basic_auth=("<username>", "<password>")
     )

@@ -5,7 +5,7 @@ from aiosnow.request import GetRequest
 
 
 class Pagestream(GetRequest):
-    """Snow Pagestream
+    """Aiosnow Pagestream
 
     The Pagestream object behaves much like a stream, it's memory friendly and yields deserialized
     chunks of records using the ServiceNow pagination system.

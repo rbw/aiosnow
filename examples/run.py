@@ -2,7 +2,7 @@ import logging
 import asyncio
 import sys
 from importlib import import_module
-from aiosnow import Snow
+from aiosnow import Client
 
 
 # Config
@@ -28,5 +28,5 @@ def run_example(path):
 if DEBUG:
     logging.basicConfig(level=logging.DEBUG)
 
-app = Snow(ADDRESS, basic_auth=CREDENTIALS)
+app = Client(ADDRESS, basic_auth=CREDENTIALS)
 run_example(sys.argv[1])

@@ -68,7 +68,7 @@ class SessionConfig(BaseConfigSchema):
 
 
 class ConfigSchema(BaseConfigSchema):
-    """Snow config schema
+    """Aiosnow config schema
 
     Attributes:
         session (bool): Session config

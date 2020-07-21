@@ -33,11 +33,11 @@ class BaseModel:
     Args:
         schema_cls: Schema class
         instance_url: Instance URL
-        session: Snow-compatible aiohttp.ClientSession
+        session: aiosnow-compatible aiohttp.ClientSession
         config: Config object
 
     Attributes:
-        config (ConfigSchema): Application config
+        config (ConfigSchema): Client config
         session (ClientSession): Session for performing requests
         schema (Schema): Resource Schema
         fields (dict): Fields declared in Schema

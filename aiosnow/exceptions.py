@@ -1,28 +1,28 @@
-class SnowException(Exception):
+class AiosnowException(Exception):
     pass
 
 
-class ConfigurationException(SnowException):
+class ConfigurationException(AiosnowException):
     """Configuration error"""
 
 
-class StreamExhausted(SnowException):
+class StreamExhausted(AiosnowException):
     """Signals there are no further items produced by the iterator"""
 
 
-class NoAuthenticationMethod(SnowException):
+class NoAuthenticationMethod(AiosnowException):
     """No authentication method was provided"""
 
 
-class UnexpectedContentType(SnowException):
+class UnexpectedContentType(AiosnowException):
     """Unexpected content type from server"""
 
 
-class ClientConnectionError(SnowException):
+class ClientConnectionError(AiosnowException):
     """Raised when there was a problem connecting to the server"""
 
 
-class RequestError(SnowException):
+class RequestError(AiosnowException):
     """The application returned an error in the response"""
 
     def __init__(self, message: str, status: int):
@@ -38,53 +38,53 @@ class UnexpectedResponseContent(RequestError):
     """Unexpected content in response from server"""
 
 
-class UnexpectedPayloadType(SnowException):
+class UnexpectedPayloadType(AiosnowException):
     """Raised when the request payload was of an unexpected type"""
 
 
-class PayloadValidationError(SnowException):
+class PayloadValidationError(AiosnowException):
     """Local payload validation against a Resource Schema failed"""
 
 
-class IncompatiblePayloadField(SnowException):
+class IncompatiblePayloadField(AiosnowException):
     """An incompatible field was found in the payload"""
 
 
-class UnknownPayloadField(SnowException):
+class UnknownPayloadField(AiosnowException):
     """A field unknown to the schema was found in the payload"""
 
 
-class IncompatibleSession(SnowException):
-    """Raised if a custom session object passed to aiosnow.Application is not of aiosnow.Session type"""
+class IncompatibleSession(AiosnowException):
+    """Raised if a custom session object passed to aiosnow.Client is not of aiosnow.Session type"""
 
 
-class UnexpectedValue(SnowException):
-    """Typically raised when a Snow method receives unexpected input"""
+class UnexpectedValue(AiosnowException):
+    """Typically raised when a method receives unexpected input"""
 
 
-class SchemaError(SnowException):
+class SchemaError(AiosnowException):
     """Generic exception raised on schema issues, e.g. integrity errors"""
 
 
-class SelectError(SnowException):
+class SelectError(AiosnowException):
     """Raised on query builder issues"""
 
 
-class InvalidContentMethod(SnowException):
+class InvalidContentMethod(AiosnowException):
     """Raised if the response content was incorrectly accessed"""
 
 
-class UnexpectedModelSchema(SnowException):
+class UnexpectedModelSchema(AiosnowException):
     """Raised if an unexpected Schema was passed to Model"""
 
 
-class NoSchemaFields(SnowException):
+class NoSchemaFields(AiosnowException):
     """The schema lacks definition"""
 
 
-class TooManyItems(SnowException):
+class TooManyItems(AiosnowException):
     """The request yielded too many results"""
 
 
-class NoItems(SnowException):
+class NoItems(AiosnowException):
     """The request yielded no results"""

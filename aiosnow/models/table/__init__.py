@@ -29,11 +29,11 @@ class TableModel(BaseModel):
     Args:
         schema_cls: Schema class
         instance_url: Instance URL
-        session: Snow-compatible aiohttp.ClientSession
+        session: aiosnow-compatible aiohttp.ClientSession
         config: Config object
 
     Attributes:
-        config (ConfigSchema): Application config
+        config (ConfigSchema): Client config
         api_url (str): Table API URL
         instance_url (str): Instance URL
         session (ClientSession): Session for performing requests
@@ -88,7 +88,7 @@ class TableModel(BaseModel):
         number of requests sent to the server.
 
         Keyword Args:
-            selection: Snow compatible query
+            selection: aiosnow-compatible query
             limit (int): Maximum number of records to return
             offset (int): Starting record index
             chunk_size (int): Number of records to fetch in one go
@@ -116,7 +116,7 @@ class TableModel(BaseModel):
         """Get one record
 
         Args:
-            selection: Snow compatible query
+            selection: aiosnow-compatible query
 
         Returns:
             Record
@@ -145,7 +145,7 @@ class TableModel(BaseModel):
         """Given a query, return the resulting record's PK field's value
 
         Args:
-            sysparm_query: Snow compatible query
+            sysparm_query: aiosnow-compatible query
 
         Returns:
             PK field's value
@@ -186,7 +186,7 @@ class TableModel(BaseModel):
         number of records.
 
         Keyword Args:
-            selection: Snow compatible query
+            selection: Aiosnow-compatible query
             limit (int): Maximum number of records to return
             offset (int): Starting record index
 

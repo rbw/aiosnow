@@ -2,7 +2,7 @@ from typing import Any, Union
 
 import marshmallow
 
-from aiosnow.exceptions import SnowException, UnexpectedValue
+from aiosnow.exceptions import AiosnowException, UnexpectedValue
 from aiosnow.model.schema.helpers import Pluck
 from aiosnow.query import BaseOperator, Condition
 
@@ -73,7 +73,7 @@ class BaseField(marshmallow.fields.Field):
             value = value.name
 
         if not isinstance(self.name, str):
-            raise SnowException(f"Missing left operand of {self.__class__}")
+            raise AiosnowException(f"Missing left operand of {self.__class__}")
 
         return Condition(self.name, operator, value)
 

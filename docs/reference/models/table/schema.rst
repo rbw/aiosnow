@@ -17,7 +17,7 @@ Example
 
 .. code-block:: python
 
-    from aiosnow import Snow, fields, model
+    from aiosnow import Client, fields, model
 
     class Incident(model.table.TableSchema):
         class Meta:

@@ -16,8 +16,8 @@ from aiosnow.session import Session
 from aiosnow.utils import get_url
 
 
-class Snow:
-    """Snow Application
+class Client:
+    """Aiosnow client
 
     Args:
         address: Instance TCP address, example: my-instance.service-now.com
@@ -27,7 +27,7 @@ class Snow:
         session: Custom aiohttp.ClientSession object
 
     Attributes:
-        config: Application configuration object
+        config: Client configuration object
     """
 
     _preconf_session = None
@@ -45,7 +45,7 @@ class Snow:
         if session:
             if not isinstance(session, aiohttp.ClientSession):
                 raise IncompatibleSession(
-                    f"The aiosnow.Application expects :session: to be a Snow-compatible "
+                    f"The aiosnow.Client expects :session: to be a aiosnow-compatible "
                     f"{aiohttp.ClientSession}, not {session}"
                 )
 
@@ -59,7 +59,7 @@ class Snow:
             session_config_params = [basic_auth, verify_ssl]
             if any([p is not None for p in session_config_params]):
                 raise ConfigurationException(
-                    f"Application Session factory configuration params {session_config_params} "
+                    f"Client Session factory configuration params {session_config_params} "
                     f"cannot be used with a custom Session object."
                 )
 
@@ -110,15 +110,8 @@ class Snow:
             auth=self._auth, connector=aiohttp.TCPConnector(**connector_args)
         )
 
-    def resource(self, schema: Type[TableSchema]) -> TableModel:
-        warnings.warn(
-            "Snow.resource is deprecated, please use Snow.get_table instead",
-            DeprecationWarning,
-        )
-        return self.get_table(schema)
-
     def get_table(self, schema: Type[TableSchema]) -> TableModel:
-        """Snow TableModel factory
+        """aiosnow TableModel factory
 
         Args:
             schema: TableModel Schema
@@ -133,12 +126,3 @@ class Snow:
             session=self.get_session(),
             config=self.config,
         )
-
-
-class Application(Snow):
-    def __init__(self, *args: Any, **kwargs: Any):
-        warnings.warn(
-            "aiosnow.Application is deprecated, please use aiosnow.Snow instead",
-            DeprecationWarning,
-        )
-        super(Application, self).__init__(*args, **kwargs)

@@ -5,7 +5,7 @@ async def main(app):
     async with app.get_table(Incident) as inc:
         response = await inc.create(
             {
-                "description": "Incident created using the Snow library",
+                "description": "Incident created using the aiosnow library",
                 "short_description": "Test incident",
             }
         )

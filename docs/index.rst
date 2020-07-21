@@ -1,11 +1,11 @@
 Introduction
 ============
 
-Snow is a simple and lightweight yet powerful and extensible library for interacting with ServiceNow. It works
+The aiosnow library is a simple and lightweight yet powerful and extensible library for interacting with ServiceNow. It works
 with modern versions of Python, utilizes `asyncio <https://docs.python.org/3/library/asyncio.html>`_ and
 can be used for simple scripting as well as for building high-concurrency backend applications on top of the ServiceNow platform.
 
-For usage examples, visit `github.com/rbw/snow/examples <https://github.com/rbw/snow/tree/master/examples>`_.
+For usage examples, visit `github.com/rbw/aiosnow/examples <https://github.com/rbw/aiosnow/tree/master/examples>`_.
 
 
 Requirements
@@ -21,13 +21,13 @@ The library is available on PyPI and can be installed using pip.
 
 .. code-block:: shell
 
-   $ pip install snow
+   $ pip install aiosnow
 
 
 Dependencies
 ------------
 
-Snow depends on a small set of stable and permissively licensed libraries.
+The aiosnow library depends on a small set of stable and permissively licensed libraries.
 
 - `aiohttp <https://github.com/aio-libs/aiohttp>`_: Communication
 - `marshmallow <https://marshmallow.readthedocs.io/en/stable>`_: Schema system
@@ -47,7 +47,7 @@ Table of Contents
    :maxdepth: 3
    :titlesonly:
 
-   reference/app/index
+   reference/client/index
    reference/schema/index
    reference/models/index
    reference/response
