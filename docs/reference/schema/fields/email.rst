@@ -1,5 +1,5 @@
 Email
 -----
 
-.. automodule:: snow.model.schema.fields.email
+.. automodule:: aiosnow.model.schema.fields.email
    :members: Email

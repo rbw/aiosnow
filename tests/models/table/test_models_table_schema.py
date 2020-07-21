@@ -1,8 +1,8 @@
 import pytest
 
-from snow.exceptions import UnexpectedModelSchema
-from snow.model import fields
-from snow.models.table import TableModel, TableSchema
+from aiosnow.exceptions import UnexpectedModelSchema
+from aiosnow.model import fields
+from aiosnow.models.table import TableModel, TableSchema
 
 
 async def test_models_table_schema_meta_valid(mock_model):

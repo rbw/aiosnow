@@ -56,20 +56,20 @@ html_theme_options = {
     "logo_name": None,
     "logo": "logo2.png",
     "font_family": "arial",
-    "github_repo": "rbw/snow",
+    "github_repo": "rbw/aiosnow",
     "github_banner": True,
     "show_powered_by": False
 }
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "snowdoc"
+htmlhelp_basename = "aiosnowdoc"
 
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, "snow.tex", "Snow Documentation",
+    (master_doc, "aiosnow.tex", "Snow Documentation",
      "Robert Wikman \\textless{}rbw@vault13.org\\textgreater{}", "manual"),
 ]
 
@@ -79,7 +79,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, "snow", "Snow Documentation",
+    (master_doc, "aiosnow", "Snow Documentation",
      [author], 1)
 ]
 
@@ -90,7 +90,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, "snow", "Snow Documentation",
-     author, "snow", "Snow library",
+    (master_doc, "aiosnow", "Snow Documentation",
+     author, "aiosnow", "Snow library",
      "Miscellaneous"),
 ]

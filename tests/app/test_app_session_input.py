@@ -1,10 +1,10 @@
 import aiohttp
 import pytest
 
-from snow.app import Snow
-from snow.exceptions import ConfigurationException, IncompatibleSession
-from snow.request.response import Response
-from snow.session import Session
+from aiosnow.app import Snow
+from aiosnow.exceptions import ConfigurationException, IncompatibleSession
+from aiosnow.request.response import Response
+from aiosnow.session import Session
 
 
 def test_app_session_invalid_type():

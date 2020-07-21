@@ -1,12 +1,12 @@
 Example
 =======
 
-This example illustrates how a custom :class:`~snow.models.table.TableSchema` can be used with the :meth:`~snow.Snow.get_table`
-factory method for producing a :class:`~snow.models.table.TableModel`.
+This example illustrates how a custom :class:`~aiosnow.models.table.TableSchema` can be used with the :meth:`~aiosnow.Snow.get_table`
+factory method for producing a :class:`~aiosnow.models.table.TableModel`.
 
 .. code-block:: python
 
-    from snow import Snow, model
+    from aiosnow import Snow, model
 
     class Incident(model.schema.TableSchema):
         class Meta:

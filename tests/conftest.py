@@ -3,11 +3,11 @@ import json
 import pytest
 from aiohttp import web
 
-from snow.app import Snow
-from snow.config import ConfigSchema
-from snow.model.base import BaseModel, BaseSchema, fields
-from snow.request.response import Response
-from snow.utils import get_url
+from aiosnow.app import Snow
+from aiosnow.config import ConfigSchema
+from aiosnow.model.base import BaseModel, BaseSchema, fields
+from aiosnow.request.response import Response
+from aiosnow.utils import get_url
 
 
 class TestSchema(BaseSchema):

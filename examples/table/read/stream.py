@@ -1,5 +1,5 @@
-from snow import select
-from snow.schemas.table import IncidentSchema as Incident
+from aiosnow import select
+from aiosnow.schemas.table import IncidentSchema as Incident
 
 
 async def main(app):

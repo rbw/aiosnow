@@ -2,7 +2,7 @@ import logging
 import asyncio
 import sys
 from importlib import import_module
-from snow import Snow
+from aiosnow import Snow
 
 
 # Config

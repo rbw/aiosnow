@@ -1,7 +1,7 @@
 import json
 from urllib.parse import urlparse
 
-from snow.request import PatchRequest
+from aiosnow.request import PatchRequest
 
 
 async def test_core_patch_success(mock_session):

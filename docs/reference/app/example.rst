@@ -5,7 +5,7 @@ A simple Snow application
 
 .. code-block:: python
 
-    from snow import Snow
+    from aiosnow import Snow
 
     app = Snow(
         "https://my-instance.service-now.com",

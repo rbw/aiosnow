@@ -1,6 +1,6 @@
 from urllib.parse import urlparse
 
-from snow.request import DeleteRequest
+from aiosnow.request import DeleteRequest
 
 
 async def test_core_delete_success(mock_session):

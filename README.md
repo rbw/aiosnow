@@ -1,10 +1,10 @@
-# snow: Python asyncio library for ServiceNow
+# aiosnow: Python asyncio library for ServiceNow
 
-[![image](https://badgen.net/pypi/v/snow)](https://pypi.org/project/snow)
-[![image](https://badgen.net/badge/python/3.7+?color=purple)](https://pypi.org/project/snow)
-[![image](https://badgen.net/travis/rbw/snow)](https://travis-ci.org/rbw/snow)
-[![image](https://badgen.net/pypi/license/snow)](https://raw.githubusercontent.com/rbw/snow/master/LICENSE)
-[![image](https://pepy.tech/badge/snow/month)](https://pepy.tech/project/snow)
+[![image](https://badgen.net/pypi/v/aiosnow)](https://pypi.org/project/aiosnow)
+[![image](https://badgen.net/badge/python/3.7+?color=purple)](https://pypi.org/project/aiosnow)
+[![image](https://badgen.net/travis/rbw/aiosnow)](https://travis-ci.org/rbw/aiosnow)
+[![image](https://badgen.net/pypi/license/aiosnow)](https://raw.githubusercontent.com/rbw/aiosnow/master/LICENSE)
+[![image](https://pepy.tech/badge/aiosnow/month)](https://pepy.tech/project/aiosnow)
 
 
 Snow is a simple and lightweight yet powerful and extensible library for interacting with ServiceNow. It works
@@ -17,8 +17,8 @@ Also, its API is fully type annotated and documented.
 
 import asyncio
 
-from snow import Snow
-from snow.schemas.table import IncidentSchema as Incident
+from aiosnow import Snow
+from aiosnow.schemas.table import IncidentSchema as Incident
 
 app = Snow("<instance>.service-now.com", basic_auth=("<username>", "<password>"))
 
@@ -38,7 +38,7 @@ Check out the [examples directory](examples) for more.
 Documentation
 ---
 
-The Snow API reference and more is available in the [documentation](https://python-snow.readthedocs.io/en/latest).
+The Snow API reference and more is available in the [documentation](https://aiosnow.readthedocs.io/en/latest).
 
 
 Funding

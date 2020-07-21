@@ -1,5 +1,5 @@
 Choice
 ------
 
-.. automodule:: snow.model.schema.fields.choice
+.. automodule:: aiosnow.model.schema.fields.choice
    :members: IntegerChoice, StringChoice

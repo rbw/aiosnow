@@ -1,7 +1,7 @@
 Exceptions
 ----------
 
-.. automodule:: snow.exceptions
+.. automodule:: aiosnow.exceptions
    :members:
    :undoc-members:
    :show-inheritance:

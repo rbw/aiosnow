@@ -1,7 +1,7 @@
 import json
 from urllib.parse import urlparse
 
-from snow.request import PostRequest
+from aiosnow.request import PostRequest
 
 
 async def test_core_post_success(mock_session):

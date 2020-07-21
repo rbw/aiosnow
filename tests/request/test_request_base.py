@@ -1,7 +1,7 @@
 import pytest
 
-from snow.exceptions import RequestError, ServerError, UnexpectedResponseContent
-from snow.request import GetRequest
+from aiosnow.exceptions import RequestError, ServerError, UnexpectedResponseContent
+from aiosnow.request import GetRequest
 
 
 async def test_core_unexpected_response_content(mock_session):
