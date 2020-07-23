@@ -2,13 +2,13 @@ Response
 ========
 
 Concrete Models' API methods, such as :meth:`~aiosnow.models.table.TableModel.get_one` of :class:`~aiosnow.models.table.TableModel`,
-returns this object as response to HTTP requests.
+returns an instance of this class as response to HTTP requests.
 
 Some facts about this object:
 
-- Iterating over a Response yields items from Response.data
-- Accessing a Response as a dict returns the requested item from Response.data
-- Its object representation is a response overview
+- Iterating over a Response yields from Response.data
+- When accessed as a dict, the requested item from Response.data is returned
+- Its representation is a response overview
 
 
 API
