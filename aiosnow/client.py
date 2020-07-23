@@ -1,5 +1,4 @@
-import warnings
-from typing import Any, Dict, Type
+from typing import Union, Dict, Type
 
 import aiohttp
 from marshmallow import ValidationError
@@ -34,7 +33,7 @@ class Client:
 
     def __init__(
         self,
-        address: str,
+        address: Union[str, bytes],
         basic_auth: tuple = None,
         use_ssl: bool = True,
         verify_ssl: bool = None,
