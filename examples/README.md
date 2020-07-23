@@ -1,11 +1,9 @@
 # Examples
 
-These are fully functional examples, for developers to quickly get a feel for the aiohttp library API.
-
-The `run.py` script can be used to easily execute examples.
+The `run.py` script can be used to easily testing out the example code.
 
 ```bash
-$ python run.py table.read.nested
+$ python3 examples/run.py table.read.nested
 ```
 
 Read
@@ -16,7 +14,7 @@ Read
 |table.read.nested   |Query Incident records with nested AssignmentGroup|
 |table.read.stream   |Fetch Incident records using a Pagestream|
 |table.read.one      |Fetch a single Incident by number|
-|table.read.selective|Fetch records with a subset of fields of the built-in IncidentSchema schema|
+|table.read.selective|Fetch records with a subset of fields of the default IncidentSchema schema|
 
 Create
 ------
