@@ -8,12 +8,11 @@
 
 
 Snow is a simple and lightweight yet powerful and extensible library for interacting with ServiceNow. It works
-with modern versions of Python and utilizes [asyncio](https://docs.python.org/3/library/asyncio.html).
+with modern versions of Python 3 and utilizes the stdlib [asyncio library](https://docs.python.org/3/library/asyncio.html).
 
 ### asyncio
 
-While adding some complexity, Python asyncio (non-blocking sockets tracked by an event loop) allows running large amounts of lightweight I/O operations simultaneously,
-and is typically a good choice for building high-concurrency backend applications.
+Much simplified, asyncio uses non-blocking sockets tracked by an event loop, and while adding some complexity, asyncio allows *running* large amounts of I/O operations simultaneously, and is typically a good choice for building high-concurrency backend applications.
 
 ##### Scripting
 
