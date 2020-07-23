@@ -1,7 +1,8 @@
 Base
 ====
 
-The :class:`~aiosnow.model.schema.BaseSchema` class is mainly used for defining new model types.
+The :class:`~aiosnow.model.schema.BaseSchema` class is mainly used for defining new model types - useful for defining
+custom APIs.
 
 API
 ---

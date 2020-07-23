@@ -5,9 +5,9 @@ A simple aiosnow application
 
 .. code-block:: python
 
-    from aiosnow import Client
+    import aiosnow
 
-    app = Client(
-        "https://my-instance.service-now.com",
+    snow = aiosnow.Client(
+        "<instance-name>.service-now.com",
         basic_auth=("<username>", "<password>")
     )

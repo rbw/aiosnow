@@ -1,7 +1,7 @@
 Schema
 ======
 
-The TableSchema functions like a regular schema, but requires :attr:`~aiosnow.models.table.TableSchema.Meta.table_name`
+The TableSchema behaves like a regular schema, but requires :attr:`~aiosnow.models.table.TableSchema.Meta.table_name`
 to be set in the :class:`~aiosnow.models.table.TableSchema.Meta` inner class.
 
 
@@ -21,7 +21,7 @@ Example
 
     class Incident(model.table.TableSchema):
         class Meta:
-            table_name = "incident"
+            table_name = "incident"  # Note
 
         field1 = fields.Text()
 
