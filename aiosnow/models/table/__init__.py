@@ -62,7 +62,9 @@ class TableModel(BaseModel):
 
     @property
     def api_url(self) -> str:
-        return self.instance_url + "/api/now/table/" + self.schema.aiosnow_meta.table_name
+        return (
+            self.instance_url + "/api/now/table/" + self.schema.aiosnow_meta.table_name
+        )
 
     @property
     def _nested_fields(self) -> dict:
