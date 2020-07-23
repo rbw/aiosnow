@@ -4,27 +4,35 @@
 [![image](https://badgen.net/badge/python/3.7+?color=purple)](https://pypi.org/project/aiosnow)
 [![image](https://badgen.net/travis/rbw/aiosnow)](https://travis-ci.org/rbw/aiosnow)
 [![image](https://badgen.net/pypi/license/aiosnow)](https://raw.githubusercontent.com/rbw/aiosnow/master/LICENSE)
-[![image](https://pepy.tech/badge/aiosnow/month)](https://pepy.tech/project/aiosnow)
+[![image](https://pepy.tech/badge/snow/month)](https://pepy.tech/project/snow)
 
 
-aiosnow is a simple and lightweight yet powerful and extensible library for interacting with ServiceNow. It works
-with modern versions of Python, utilizes [asyncio](https://docs.python.org/3/library/asyncio.html) and
-can be used for simple scripting as well as for building high-concurrency backend applications on top of the ServiceNow platform.
-Also, its API is fully type annotated and documented.
+Snow is a simple and lightweight yet powerful and extensible library for interacting with ServiceNow. It works
+with modern versions of Python and utilizes [asyncio](https://docs.python.org/3/library/asyncio.html).
+
+### asyncio
+
+While adding some complexity, Python asyncio (non-blocking sockets tracked by an event loop) allows running large amounts of lightweight I/O operations simultaneously,
+and is typically a good choice for building high-concurrency backend applications.
+
+##### Scripting
+
+The aiosnow library can of course be used for writing any type of scripts, but requires asyncio, i.e. an event loop must be created and coroutines should be written with the *async/await* syntax.
+
 
 *Example code*
 ```python
 
 import asyncio
 
-from aiosnow import Client
+import aiosnow
 from aiosnow.schemas.table import IncidentSchema as Incident
 
-app = Client("<instance>.service-now.com", basic_auth=("<username>", "<password>"))
+snow = aiosnow.Client("<instance>.service-now.com", basic_auth=("<username>", "<password>"))
 
 async def main():
     # Make a TableModel object from the built-in Incident schema
-    async with app.get_table(Incident) as inc:
+    async with snow.get_table(Incident) as inc:
         # Get high-priority incidents
         for response in await inc.get(Incident.priority <= 3, limit=5):
             print(f"Number: {response['number']}, Priority: {response['priority'].text}")
@@ -35,14 +43,12 @@ asyncio.run(main())
 
 Check out the [examples directory](examples) for more.
 
-Documentation
----
+### Documentation
 
 The aiosnow reference and more is available in the [documentation](https://aiosnow.readthedocs.io/en/latest).
 
 
-Funding
--------
+### Funding
 
 The aiosnow code is permissively licensed, and can be incorporated into any type of application–commercial or otherwise–without costs or limitations.
 Its author believes it's in the commercial best-interest for users of the project to invest in its ongoing development.
@@ -53,21 +59,18 @@ Consider leaving a [donation](https://paypal.vault13.org) if you like this softw
 - Allow more time to be invested in documentation, issue triage, and community support.
 - Safeguard the future development of aiosnow.
 
-Development status
----
+### Development status
 
 The fundamental components (models, client code, error handling, documentation, etc) of the library is considered complete.
 However, automatic testing and real-world use is somewhat lacking, i.e. there are most likely bugs lurking about,
 and the software should be considered Alpha, shortly Beta.
 
-Contributing
----
+### Contributing
 
 Check out the [contributing guidelines](CONTRIBUTING.md) if you want to help out with code or documentation.
 
 
-Author
-------
+### Author
 
 Robert Wikman \<rbw@vault13.org\>
 
