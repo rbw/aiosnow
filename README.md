@@ -6,7 +6,7 @@
 [![image](https://badgen.net/pypi/license/aiosnow)](https://raw.githubusercontent.com/rbw/aiosnow/master/LICENSE)
 [![image](https://pepy.tech/badge/snow/month)](https://pepy.tech/project/snow)
 
-This is a simple and lightweight yet powerful and extensible library for interacting with ServiceNow, that works
+This is a simple and lightweight yet powerful and extensible library for interacting with ServiceNow that works
 with modern versions of Python and utilizes the stdlib [asyncio](https://docs.python.org/3/library/asyncio.html) library.
 
 ### asyncio
