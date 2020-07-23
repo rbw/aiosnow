@@ -12,7 +12,7 @@ DEBUG = True
 
 
 if len(sys.argv) != 2:
-    print(f"Usage: run.py <example path>")
+    print(f"Usage: run.py <path.to.example>\nExample: python3 examples/run.py table.read.nested")
     sys.exit(1)
 
 
