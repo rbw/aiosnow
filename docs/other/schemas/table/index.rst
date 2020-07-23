@@ -1,7 +1,7 @@
 Table
 =====
 
-Snow built-in :class:`~snow.model.schema.table.TableSchema` schemas for use with :class:`~snow.models.table.TableModel`.
+aiosnow built-in :class:`~aiosnow.model.schema.table.TableSchema` schemas for use with :class:`~aiosnow.models.table.TableModel`.
 
 .. toctree::
    :maxdepth: 1

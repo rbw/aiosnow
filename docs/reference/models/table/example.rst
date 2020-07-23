@@ -1,12 +1,12 @@
 Example
 =======
 
-This example illustrates how a custom :class:`~snow.models.table.TableSchema` can be used with the :meth:`~snow.Snow.get_table`
-factory method for producing a :class:`~snow.models.table.TableModel`.
+This example illustrates how a custom :class:`~aiosnow.models.table.TableSchema` can be used with the :meth:`~aiosnow.Client.get_table`
+factory method for producing a :class:`~aiosnow.models.table.TableModel`.
 
 .. code-block:: python
 
-    from snow import Snow, model
+    from aiosnow import Client, model
 
     class Incident(model.schema.TableSchema):
         class Meta:
@@ -20,7 +20,7 @@ factory method for producing a :class:`~snow.models.table.TableModel`.
         assignment_group = fields.TextMap()
         opened_at = fields.DateTime()
 
-    app = Snow(
+    app = Client(
         "https://my-instance.service-now.com",
         basic_auth=("<username>", "<password>")
     )

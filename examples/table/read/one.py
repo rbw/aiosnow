@@ -1,4 +1,4 @@
-from snow.schemas.table import IncidentSchema as Incident
+from aiosnow.schemas.table import IncidentSchema as Incident
 
 
 async def main(app):

@@ -1,6 +1,6 @@
 # Examples
 
-These are fully functional examples, for developers to quickly get a feel for the Snow library API.
+These are fully functional examples, for developers to quickly get a feel for the aiohttp library API.
 
 The `run.py` script can be used to easily execute examples.
 

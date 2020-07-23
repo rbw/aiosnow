@@ -1,5 +1,5 @@
 DateTime
 --------
 
-.. automodule:: snow.model.schema.fields.datetime
+.. automodule:: aiosnow.model.schema.fields.datetime
    :members: DateTime

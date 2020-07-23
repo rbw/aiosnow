@@ -1,5 +1,5 @@
-from snow import fields, PartialSchema, select
-from snow.schemas.table import IncidentSchema
+from aiosnow import fields, PartialSchema, select
+from aiosnow.schemas.table import IncidentSchema
 
 
 class AssignmentGroup(PartialSchema):

@@ -2,7 +2,7 @@ import logging
 import asyncio
 import sys
 from importlib import import_module
-from snow import Snow
+from aiosnow import Client
 
 
 # Config
@@ -12,7 +12,9 @@ DEBUG = True
 
 
 if len(sys.argv) != 2:
-    print(f"Usage: run.py <example path>")
+    print(
+        f"Usage: run.py <path.to.example>\nExample: python3 examples/run.py table.read.nested"
+    )
     sys.exit(1)
 
 
@@ -28,5 +30,5 @@ def run_example(path):
 if DEBUG:
     logging.basicConfig(level=logging.DEBUG)
 
-app = Snow(ADDRESS, basic_auth=CREDENTIALS)
+app = Client(ADDRESS, basic_auth=CREDENTIALS)
 run_example(sys.argv[1])

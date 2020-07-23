@@ -1,4 +1,4 @@
-from snow.request import GetRequest
+from aiosnow.request import GetRequest
 
 
 async def test_core_get_success(mock_session):

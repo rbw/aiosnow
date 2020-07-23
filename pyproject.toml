@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "snow"
-version = "0.3.1"
-description = "Python asyncio library for ServiceNow"
+name = "aiosnow"
+version = "0.4.0"
+description = "Asynchronous Python ServiceNow library"
 authors = ["Robert Wikman <rbw@vault13.org>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/rbw/snow"
+homepage = "https://github.com/rbw/aiosnow"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Operating System :: OS Independent",

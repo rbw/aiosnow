@@ -1,5 +1,5 @@
 Boolean
 -------
 
-.. automodule:: snow.model.schema.fields.boolean
+.. automodule:: aiosnow.model.schema.fields.boolean
    :members: Boolean

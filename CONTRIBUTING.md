@@ -1,6 +1,6 @@
-# Contributing to the Snow project
+# Contributing to the aiosnow project
 
-Snow aims to have relaxed contribution requirements. They are listed below. 
+aiosnow aims to have relaxed contribution requirements. They are listed below.
 
 ## Style
 
@@ -33,12 +33,12 @@ $ make reformat
 
 ### Documentation
 
-- Docstrings should be written ins Google Style 
+- Docstrings should be written ins Google Style
 - Sphinx docs should use reStructuredText
 
 ## Development tools
 
-Snow uses Poetry for working with the project. Guides for its installation procedure is described over at [python-poetry/poetry](https://github.com/python-poetry/poetry#installation).
+aiosnow uses Poetry for working with the project. Guides for its installation procedure is described over at [python-poetry/poetry](https://github.com/python-poetry/poetry#installation).
 
 With poetry installed, run `make` in the project root for a list of available commands.
 
@@ -85,7 +85,7 @@ $ make clean
 
 ### Publish
 
-Uploads Snow to PyPI.
+Uploads aiosnow to PyPI.
 
 ```
 $ make publish

@@ -1,10 +1,10 @@
 import aiohttp
 import pytest
 
-from snow.app import Snow
-from snow.exceptions import ConfigurationException, IncompatibleSession
-from snow.request.response import Response
-from snow.session import Session
+from aiosnow.client import Client
+from aiosnow.exceptions import ConfigurationException, IncompatibleSession
+from aiosnow.request.response import Response
+from aiosnow.session import Session
 
 
 def test_app_session_invalid_type():
@@ -14,8 +14,8 @@ def test_app_session_invalid_type():
     fail_int = dict(address="test.service-now.com", session=123)
 
     with pytest.raises(IncompatibleSession):
-        Snow(**fail_str)
-        Snow(**fail_int)
+        Client(**fail_str)
+        Client(**fail_int)
 
 
 def test_app_session_mutual_exclusive():
@@ -24,17 +24,17 @@ def test_app_session_mutual_exclusive():
     session = Session()
 
     with pytest.raises(ConfigurationException):
-        Snow("test.service-now.com", session=session, basic_auth=("a", "b"))
+        Client("test.service-now.com", session=session, basic_auth=("a", "b"))
 
     with pytest.raises(ConfigurationException):
-        Snow("test.service-now.com", session=session, verify_ssl=True)
+        Client("test.service-now.com", session=session, verify_ssl=True)
 
 
 def test_app_session_no_auth_method():
-    """No authentication method to Application should raise ConfigurationException"""
+    """No authentication method to Client should raise ConfigurationException"""
 
     with pytest.raises(ConfigurationException):
-        Snow("test.service-now.com")
+        Client("test.service-now.com")
 
 
 def test_app_session_config_full():
@@ -47,7 +47,7 @@ def test_app_session_config_full():
         verify_ssl=True,
     )
 
-    app = Snow(**config)
+    app = Client(**config)
 
     assert app.config.address == config["address"]
     assert app.config.session.basic_auth == config["basic_auth"]
@@ -56,26 +56,26 @@ def test_app_session_config_full():
 
 
 def test_app_session_object():
-    """Compatible user-provided Session objects should be returned from Application.get_session"""
+    """Compatible user-provided Session objects should be returned from Client.get_session"""
 
     session = Session()
-    app = Snow("test.service-now.com", session=session)
+    app = Client("test.service-now.com", session=session)
     assert app.get_session() == app._preconf_session == session
 
 
 def test_app_session_invalid_response_class():
-    """Compatible user-provided Session objects should be returned from Application.get_session"""
+    """Compatible user-provided Session objects should be returned from Client.get_session"""
 
     session = aiohttp.ClientSession()
 
     with pytest.raises(IncompatibleSession):
-        Snow("test.service-now.com", session=session)
+        Client("test.service-now.com", session=session)
 
 
 def test_app_session_response_class():
-    """Compatible user-provided Session objects should be returned from Application.get_session"""
+    """Compatible user-provided Session objects should be returned from Client.get_session"""
 
     session = aiohttp.ClientSession(response_class=Response)
-    app = Snow("test.service-now.com", session=session)
+    app = Client("test.service-now.com", session=session)
 
     assert app.get_session()._response_class == Response

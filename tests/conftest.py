@@ -3,11 +3,11 @@ import json
 import pytest
 from aiohttp import web
 
-from snow.app import Snow
-from snow.config import ConfigSchema
-from snow.model.base import BaseModel, BaseSchema, fields
-from snow.request.response import Response
-from snow.utils import get_url
+from aiosnow.client import Client
+from aiosnow.config import ConfigSchema
+from aiosnow.model.base import BaseModel, BaseSchema, fields
+from aiosnow.request.response import Response
+from aiosnow.utils import get_url
 
 
 class TestSchema(BaseSchema):
@@ -60,7 +60,7 @@ def mock_session(aiohttp_client, mock_server):
 
 @pytest.fixture
 def mock_app():
-    return Snow(
+    return Client(
         address="test.service-now.com", basic_auth=("test", "test"), use_ssl=False
     )
 

@@ -1,14 +1,14 @@
 Table
 =====
 
-Objects of this type are typically created via :meth:`~snow.Snow.get_table`
-(given a :class:`~snow.models.table.TableSchema`) and provides an interface for working with the ServiceNow Table API.
+Objects of this type are typically created via :meth:`~aiosnow.Client.get_table`
+(given a :class:`~aiosnow.models.TableSchema`) and provides an interface for working with the ServiceNow Table API.
 
 
 API
 ---
 
-.. automodule:: snow.models.table
+.. automodule:: aiosnow.models.table
    :noindex:
    :members: TableModel
 
