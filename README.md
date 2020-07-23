@@ -1,4 +1,4 @@
-# aiosnow: Python asyncio library for ServiceNow
+# aiosnow: asynchronous ServiceNow library
 
 [![image](https://badgen.net/pypi/v/aiosnow)](https://pypi.org/project/aiosnow)
 [![image](https://badgen.net/badge/python/3.7+?color=purple)](https://pypi.org/project/aiosnow)
@@ -6,17 +6,16 @@
 [![image](https://badgen.net/pypi/license/aiosnow)](https://raw.githubusercontent.com/rbw/aiosnow/master/LICENSE)
 [![image](https://pepy.tech/badge/snow/month)](https://pepy.tech/project/snow)
 
-
-Snow is a simple and lightweight yet powerful and extensible library for interacting with ServiceNow. It works
-with modern versions of Python 3 and utilizes the stdlib [asyncio library](https://docs.python.org/3/library/asyncio.html).
+This is a simple and lightweight yet powerful and extensible library for interacting with ServiceNow, that works
+with modern versions of Python and utilizes the stdlib [asyncio](https://docs.python.org/3/library/asyncio.html) library.
 
 ### asyncio
 
-Much simplified, asyncio uses non-blocking sockets tracked by an event loop, and while adding some complexity, asyncio allows *running* large amounts of I/O operations simultaneously, and is typically a good choice for building high-concurrency backend applications.
+In a nutshell, asyncio uses non-blocking sockets tracked by an event loop, and while adding some complexity, it allows for running large amounts of I/O operations simultaneously, and is typically a good choice for high-concurrency backend applications.
 
 ##### Scripting
 
-The aiosnow library can of course be used for writing any type of scripts, but requires asyncio, i.e. an event loop must be created and coroutines should be written with the *async/await* syntax.
+The aiosnow library can, of course, be used in scripts - but requires an event loop to be created and coroutines to be written with the *async/await* syntax.
 
 
 *Example code*
