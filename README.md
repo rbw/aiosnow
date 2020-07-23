@@ -1,4 +1,4 @@
-# aiosnow: asynchronous ServiceNow library
+# aiosnow: Asynchronous Python ServiceNow library
 
 [![image](https://badgen.net/pypi/v/aiosnow)](https://pypi.org/project/aiosnow)
 [![image](https://badgen.net/badge/python/3.7+?color=purple)](https://pypi.org/project/aiosnow)

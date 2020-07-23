@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "aiosnow"
-version = "0.3.1"
-description = "Python asyncio library for ServiceNow"
+version = "0.4.0"
+description = "Asynchronous Python ServiceNow library"
 authors = ["Robert Wikman <rbw@vault13.org>"]
 license = "MIT"
 readme = "README.md"
