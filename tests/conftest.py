@@ -5,7 +5,7 @@ from aiohttp import web
 
 from aiosnow.client import Client
 from aiosnow.config import ConfigSchema
-from aiosnow.model.base import BaseModel, BaseSchema, fields
+from aiosnow.models.common import BaseModel, BaseSchema, fields
 from aiosnow.request.response import Response
 from aiosnow.utils import get_url
 

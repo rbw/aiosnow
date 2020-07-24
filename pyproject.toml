@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aiosnow"
-version = "0.4.0"
+version = "0.4.1"
 description = "Asynchronous Python ServiceNow library"
 authors = ["Robert Wikman <rbw@vault13.org>"]
 license = "MIT"
@@ -21,6 +21,7 @@ marshmallow = "^3.6.1"
 [tool.poetry.dev-dependencies]
 twine = "^1.13"
 mypy = "^0.770"
+isort = "^5.1.4"
 sphinx = "^2.1.1"
 sphinxcontrib-napoleon = "^0.7"
 pytest = "^4.4.0"

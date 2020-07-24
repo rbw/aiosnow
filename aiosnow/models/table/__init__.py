@@ -16,10 +16,10 @@ from aiosnow.exceptions import (
     UnexpectedModelSchema,
     UnexpectedResponseContent,
 )
-from aiosnow.model import BaseModel
 from aiosnow.query import Condition, QueryBuilder, select
 from aiosnow.request import Pagestream, Response, methods
 
+from ..common import BaseModel
 from .schema import TableSchema
 
 

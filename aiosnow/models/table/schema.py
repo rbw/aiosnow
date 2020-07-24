@@ -1,6 +1,6 @@
 from typing import Any
 
-from aiosnow.model.schema.base import BaseSchema, BaseSchemaMeta
+from ..common.schema.base import BaseSchema, BaseSchemaMeta
 
 
 class TableSchemaMeta(BaseSchemaMeta):
