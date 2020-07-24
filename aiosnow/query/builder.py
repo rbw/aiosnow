@@ -7,7 +7,7 @@ from aiosnow.consts import SORT_ASCENDING, SORT_DESCENDING
 from .condition import Condition
 
 if TYPE_CHECKING:
-    from aiosnow.model.schema.fields import BaseField
+    from aiosnow.models.common.schema.fields import BaseField
 
 
 class QueryBuilder:

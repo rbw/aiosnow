@@ -1,4 +1,4 @@
-from typing import Union, Dict, Type
+from typing import Dict, Type, Union
 
 import aiohttp
 from marshmallow import ValidationError
@@ -16,7 +16,7 @@ from aiosnow.utils import get_url
 
 
 class Client:
-    """Aiosnow client
+    """aiosnow client
 
     Args:
         address: Instance TCP address, example: my-instance.service-now.com

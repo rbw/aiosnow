@@ -1,4 +1,4 @@
-from aiosnow.model import fields
+from aiosnow.models.common.schema import fields
 from aiosnow.models.table import TableSchema
 
 

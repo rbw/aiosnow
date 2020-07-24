@@ -1,7 +1,7 @@
 import pytest
 
 from aiosnow.exceptions import UnexpectedModelSchema
-from aiosnow.model import fields
+from aiosnow.models.common.schema import fields
 from aiosnow.models.table import TableModel, TableSchema
 
 

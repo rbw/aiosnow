@@ -3,7 +3,7 @@ from typing import Any, Union
 import marshmallow
 
 from aiosnow.exceptions import AiosnowException, UnexpectedValue
-from aiosnow.model.schema.helpers import Pluck
+from aiosnow.models.common.schema.helpers import Pluck
 from aiosnow.query import BaseOperator, Condition
 
 from .utils import serialize_list
