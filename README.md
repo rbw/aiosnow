@@ -9,13 +9,13 @@
 This is a simple and lightweight yet powerful and extensible library for interacting with ServiceNow that works
 with modern versions of Python and utilizes the stdlib [asyncio](https://docs.python.org/3/library/asyncio.html) library.
 
-### asyncio
+#### Python asyncio
 
 In a nutshell, asyncio uses non-blocking sockets tracked by an event loop, and while adding some complexity, it allows for running large amounts of I/O operations simultaneously, and is typically a good choice for high-concurrency backend applications.
 
-##### Scripting
+#### Scripting with aiosnow
 
-The aiosnow library can, of course, be used in scripts - but requires an event loop to be created and coroutines to be written with the *async/await* syntax.
+The aiosnow library can, of course, be used in scripts - but requires an event loop to be created and coroutines to be written with the *async/await* syntax, which adds some complexity.
 
 
 *Example code*
