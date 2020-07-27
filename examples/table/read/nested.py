@@ -20,7 +20,6 @@ async def main(app):
 
         for response in await inc.get(query):
             ag = response["assignment_group"]
-            text = "{number} is assigned to group: {ag_name} ({ag_id})".format(
+            print("{number} is assigned to group: {ag_name} ({ag_id})".format(
                 number=response["number"], ag_id=ag["sys_id"], ag_name=ag["name"]
-            )
-            print(text)
+            ))
