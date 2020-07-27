@@ -3,5 +3,5 @@
 String
 ------
 
-.. automodule:: aiosnow.model.schema.fields.string
+.. automodule:: aiosnow.models.common.schema.fields.string
    :members: String

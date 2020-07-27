@@ -8,9 +8,8 @@ Objects of this type are typically created via :meth:`~aiosnow.Client.get_table`
 API
 ---
 
-.. automodule:: aiosnow.models.table
-   :noindex:
-   :members: TableModel
+.. autoclass:: aiosnow.models.table.TableModel
+   :members:
 
 
 .. toctree::

@@ -1,5 +1,5 @@
 Email
 -----
 
-.. automodule:: aiosnow.model.schema.fields.email
+.. automodule:: aiosnow.models.common.schema.fields.email
    :members: Email
