@@ -12,4 +12,4 @@ async def main(app):
         query = select(Incident.number.starts_with("INC001")).order_asc(Incident.number)
 
         for record in await inc.get(query, limit=10):
-            print(record["sys_id"])
+            print(record)
