@@ -1,11 +1,9 @@
 Incident
---------
+========
 
-Incident-type schemas modelled after ServiceNow table defaults.
+Incident definition, ServiceNow defaults.
 
-
-.. automodule:: aiosnow.schemas.table
-   :members: IncidentSchema
-   :undoc-members:
+.. autoclass:: aiosnow.schemas.table.incident.IncidentSchema
+   :members:
    :show-inheritance: false
    :exclude-members: aiosnow_meta, opts

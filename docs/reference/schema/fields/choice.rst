@@ -1,5 +1,5 @@
 Choice
 ------
 
-.. automodule:: aiosnow.model.schema.fields.choice
+.. automodule:: aiosnow.models.common.schema.fields.choice
    :members: IntegerChoice, StringChoice

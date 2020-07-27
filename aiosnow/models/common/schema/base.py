@@ -5,7 +5,6 @@ import marshmallow
 
 from aiosnow.exceptions import (
     IncompatiblePayloadField,
-    NoSchemaFields,
     UnexpectedPayloadType,
     UnknownPayloadField,
 )
@@ -16,8 +15,8 @@ from .fields.mapped import MappedField
 
 class BaseSchemaMeta(marshmallow.schema.SchemaMeta):
     def __new__(mcs, name: str, bases: tuple, attrs: dict) -> Any:
-        base_cls = bases[0]
-        fields = getattr(base_cls, "_declared_fields", {})
+        fields = getattr(bases[0], "_declared_fields", {})  # Inherit from parent
+        fields.update(getattr(mcs, "_declared_fields", {}))  # Merge
 
         for key, value in attrs.items():
             if isinstance(value, BaseField):
@@ -25,16 +24,15 @@ class BaseSchemaMeta(marshmallow.schema.SchemaMeta):
             elif isinstance(value, BaseSchemaMeta):
                 fields[key] = Nested(key, value, allow_none=True, required=False)
 
-        attrs.update(fields)
-        cls = super().__new__(mcs, name, bases, attrs)
-
         for name, field in fields.items():
             if not isinstance(field, Nested):
                 field.name = name
 
-            setattr(cls, name, field)
+            setattr(mcs, name, field)
 
-        return cls
+        attrs["fields"] = fields
+
+        return super().__new__(mcs, name, bases, attrs)
 
 
 class Nested(marshmallow.fields.Nested):
@@ -52,45 +50,19 @@ class BaseSchema(marshmallow.Schema, metaclass=BaseSchemaMeta):
     """Abstract base schema
 
     Attributes:
-        aiosnow_meta: Schema config object
-        aiosnow_fields (dict): Fields declared in schema
         nested_fields (list): List of nested field names
     """
 
     class Meta:
-        """Concrete Model-specific configuration"""
+        pass
 
     aiosnow_meta: Any = None
 
     def __init__(self, *args: Any, **kwargs: Any):
-        self.aiosnow_fields = self.get_fields()
-        self.nested_fields = [
-            k for k, v in self.aiosnow_fields.items() if isinstance(v, Nested)
-        ]
-
+        self.nested_fields = {
+            n: f for n, f in self.fields.items() if isinstance(f, Nested)
+        }
         super(BaseSchema, self).__init__(*args, **kwargs)
-
-    @classmethod
-    def get_fields(cls) -> dict:
-        fields = {}
-        for name, field in cls.__dict__.items():
-            if name.startswith("_") or name in ["opts", "snow_meta"]:
-                continue
-
-            fields[name] = field
-
-        if not fields:
-            raise NoSchemaFields(f"Schema {cls} lacks fields definitions")
-
-        return fields
-
-    @property
-    def _aiosnow_fields(self) -> Iterable:
-        for name, field in self.__dict__.items():
-            if not isinstance(field, (BaseField, BaseSchemaMeta)):
-                continue
-
-            yield name, field
 
     @marshmallow.pre_load
     def _load_response(self, data: Union[list, dict], **_: Any) -> Union[list, dict]:
@@ -122,7 +94,7 @@ class BaseSchema(marshmallow.Schema, metaclass=BaseSchemaMeta):
         """
 
         for key, value in content.items():
-            field = self.aiosnow_fields.get(key, None)
+            field = self.fields.get(key, None)
 
             if not field:
                 warnings.warn(

@@ -40,7 +40,6 @@ class BaseModel:
         config (ConfigSchema): Client config
         session (ClientSession): Session for performing requests
         schema (Schema): Resource Schema
-        fields (dict): Fields declared in Schema
         instance_url (str): Instance URL
         primary_key (str): Schema primary key
     """
@@ -64,19 +63,7 @@ class BaseModel:
 
         # Read Schema
         self.schema = schema_cls(unknown=marshmallow.EXCLUDE)
-        self.fields = self._get_return_fields()
         self.primary_key = self._get_primary_key()
-
-    def _get_return_fields(self) -> dict:
-        if not self.schema.aiosnow_meta.return_only:
-            return self.schema.aiosnow_fields
-
-        selected = {}
-
-        for name in self.schema.aiosnow_meta.return_only:
-            selected[name] = self.schema.aiosnow_fields[name]
-
-        return selected
 
     @property
     @abstractmethod
@@ -92,11 +79,16 @@ class BaseModel:
         if not isinstance(content, (dict, list)):
             raise ValueError(f"Cannot deserialize type {type(content)}")
 
-        return self.schema.load(content, many=isinstance(content, list))
+        return self.schema.load(content, many=isinstance(content, list), partial=True)
 
     async def request(self, method: str, *args: Any, **kwargs: Any) -> Response:
         kwargs.update(
-            dict(api_url=self.api_url, session=self.session, fields=self.fields.keys(),)
+            dict(
+                api_url=self.api_url,
+                session=self.session,
+                fields=self.schema.aiosnow_meta.return_only
+                or self.schema.fields.keys(),
+            )
         )
 
         req_cls = req_cls_map[method]
@@ -117,7 +109,7 @@ class BaseModel:
     def _pk_candidates(self) -> list:
         return [
             n
-            for n, f in self.fields.items()
+            for n, f in self.schema.fields.items()
             if isinstance(f, fields.BaseField) and f.is_primary is True
         ]
 

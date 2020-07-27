@@ -3,5 +3,5 @@
 Integer
 -------
 
-.. automodule:: aiosnow.model.schema.fields.integer
+.. automodule:: aiosnow.models.common.schema.fields.integer
    :members: Integer

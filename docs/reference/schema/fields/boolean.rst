@@ -1,5 +1,5 @@
 Boolean
 -------
 
-.. automodule:: aiosnow.model.schema.fields.boolean
+.. automodule:: aiosnow.models.common.schema.fields.boolean
    :members: Boolean

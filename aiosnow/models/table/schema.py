@@ -10,7 +10,7 @@ class TableSchemaMeta(BaseSchemaMeta):
 
         table_name = hasattr(cls.Meta, "table_name") and cls.Meta.table_name or None
 
-        if not table_name and hasattr(base_cls, "Meta"):
+        if hasattr(base_cls, "Meta") and not table_name:
             table_name = (
                 hasattr(base_cls.Meta, "table_name")
                 and base_cls.Meta.table_name
