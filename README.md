@@ -11,11 +11,11 @@ with modern versions of Python and utilizes the stdlib [asyncio](https://docs.py
 
 #### Python asyncio
 
-In a nutshell, asyncio uses non-blocking sockets tracked by an event loop, and while adding some complexity, it allows for running large amounts of I/O operations simultaneously, and is typically a good choice for high-concurrency backend applications.
+In a nutshell, asyncio uses non-blocking sockets tracked by an event loop, which allows for running large amounts of I/O operations simultaneously, and is typically a good choice for high-concurrency backend applications.
 
 #### Scripting with aiosnow
 
-The aiosnow library can, of course, be used in scripts - but requires an event loop to be created and coroutines to be written with the *async/await* syntax, which adds some complexity.
+The aiosnow library can, of course, be used in scripts - but requires an event loop to be created and coroutines to be written with the *async/await* syntax, which adds some extra complexity.
 
 
 *Example code*
