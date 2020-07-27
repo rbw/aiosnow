@@ -21,18 +21,17 @@ class BaseSchemaMeta(marshmallow.schema.SchemaMeta):
         for key, value in attrs.items():
             if isinstance(value, BaseField):
                 fields[key] = value
+                fields[key].name = key
             elif isinstance(value, BaseSchemaMeta):
                 fields[key] = Nested(key, value, allow_none=True, required=False)
 
-        for name, field in fields.items():
-            if not isinstance(field, Nested):
-                field.name = name
-
-            setattr(mcs, name, field)
-
         attrs["fields"] = fields
+        cls = super().__new__(mcs, name, bases, attrs)
 
-        return super().__new__(mcs, name, bases, attrs)
+        for name, field in fields.items():
+            setattr(cls, name, field)
+
+        return cls
 
 
 class Nested(marshmallow.fields.Nested):
