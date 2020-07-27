@@ -44,8 +44,8 @@ class GetRequest(BaseRequest):
 
     @property
     def _nested_attrs(self) -> Iterable:
-        for f in self.nested_fields.values():
-            yield from f.keys()
+        for field in self.nested_fields.values():
+            yield from field.nested.fields.keys()
 
     async def get_cached(self, url: str) -> dict:
         if url not in _cache:

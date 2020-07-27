@@ -58,25 +58,11 @@ class TableModel(BaseModel):
                 f"Missing Meta.table_name in {self.__class__.__name__}"
             )
 
-        self.nested_fields = self._nested_fields
-
     @property
     def api_url(self) -> str:
         return (
             self.instance_url + "/api/now/table/" + self.schema.aiosnow_meta.table_name
         )
-
-    @property
-    def _nested_fields(self) -> dict:
-        nested = {}
-        for k, v in self.fields.items():
-            if not isinstance(v, marshmallow.fields.Nested):
-                continue
-
-            nested_cls = getattr(v, "nested")
-            nested[k] = nested_cls.get_fields()
-
-        return nested
 
     async def stream(
         self, selection: Union[QueryBuilder, Condition, str] = None, **kwargs: Any
@@ -103,8 +89,8 @@ class TableModel(BaseModel):
             api_url=self.api_url,
             query=select(selection).sysparms,
             session=self.session,
-            fields=self.fields.keys(),
-            nested_fields=self.nested_fields,
+            fields=self.schema.aiosnow_meta.return_only or self.schema.fields.keys(),
+            nested_fields=self.schema.nested_fields,
             **kwargs,
         )
 
@@ -182,7 +168,7 @@ class TableModel(BaseModel):
     ) -> Response:
         """Buffered many
 
-        Fetches data and stores in buffer.
+        Fetch and store data in buffer.
 
         Note: It's recommended to use the stream method when dealing with large
         number of records.
@@ -199,7 +185,7 @@ class TableModel(BaseModel):
         return await self.request(
             methods.GET,
             query=select(selection).sysparms,
-            nested_fields=self.nested_fields,
+            nested_fields=self.schema.nested_fields,
             **kwargs,
         )
 
