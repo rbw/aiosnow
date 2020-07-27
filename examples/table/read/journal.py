@@ -25,7 +25,8 @@ async def main(app):
             record = dict(response)
             async with app.get_table(Journal) as journal:
                 wn_query = select(
-                    Journal.element_id.equals(record["sys_id"]) & Journal.element.equals("work_notes")
+                    Journal.element_id.equals(record["sys_id"])
+                    & Journal.element.equals("work_notes")
                 ).order_asc(Journal.sys_created_on)
 
                 record["journal"] = list(await journal.get(wn_query))

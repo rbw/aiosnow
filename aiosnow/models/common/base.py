@@ -83,7 +83,12 @@ class BaseModel:
 
     async def request(self, method: str, *args: Any, **kwargs: Any) -> Response:
         kwargs.update(
-            dict(api_url=self.api_url, session=self.session, fields=self.schema.aiosnow_meta.return_only or self.schema.fields.keys(),)
+            dict(
+                api_url=self.api_url,
+                session=self.session,
+                fields=self.schema.aiosnow_meta.return_only
+                or self.schema.fields.keys(),
+            )
         )
 
         req_cls = req_cls_map[method]
