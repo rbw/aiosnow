@@ -10,7 +10,7 @@ from aiosnow.exceptions import (
     UnexpectedResponseContent,
 )
 
-from .schemas import ContentSchema, ErrorSchema
+from .schemas import ContentSchema
 
 
 class Response(ClientResponse):
