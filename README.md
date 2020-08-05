@@ -6,33 +6,25 @@
 [![image](https://badgen.net/pypi/license/aiosnow)](https://raw.githubusercontent.com/rbw/aiosnow/master/LICENSE)
 [![image](https://pepy.tech/badge/snow/month)](https://pepy.tech/project/snow)
 
-The aiosnow library is a simple and lightweight yet powerful and extensible tool for interacting with ServiceNow. It works
-with modern versions of Python and utilizes [asyncio](https://docs.python.org/3/library/asyncio.html) to allow large amounts of simultaneous I/O, making it suitable for building high-concurrency backend applications on top of the ServiceNow platform.
-
-#### Scripting with aiosnow
-
-The library can, of course, be used in simple scripts also, but requires coroutines to be written with the *async/await* syntax.
-
+The aiosnow library is a simple, lightweight and extensible tool for interacting with ServiceNow.
+It utilizes [asyncio](https://docs.python.org/3/library/asyncio.html) and especially shines when building high-concurrency backend applications on top of the ServiceNow platform, but can be used for scripting as well.
 
 *Example code*
 ```python
-
 import asyncio
-
 import aiosnow
 from aiosnow.schemas.table import IncidentSchema as Incident
 
 snow = aiosnow.Client("<instance>.service-now.com", basic_auth=("<username>", "<password>"))
 
 async def main():
-    # Make a TableModel object from the built-in Incident schema
+    # Make a TableModel object for interacting with the table API
     async with snow.get_table(Incident) as inc:
-        # Get high-priority incidents
+        # Fetch high-priority incidents
         for response in await inc.get(Incident.priority <= 3, limit=5):
             print(f"Number: {response['number']}, Priority: {response['priority'].text}")
 
 asyncio.run(main())
-
 ```
 
 Check out the [examples directory](examples) for more.
