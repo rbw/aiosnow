@@ -1,10 +1,9 @@
 Introduction
 ============
 
-This is a simple and lightweight yet powerful and extensible library for interacting with ServiceNow that works
-with modern versions of Python and utilizes the stdlib `asyncio <https://docs.python.org/3/library/asyncio.html>`_ library.
+The aiosnow library is a simple, lightweight and extensible tool for interacting with ServiceNow. It utilizes asyncio and especially shines when building high-concurrency backend applications on top of the ServiceNow platform, but can be used for scripting as well.
 
-For usage examples, visit `github.com/rbw/aiosnow/examples <https://github.com/rbw/aiosnow/tree/master/examples>`_.
+For usage examples, please visit `github.com/rbw/aiosnow/examples <https://github.com/rbw/aiosnow/tree/master/examples>`_.
 
 
 Requirements
