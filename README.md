@@ -6,8 +6,13 @@
 [![image](https://badgen.net/pypi/license/aiosnow)](https://raw.githubusercontent.com/rbw/aiosnow/master/LICENSE)
 [![image](https://pepy.tech/badge/snow/month)](https://pepy.tech/project/snow)
 
-The aiosnow library is a simple, lightweight and extensible tool for interacting with ServiceNow.
-It utilizes [asyncio](https://docs.python.org/3/library/asyncio.html) and especially shines when building high-concurrency backend applications on top of the ServiceNow platform, but can be used for scripting as well.
+The aiosnow library is mainly for high-concurrency backend applications - but can be used for other purposes, such as scripting, as well.
+
+*Highlights*
+- Simple: Much work was put into making the aiosnow library as simple and intuitive as possible.
+- Performant: Requests against the ServiceNow API are performed with non-blocking I/O using [asyncio](https://docs.python.org/3/library/asyncio.html) for concurrency.
+- Modular: Key components are componentized into modules built with composability and extensibility in mind.
+
 
 *Example code*
 ```python
@@ -27,11 +32,11 @@ async def main():
 asyncio.run(main())
 ```
 
-Check out the [examples directory](examples) for more.
+Check out the [examples directory](examples) for more material.
 
 ### Documentation
 
-The aiosnow reference and more is available in the [documentation](https://aiosnow.readthedocs.io/en/latest).
+The aiosnow technical documentation is available in the [documentation](https://aiosnow.readthedocs.io/en/latest).
 
 
 ### Funding
@@ -47,9 +52,8 @@ Consider leaving a [donation](https://paypal.vault13.org) if you like this softw
 
 ### Development status
 
-The fundamental components (models, client code, error handling, documentation, etc) of the library is considered complete.
-However, automatic testing and real-world use is somewhat lacking, i.e. there are most likely bugs lurking about,
-and the software should be considered Alpha, shortly Beta.
+The aiosnow library is in Beta. Key components (model system, client code, error handling, documentation, etc.) of the library is considered complete.
+
 
 ### Contributing
 

@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "aiosnow"
-version = "0.4.2"
+version = "0.5.0"
 description = "Asynchronous Python ServiceNow library"
 authors = ["Robert Wikman <rbw@vault13.org>"]
 license = "MIT"
 readme = "README.md"
 homepage = "https://github.com/rbw/aiosnow"
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Topic :: Software Development :: Libraries"
