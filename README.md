@@ -1,8 +1,4 @@
-<p align="center">
-  <img width="256" height="256" src="docs/_static/logo2.png">
-  <br><br>
-  <b>Asynchronous Python ServiceNow Library</b><br>
-</p>
+# aiosnow: Asynchronous Python ServiceNow Library
 
 [![image](https://badgen.net/pypi/v/aiosnow)](https://pypi.org/project/aiosnow)
 [![image](https://badgen.net/badge/python/3.7+?color=purple)](https://pypi.org/project/aiosnow)
