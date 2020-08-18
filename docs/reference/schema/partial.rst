@@ -1,8 +1,8 @@
 Partial
 =======
 
-Schemas can be nested with the special :class:`~aiosnow.models.common.schema.PartialSchema` class, which doesn't require a
-Meta inner class.
+Schemas can be nested with the special :class:`~aiosnow.models.common.schema.PartialSchema` class, which doesn't require the
+*Meta* inner class.
 
 
 Example

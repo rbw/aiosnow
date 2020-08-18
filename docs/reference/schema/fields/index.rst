@@ -3,10 +3,10 @@
 Fields
 ======
 
-Fields are used when defining a concrete Schema and comes with type-specific query builders.
+Fields are used when defining a Schema and comes with type-specific query builders.
 
 They are used in:
-    - Concrete Model definitions
+    - Schema definitions
     - Building and serializing queries
     - Request field selection
     - Request payload serialization

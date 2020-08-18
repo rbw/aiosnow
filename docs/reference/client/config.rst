@@ -3,9 +3,7 @@
 Config
 ======
 
-The :class:`~aiosnow.Client` constructor takes a set of configuration parameters which are deserialized into
-an object in the :data:`~aiosnow.Client.config` attribute.
-
+The :class:`~aiosnow.Client` constructor takes a set of :ref:`config <config>` parameters.
 
 *aiosnow configuration options*
 

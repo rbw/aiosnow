@@ -6,14 +6,10 @@
 [![image](https://badgen.net/pypi/license/aiosnow)](https://raw.githubusercontent.com/rbw/aiosnow/master/LICENSE)
 [![image](https://pepy.tech/badge/snow/month)](https://pepy.tech/project/snow)
 
-The aiosnow library is mainly for building high-concurrency applications on top of the ServiceNow platform—
-but can be used for other purposes as well, such as scripting.
+**aiosnow** is a Python [asyncio](https://docs.python.org/3/library/asyncio.html) library for interacting with ServiceNow programmatically. It hopes to be:
 
-One key goal of this project is to offer a library API that is:
-
-- Convenient: Significant effort is put into providing a flexible and intuitive developer experience.
-- Lightweight: Requests against the ServiceNow API are performed using non-blocking sockets tracked by
-an [asyncio](https://docs.python.org/3/library/asyncio.html) event loop.
+- Convenient: A good deal of work is put into making **aiosnow** flexible and easy to use.
+- Performant: Remote API calls uses non-blocking sockets tracked by an event loop, allowing large amounts of lightweight request tasks to run concurrently.
 - Modular: Core functionality is componentized into modules that are built with composability and extensibility in mind.
 
 *Example code*
@@ -39,19 +35,19 @@ Check out the [examples directory](examples) for more material.
 
 ### Documentation
 
-The API Reference and more is available in the [technical documentation](https://aiosnow.readthedocs.io/en/latest).
+API reference and more is available in the [technical documentation](https://aiosnow.readthedocs.io/en/latest).
 
 
 ### Funding
 
-The aiosnow code is permissively licensed, and can be incorporated into any type of application–commercial or otherwise–without costs or limitations.
+The **aiosnow** code is permissively licensed, and can be incorporated into any type of application–commercial or otherwise–without costs or limitations.
 Its author believes it's in the commercial best-interest for users of the project to invest in its ongoing development.
 
 Consider leaving a [donation](https://paypal.vault13.org) if you like this software, it will:
 
 - Directly contribute to faster releases, more features, and higher quality software.
 - Allow more time to be invested in documentation, issue triage, and community support.
-- Safeguard the future development of aiosnow.
+- Safeguard the future development of **aiosnow**.
 
 ### Development status
 
