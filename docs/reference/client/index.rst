@@ -3,8 +3,7 @@
 Client
 ======
 
-The :class:`~aiosnow.Client` constructor takes a set of config parameters and provides methods for
-interacting with ServiceNow APIs.
+The :class:`~aiosnow.Client` object provides means to interact with ServiceNow.
 
 API
 ---
@@ -17,4 +16,5 @@ API
 .. toctree::
    :hidden:
 
+   config
    example

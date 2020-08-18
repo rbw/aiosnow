@@ -28,15 +28,19 @@ class IntegerMapping(Mapping):
 
 
 class MappedField(marshmallow.fields.Tuple):
-    def __init__(self, *args: Any, **kwargs: Any):
+    def __init__(self, *args: Any, dump_text: bool = False, **kwargs: Any):
+        self.should_dump_text = dump_text
         super(MappedField, self).__init__(self._tuple_fields, *args, **kwargs)
 
     @property
     def _tuple_fields(self) -> Tuple[Union[Integer, String], String]:
         raise NotImplementedError
 
-    def _serialize(self, value: str, *args: Any, **kwargs: Any) -> Any:
-        return value
+    def _serialize(self, value: Mapping, *args: Any, **kwargs: Any) -> Any:
+        if self.should_dump_text:
+            return value.text
+
+        return value.id
 
 
 class IntegerMap(MappedField, Integer):

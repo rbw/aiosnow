@@ -3,16 +3,18 @@
 Schema
 ======
 
-Schemas are used for describing API models using :ref:`fields <fields-root>` and the :class:`~aiosnow.models.common.schema.BaseSchema.Meta`
-inner class for type-specific configuration, such as `table_name` in the :class:`~aiosnow.models.table.TableSchema` class.
+A Schema is defined using one or more :ref:`fields <fields-root>`. Concrete schemas typically also configures the *Model* it defines via the *Meta* inner class.
+For instance, the *Meta.table_name* inner class attribute of a :class:`~aiosnow.models.table.TableSchema` would instruct the :class:`~aiosnow.models.table.TableModel`
+to make use of the given *table name* when interacting with the *ServiceNow Table API*.
 
-Check out the :ref:`default schemas <schemas-root>` if you're looking to get started quickly.
+Check out the :ref:`builtin schemas <schemas-root>` if you're looking to get started quickly.
 
 
 .. toctree::
    :titlesonly:
    :maxdepth: 2
 
+   builtin/index
    fields/index
    base
    partial
