@@ -1,5 +1,5 @@
-Introduction
-============
+About
+=====
 
 **aiosnow** is a Python `asyncio <https://docs.python.org/3/library/asyncio.html>`_ library for interacting with ServiceNow programmatically. It hopes to be:
 
@@ -19,7 +19,7 @@ Requirements
 Installation
 ------------
 
-The library is available on PyPI and can be installed using pip.
+The library is available on PyPI and can be installed using **pip**.
 
 .. code-block:: shell
 
@@ -42,6 +42,7 @@ Table of Contents
    :hidden:
 
    self
+   funding
 
 .. toctree::
    :caption: Reference
@@ -53,9 +54,3 @@ Table of Contents
    reference/models/index
    reference/response
    reference/exceptions
-
-.. toctree::
-   :caption: Other
-   :maxdepth: 2
-
-   other/funding
