@@ -1,5 +1,6 @@
 import warnings
 from typing import Any, Iterable, Tuple, Union
+from copy import deepcopy
 
 import marshmallow
 
@@ -15,7 +16,8 @@ from .fields.mapped import MappedField
 
 class BaseSchemaMeta(marshmallow.schema.SchemaMeta):
     def __new__(mcs, name: str, bases: tuple, attrs: dict) -> Any:
-        fields = getattr(bases[0], "_declared_fields", {})  # Inherit from parent
+        base_fields = getattr(bases[0], "_declared_fields", {})
+        fields = deepcopy(base_fields)
         fields.update(getattr(mcs, "_declared_fields", {}))  # Merge
 
         for key, value in attrs.items():
@@ -26,6 +28,7 @@ class BaseSchemaMeta(marshmallow.schema.SchemaMeta):
                 fields[key] = Nested(key, value, allow_none=True, required=False)
 
         attrs["fields"] = fields
+
         cls = super().__new__(mcs, name, bases, attrs)
 
         for name, field in fields.items():
