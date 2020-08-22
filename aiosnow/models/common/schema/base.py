@@ -8,6 +8,8 @@ from aiosnow.exceptions import (
     IncompatiblePayloadField,
     UnexpectedPayloadType,
     UnknownPayloadField,
+    SerializationError,
+    DeserializationError
 )
 
 from .fields.base import BaseField
@@ -144,6 +146,18 @@ class BaseSchema(marshmallow.Schema, metaclass=BaseSchemaMeta):
 
             yield key, value
 
+    def load(self, *args, **kwargs):
+        try:
+            return super().load(*args, **kwargs)
+        except marshmallow.exceptions.ValidationError as e:
+            raise DeserializationError(e)
+
+    def loads(self, *args, **kwargs):
+        try:
+            return super().loads(*args, **kwargs)
+        except marshmallow.exceptions.ValidationError as e:
+            raise DeserializationError(e)
+
     def dumps(self, obj: dict, *args: Any, many: bool = None, **kwargs: Any) -> str:
         """Dump payload
 
@@ -161,4 +175,8 @@ class BaseSchema(marshmallow.Schema, metaclass=BaseSchemaMeta):
             )
 
         data = dict(self.__dump_payload(obj))
-        return super().dumps(data)
+
+        try:
+            return super().dumps(data)
+        except marshmallow.exceptions.ValidationError as e:
+            raise SerializationError(e)

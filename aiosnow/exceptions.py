@@ -22,6 +22,14 @@ class ClientConnectionError(AiosnowException):
     """Raised when there was a problem connecting to the server"""
 
 
+class SerializationError(AiosnowException):
+    """Raised when there was an issue with serialization"""
+
+
+class DeserializationError(AiosnowException):
+    """Raised when there was an issue with deserialization"""
+
+
 class RequestError(AiosnowException):
     """The application returned an error in the response"""
 
