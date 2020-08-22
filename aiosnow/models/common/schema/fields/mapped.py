@@ -8,23 +8,23 @@ from .string import String
 
 
 class Mapping(ABC):
-    id: Union[str, int, None] = None
-    text: Union[str, None] = None
+    key: Union[str, int, None] = None
+    value: Union[str, None] = None
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} [id={self.id}, text={self.text}]>"
+        return f"<{self.__class__.__name__} [id={self.key}, text={self.value}]>"
 
 
 class StringMapping(Mapping):
-    def __init__(self, id_value: str, text_value: str):
-        self.id = id_value
-        self.text = text_value
+    def __init__(self, key: str, value: str):
+        self.key = key
+        self.value = value
 
 
 class IntegerMapping(Mapping):
-    def __init__(self, id_value: int, text_value: str):
-        self.id = id_value
-        self.text = text_value
+    def __init__(self, key: int, value: str):
+        self.key = key
+        self.value = value
 
 
 class MappedField(marshmallow.fields.Tuple):
@@ -36,11 +36,11 @@ class MappedField(marshmallow.fields.Tuple):
     def _tuple_fields(self) -> Tuple[Union[Integer, String], String]:
         raise NotImplementedError
 
-    def _serialize(self, value: Mapping, *args: Any, **kwargs: Any) -> Any:
+    def _serialize(self, obj: Mapping, *args: Any, **kwargs: Any) -> Any:
         if self.should_dump_text:
-            return value.text
+            return obj.value
 
-        return value.id
+        return obj.key
 
 
 class IntegerMap(MappedField, Integer):
