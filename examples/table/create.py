@@ -12,6 +12,6 @@ async def main(app):
 
         print(
             f"Incident created [number: {response['number']}, "
-            f"priority: {response['priority'].text}, "
+            f"priority: {response['priority'].value}, "
             f"description: {response['description']}]"
         )

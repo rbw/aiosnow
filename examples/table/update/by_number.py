@@ -7,5 +7,5 @@ async def main(app):
 
         print(
             f"Updated: {response['number']} ({response['sys_id']}),"
-            f"new impact: {response['impact'].text}"
+            f"new impact: {response['impact'].value}"
         )
