@@ -26,7 +26,7 @@ async def main():
     async with snow.get_table(Incident) as inc:
         # Fetch high-priority incidents
         for response in await inc.get(Incident.priority <= 3, limit=5):
-            print(f"Number: {response['number']}, Priority: {response['priority'].text}")
+            print(f"Number: {response['number']}, Priority: {response['priority'].value}")
 
 asyncio.run(main())
 ```
