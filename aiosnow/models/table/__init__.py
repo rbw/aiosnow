@@ -100,14 +100,14 @@ class TableModel(BaseModel):
                 for record in response.data:
                     yield response, record
 
-    async def get_one(self, selection: Union[QueryBuilder, Condition, str]) -> dict:
+    async def get_one(self, selection: Union[QueryBuilder, Condition, str]) -> Response:
         """Get one record
 
         Args:
             selection: aiosnow-compatible query
 
         Returns:
-            Record
+            Response
         """
 
         if not self.primary_key:
@@ -127,7 +127,10 @@ class TableModel(BaseModel):
         elif len(response) < 1:
             raise NoItems("Expected a single object in response, got none")
 
-        return response.data[0]
+        # Assign the matched record
+        response.data = response.data[0]
+
+        return response
 
     async def get_pk_value(self, sysparm_query: str) -> str:
         """Given a query, return the resulting record's PK field's value
