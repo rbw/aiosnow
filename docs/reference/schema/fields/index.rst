@@ -21,5 +21,3 @@ They are used in:
    boolean
    integermap
    stringmap
-   email
-   choice
