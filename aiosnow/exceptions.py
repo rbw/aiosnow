@@ -2,7 +2,7 @@ class AiosnowException(Exception):
     pass
 
 
-class ConfigurationException(AiosnowException):
+class ConfigurationError(AiosnowException):
     """Configuration error"""
 
 

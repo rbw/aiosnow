@@ -2,7 +2,7 @@ import aiohttp
 import pytest
 
 from aiosnow.client import Client
-from aiosnow.exceptions import ConfigurationException, IncompatibleSession
+from aiosnow.exceptions import ConfigurationError, IncompatibleSession
 from aiosnow.request.response import Response
 from aiosnow.session import Session
 
@@ -23,17 +23,17 @@ def test_client_session_mutual_exclusive():
 
     session = Session()
 
-    with pytest.raises(ConfigurationException):
+    with pytest.raises(ConfigurationError):
         Client("test.service-now.com", session=session, basic_auth=("a", "b"))
 
-    with pytest.raises(ConfigurationException):
+    with pytest.raises(ConfigurationError):
         Client("test.service-now.com", session=session, verify_ssl=True)
 
 
 def test_client_session_no_auth_method():
     """No authentication method to Client should raise ConfigurationException"""
 
-    with pytest.raises(ConfigurationException):
+    with pytest.raises(ConfigurationError):
         Client("test.service-now.com")
 
 
