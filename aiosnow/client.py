@@ -5,7 +5,7 @@ from marshmallow import ValidationError
 
 from aiosnow.config import ConfigSchema
 from aiosnow.exceptions import (
-    ConfigurationException,
+    ConfigurationError,
     IncompatibleSession,
     NoAuthenticationMethod,
 )
@@ -57,7 +57,7 @@ class Client:
 
             session_config_params = [basic_auth, verify_ssl]
             if any([p is not None for p in session_config_params]):
-                raise ConfigurationException(
+                raise ConfigurationError(
                     f"Client Session factory configuration params {session_config_params} "
                     f"cannot be used with a custom Session object."
                 )
@@ -73,7 +73,7 @@ class Client:
         try:
             self.config = ConfigSchema(many=False).load(app_config)
         except ValidationError as e:
-            raise ConfigurationException(e)
+            raise ConfigurationError(e)
 
         self.url = get_url(str(self.config.address), bool(use_ssl))
 

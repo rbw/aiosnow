@@ -5,7 +5,7 @@ from typing import Any
 
 from marshmallow import Schema, ValidationError, fields, post_load
 
-from aiosnow.exceptions import ConfigurationException
+from aiosnow.exceptions import ConfigurationError
 
 
 class ConfigEncoder(json.JSONEncoder):
@@ -33,7 +33,7 @@ class BaseConfigSchema(Schema):
         try:
             return self.ConfigSegment(**data)
         except ValidationError as exc:
-            raise ConfigurationException from exc
+            raise ConfigurationError from exc
 
 
 class SessionConfig(BaseConfigSchema):
