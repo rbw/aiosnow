@@ -1,43 +1,53 @@
 import pytest
 
-from aiosnow.models.common.schema import BaseSchema, fields
 from aiosnow.exceptions import DeserializationError
+from aiosnow.models.common.schema import BaseSchema, fields
+from aiosnow.query.utils import select
 
 
-async def test_fields_boolean_type(mock_model):
+def test_fields_boolean_type():
     class TestSchema(BaseSchema):
-        f_bool1 = fields.Boolean()
+        test_bool = fields.Boolean()
 
     schema = TestSchema()
-    assert isinstance(schema.f_bool1, fields.Boolean)
+    assert isinstance(schema.test_bool, fields.Boolean)
 
 
-async def test_fields_boolean_deserialize_plain_valid(mock_model):
+def test_fields_boolean_deserialize_plain_valid():
     class TestSchema(BaseSchema):
-        f_bool1 = fields.Boolean()
-        f_bool2 = fields.Boolean()
-        f_bool3 = fields.Boolean()
-        f_bool4 = fields.Boolean()
+        test_bool1 = fields.Boolean()
+        test_bool2 = fields.Boolean()
+        test_bool3 = fields.Boolean()
+        test_bool4 = fields.Boolean()
 
     schema = TestSchema()
-    data = schema.load({
-        "f_bool1": True,
-        "f_bool2": 1,
-        "f_bool3": False,
-        "f_bool4": 0
-    })
+    data = schema.load({"test_bool1": True, "test_bool2": 1, "test_bool3": False, "test_bool4": 0})
 
-    assert data["f_bool1"] is True
-    assert data["f_bool2"] is True
-    assert data["f_bool3"] is False
-    assert data["f_bool4"] is False
+    assert data["test_bool1"] is True
+    assert data["test_bool2"] is True
+    assert data["test_bool3"] is False
+    assert data["test_bool4"] is False
 
 
-async def test_fields_boolean_deserialize_plain_invalid(mock_model):
+def test_fields_boolean_deserialize_plain_invalid():
     class TestSchema(BaseSchema):
-        f_bool1 = fields.Boolean()
+        test_bool = fields.Boolean()
 
     schema = TestSchema()
 
     with pytest.raises(DeserializationError):
-        schema.load({"f_bool1": 2})
+        schema.load({"test_bool": 2})
+
+
+def test_fields_boolean_select_falsy():
+    class TestSchema(BaseSchema):
+        test_bool = fields.Boolean()
+
+    assert select(TestSchema.test_bool.is_falsy()).sysparms == "test_bool!=true"
+
+
+def test_fields_boolean_select_true():
+    class TestSchema(BaseSchema):
+        test_bool = fields.Boolean()
+
+    assert select(TestSchema.test_bool.is_true()).sysparms == "test_bool=true"
