@@ -36,7 +36,9 @@ class MappedField(marshmallow.fields.Tuple):
     def _tuple_fields(self) -> Tuple[Union[Integer, String], String]:
         raise NotImplementedError
 
-    def _serialize(self, obj: Mapping, *args: Any, **kwargs: Any) -> Any:
+    def _serialize(self, *args: Any, **kwargs: Any) -> Any:
+        obj = args[0]
+
         if self.should_dump_text:
             return obj.value
 

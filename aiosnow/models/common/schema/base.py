@@ -146,13 +146,13 @@ class BaseSchema(marshmallow.Schema, metaclass=BaseSchemaMeta):
 
             yield key, value
 
-    def load(self, *args, **kwargs):
+    def load(self, *args: Any, **kwargs: Any) -> dict:
         try:
             return super().load(*args, **kwargs)
         except marshmallow.exceptions.ValidationError as e:
             raise DeserializationError(e)
 
-    def loads(self, *args, **kwargs):
+    def loads(self, *args: Any, **kwargs: Any) -> dict:
         try:
             return super().loads(*args, **kwargs)
         except marshmallow.exceptions.ValidationError as e:
