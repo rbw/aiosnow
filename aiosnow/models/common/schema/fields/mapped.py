@@ -12,7 +12,7 @@ class Mapping(ABC):
     value: Union[str, None] = None
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} [id={self.key}, text={self.value}]>"
+        return f"<{self.__class__.__name__} [key={self.key}, value={self.value}]>"
 
 
 class StringMapping(Mapping):

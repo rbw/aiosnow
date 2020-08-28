@@ -52,7 +52,9 @@ def test_fields_string_query_between():
     class TestSchema(BaseSchema):
         test_str = fields.String()
 
-    assert select(TestSchema.test_str.between("q", "t")).sysparms == "test_strBETWEENq@t"
+    assert (
+        select(TestSchema.test_str.between("q", "t")).sysparms == "test_strBETWEENq@t"
+    )
 
 
 def test_fields_string_query_ends_with():
@@ -60,7 +62,8 @@ def test_fields_string_query_ends_with():
         test_str = fields.String()
 
     assert (
-        select(TestSchema.test_str.ends_with("outage")).sysparms == "test_strENDSWITHoutage"
+        select(TestSchema.test_str.ends_with("outage")).sysparms
+        == "test_strENDSWITHoutage"
     )
 
 
@@ -98,6 +101,8 @@ def test_fields_string_query_not_equals():
         test_str = fields.String()
 
     assert (
-        select(TestSchema.test_str.not_equals("Network storage is unavailable")).sysparms
+        select(
+            TestSchema.test_str.not_equals("Network storage is unavailable")
+        ).sysparms
         == "test_str!=Network storage is unavailable"
     )
