@@ -54,3 +54,10 @@ Table of Contents
    reference/models/index
    reference/response
    reference/exceptions
+
+.. toctree::
+   :caption: Extras
+   :maxdepth: 3
+   :titlesonly:
+
+   schemas/index
