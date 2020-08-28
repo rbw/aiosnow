@@ -16,7 +16,7 @@ from .schemas import ContentSchema
 class Response(ClientResponse):
     """Aiosnow Response class
 
-    Deserializes the response content received from a ServiceNow API
+    The Response object holds information about the ServiceNow HTTP response.
 
     Subclass of aiohttp.ClientResponse, its base reference documentation can be found here:
     https://docs.aiohttp.org/en/latest/client_reference.html#aiohttp.ClientResponse

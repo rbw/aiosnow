@@ -17,3 +17,4 @@ Check out the :ref:`builtin schemas <schemas-root>` if you're looking to get sta
    base
    fields/index
    partial
+   builtins/index
