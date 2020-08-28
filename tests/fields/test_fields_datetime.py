@@ -45,46 +45,69 @@ def test_fields_datetime_after():
     class TestSchema(BaseSchema):
         test_dt = fields.DateTime()
 
-    assert select(TestSchema.test_dt.after("2019-12-24 02:03:04")).sysparms == "test_dt>2019-12-24 02:03:04"
+    assert (
+        select(TestSchema.test_dt.after("2019-12-24 02:03:04")).sysparms
+        == "test_dt>2019-12-24 02:03:04"
+    )
 
 
 def test_fields_datetime_as_of():
     class TestSchema(BaseSchema):
         test_dt = fields.DateTime()
 
-    assert select(TestSchema.test_dt.as_of("2019-12-24 02:03:04")).sysparms == "test_dt>=2019-12-24 02:03:04"
+    assert (
+        select(TestSchema.test_dt.as_of("2019-12-24 02:03:04")).sysparms
+        == "test_dt>=2019-12-24 02:03:04"
+    )
 
 
 def test_fields_datetime_before():
     class TestSchema(BaseSchema):
         test_dt = fields.DateTime()
 
-    assert select(TestSchema.test_dt.before("2019-12-24 02:03:04")).sysparms == "test_dt<2019-12-24 02:03:04"
+    assert (
+        select(TestSchema.test_dt.before("2019-12-24 02:03:04")).sysparms
+        == "test_dt<2019-12-24 02:03:04"
+    )
 
 
 def test_fields_datetime_between():
     class TestSchema(BaseSchema):
         test_dt = fields.DateTime()
 
-    assert select(TestSchema.test_dt.between("2018-12-24 02:03:04", "2019-12-24 02:03:04")).sysparms == "test_dtBETWEEN2018-12-24 02:03:04@2019-12-24 02:03:04"
+    assert (
+        select(
+            TestSchema.test_dt.between("2018-12-24 02:03:04", "2019-12-24 02:03:04")
+        ).sysparms
+        == "test_dtBETWEEN2018-12-24 02:03:04@2019-12-24 02:03:04"
+    )
 
 
 def test_fields_datetime_not_on():
     class TestSchema(BaseSchema):
         test_dt = fields.DateTime()
 
-    assert select(TestSchema.test_dt.not_on("2019-12-24 02:03:04")).sysparms == "test_dtNOTON2019-12-24 02:03:04"
+    assert (
+        select(TestSchema.test_dt.not_on("2019-12-24 02:03:04")).sysparms
+        == "test_dtNOTON2019-12-24 02:03:04"
+    )
 
 
 def test_fields_datetime_on():
     class TestSchema(BaseSchema):
         test_dt = fields.DateTime()
 
-    assert select(TestSchema.test_dt.on("2019-12-24 02:03:04")).sysparms == "test_dtON2019-12-24 02:03:04"
+    assert (
+        select(TestSchema.test_dt.on("2019-12-24 02:03:04")).sysparms
+        == "test_dtON2019-12-24 02:03:04"
+    )
 
 
 def test_fields_datetime_until():
     class TestSchema(BaseSchema):
         test_dt = fields.DateTime()
 
-    assert select(TestSchema.test_dt.until("2019-12-24 02:03:04")).sysparms == "test_dt<=2019-12-24 02:03:04"
+    assert (
+        select(TestSchema.test_dt.until("2019-12-24 02:03:04")).sysparms
+        == "test_dt<=2019-12-24 02:03:04"
+    )

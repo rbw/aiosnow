@@ -21,7 +21,9 @@ def test_fields_boolean_deserialize_plain_valid():
         test_bool4 = fields.Boolean()
 
     schema = TestSchema()
-    data = schema.load({"test_bool1": True, "test_bool2": 1, "test_bool3": False, "test_bool4": 0})
+    data = schema.load(
+        {"test_bool1": True, "test_bool2": 1, "test_bool3": False, "test_bool4": 0}
+    )
 
     assert data["test_bool1"] is True
     assert data["test_bool2"] is True

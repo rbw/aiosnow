@@ -50,7 +50,9 @@ class Integer(marshmallow.fields.Integer, BaseField):
         """
 
         return self._condition(
-            NumericOperator.GREATER, value, field_operator=NumericOperator.Related.GREATER
+            NumericOperator.GREATER,
+            value,
+            field_operator=NumericOperator.Related.GREATER,
         )
 
     def less_or_equals(self, value: int) -> Condition:
