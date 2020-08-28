@@ -96,3 +96,7 @@ class TooManyItems(AiosnowException):
 
 class NoItems(AiosnowException):
     """The request yielded no results"""
+
+
+class DeleteError(AiosnowException):
+    """Raised if there was an error deleting a record"""
