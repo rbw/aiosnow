@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import json
 from typing import Any, AsyncGenerator, Type, Union
 
 import aiohttp
-import marshmallow
 
 from aiosnow.config import ConfigSchema
 from aiosnow.exceptions import (
+    DeleteError,
     NoItems,
     PayloadValidationError,
     RequestError,
@@ -210,12 +211,9 @@ class TableModel(BaseModel):
                 f"Expected payload as a {dict}, got: {type(payload)}"
             )
 
-        try:
-            data = self.schema.dumps(payload)
-        except marshmallow.exceptions.ValidationError as e:
-            raise PayloadValidationError(e)
-
-        return await self.request(methods.PATCH, object_id=object_id, payload=data,)
+        return await self.request(
+            methods.PATCH, object_id=object_id, payload=json.dumps(payload),
+        )
 
     async def create(self, payload: dict) -> Response:
         """Create a new record
@@ -227,12 +225,7 @@ class TableModel(BaseModel):
             Response
         """
 
-        try:
-            data = self.schema.dumps(payload)
-        except marshmallow.exceptions.ValidationError as e:
-            raise PayloadValidationError(e)
-
-        return await self.request(methods.POST, payload=data,)
+        return await self.request(methods.POST, payload=json.dumps(payload),)
 
     async def delete(self, selection: Union[Condition, str]) -> Response:
         """Delete matching record
@@ -244,7 +237,11 @@ class TableModel(BaseModel):
             Response
         """
 
-        object_id = await self.get_object_id(selection)
+        try:
+            object_id = await self.get_object_id(selection)
+        except NoItems:
+            raise DeleteError("Cannot delete, no such record")
+
         response = await self.request(methods.DELETE, object_id=object_id,)
 
         if response.status != 204:
