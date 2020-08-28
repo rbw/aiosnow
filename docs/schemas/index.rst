@@ -1,6 +1,6 @@
 .. _schemas-root:
 
-Builtin
+Schemas
 =======
 
 At some point you probably want to roll your *own* schemas, however, if you're looking to get started quickly,

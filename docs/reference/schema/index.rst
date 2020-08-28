@@ -14,7 +14,6 @@ Check out the :ref:`builtin schemas <schemas-root>` if you're looking to get sta
    :titlesonly:
    :maxdepth: 2
 
-   builtin/index
-   fields/index
    base
+   fields/index
    partial
