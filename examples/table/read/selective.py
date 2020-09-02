@@ -7,8 +7,8 @@ class Incident(IncidentSchema):
         return_only = ["sys_id", "number", "short_description"]
 
 
-async def main(app):
-    async with app.get_table(Incident) as inc:
+async def main(snow):
+    async with snow.get_table(Incident) as inc:
         query = select(Incident.number.starts_with("INC001")).order_asc(Incident.number)
 
         for record in await inc.get(query, limit=10):

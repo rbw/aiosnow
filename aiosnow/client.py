@@ -9,7 +9,6 @@ from aiosnow.exceptions import (
     IncompatibleSession,
     NoAuthenticationMethod,
 )
-from aiosnow.models.table import TableModel, TableSchema
 from aiosnow.request import Response
 from aiosnow.session import Session
 from aiosnow.utils import get_url
@@ -75,7 +74,7 @@ class Client:
         except ValidationError as e:
             raise ConfigurationError(e)
 
-        self.url = get_url(str(self.config.address), bool(use_ssl))
+        self.base_url = get_url(str(self.config.address), bool(use_ssl))
 
     @property
     def _auth(self) -> aiohttp.BasicAuth:
@@ -107,21 +106,4 @@ class Client:
 
         return Session(
             auth=self._auth, connector=aiohttp.TCPConnector(**connector_args)
-        )
-
-    def get_table(self, schema: Type[TableSchema]) -> TableModel:
-        """aiosnow TableModel factory
-
-        Args:
-            schema: TableModel Schema
-
-        Returns:
-            Resource: TableModel object
-        """
-
-        return TableModel(
-            schema,
-            instance_url=self.url,
-            session=self.get_session(),
-            config=self.config,
         )

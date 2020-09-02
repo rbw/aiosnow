@@ -18,17 +18,16 @@ if len(sys.argv) != 2:
     sys.exit(1)
 
 
-def run_example(path):
+def run_example(path, client):
     module = import_module(path)
     if not hasattr(module, "main"):
         raise AttributeError(f"Missing member main() in example {path}")
 
-    example = import_module(path).main(app)
+    example = import_module(path).main(client)
     asyncio.run(example)
 
 
 if DEBUG:
     logging.basicConfig(level=logging.DEBUG)
 
-app = Client(ADDRESS, basic_auth=CREDENTIALS)
-run_example(sys.argv[1])
+run_example(sys.argv[1], client=Client(ADDRESS, basic_auth=CREDENTIALS))
