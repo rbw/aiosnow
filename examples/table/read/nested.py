@@ -11,8 +11,8 @@ class Incident(IncidentSchema):
     assignment_group = AssignmentGroup
 
 
-async def main(app):
-    async with app.get_table(Incident) as inc:
+async def main(snow):
+    async with snow.get_table(Incident) as inc:
         query = select(
             Incident.assignment_group.name.equals("Hardware")
             & Incident.impact.greater_or_equals(1)

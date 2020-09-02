@@ -82,8 +82,8 @@ class InvalidContentMethod(AiosnowException):
     """Raised if the response content was incorrectly accessed"""
 
 
-class UnexpectedModelSchema(AiosnowException):
-    """Raised if an unexpected Schema was passed to Model"""
+class InvalidModelMeta(AiosnowException):
+    """Raised if the Model Meta class is invalid"""
 
 
 class NoSchemaFields(AiosnowException):

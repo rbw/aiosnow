@@ -18,7 +18,8 @@ from .fields.mapped import MappedField
 
 class BaseSchemaMeta(marshmallow.schema.SchemaMeta):
     def __new__(mcs, name: str, bases: tuple, attrs: dict) -> Any:
-        base_fields = getattr(bases[0], "_declared_fields", {})
+        base_cls = bases[0]
+        base_fields = getattr(base_cls, "_declared_fields", {})
         fields = deepcopy(base_fields)
         fields.update(getattr(mcs, "_declared_fields", {}))  # Merge
 
@@ -30,6 +31,9 @@ class BaseSchemaMeta(marshmallow.schema.SchemaMeta):
                 fields[key] = Nested(key, value, allow_none=True, required=False)
 
         attrs["fields"] = fields
+
+        if "Meta" in attrs:
+            attrs["Meta"] = type("Meta", (base_cls.Meta, ), {**attrs["Meta"].__dict__})
 
         cls = super().__new__(mcs, name, bases, attrs)
 
@@ -58,14 +62,18 @@ class BaseSchema(marshmallow.Schema, metaclass=BaseSchemaMeta):
     """
 
     class Meta:
-        pass
+        @property
+        def return_only(self) -> None:
+            """Return only these fields"""
+            return None
 
     aiosnow_meta: Any = None
+    _nested_fields = {}
 
     def __init__(self, *args: Any, **kwargs: Any):
-        self.nested_fields = {
+        self._nested_fields.update({
             n: f for n, f in self.fields.items() if isinstance(f, Nested)
-        }
+        })
         super(BaseSchema, self).__init__(*args, **kwargs)
 
     @marshmallow.pre_load

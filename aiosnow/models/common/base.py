@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Any, Dict, Type, Union
+from typing import Any, Dict, Union
 
-import aiohttp
 import marshmallow
 
 from aiosnow.config import ConfigSchema
-from aiosnow.exceptions import SchemaError, UnexpectedModelSchema
+from aiosnow.exceptions import SchemaError
+from aiosnow.client import Client
 from aiosnow.request import (
     DeleteRequest,
     GetRequest,
@@ -27,43 +27,20 @@ req_cls_map = {
 }
 
 
-class BaseModel:
+class BaseModel(BaseSchema):
     """Abstract base model
 
     Args:
-        schema_cls: Schema class
-        instance_url: Instance URL
-        session: aiosnow-compatible aiohttp.ClientSession
-        config: Config object
-
-    Attributes:
-        config (ConfigSchema): Client config
-        session (ClientSession): Session for performing requests
-        schema (Schema): Resource Schema
-        instance_url (str): Instance URL
-        primary_key (str): Schema primary key
+        client: Client object
     """
 
     def __init__(
         self,
-        schema_cls: Type[BaseSchema],
-        instance_url: str,
-        session: aiohttp.ClientSession,
-        config: ConfigSchema,
+        client: Client
     ):
-        if not issubclass(schema_cls, self._schema_type):
-            raise UnexpectedModelSchema(
-                f"Unexpected Schema: {schema_cls.__name__}, Model: "
-                f"{self.__class__.__name__}, must be subclass of: {self._schema_type.__name__}"
-            )
-
-        self.session = session
-        self.config = config
-        self.instance_url = instance_url
-
-        # Read Schema
-        self.schema = schema_cls(unknown=marshmallow.EXCLUDE)
-        self.primary_key = self._get_primary_key()
+        super(BaseSchema, self).__init__(unknown=marshmallow.EXCLUDE)
+        self._client = client
+        self._primary_key = self._get_primary_key()
 
     @property
     @abstractmethod
@@ -75,19 +52,13 @@ class BaseModel:
     def api_url(self) -> Any:
         pass
 
-    def _deserialize(self, content: Union[dict, list]) -> Union[dict, list]:
-        if not isinstance(content, (dict, list)):
-            raise ValueError(f"Cannot deserialize type {type(content)}")
-
-        return self.schema.load(content, many=isinstance(content, list), partial=True)
-
     async def request(self, method: str, *args: Any, **kwargs: Any) -> Response:
         kwargs.update(
             dict(
                 api_url=self.api_url,
-                session=self.session,
-                fields=self.schema.aiosnow_meta.return_only
-                or self.schema.fields.keys(),
+                session=self._client.get_session(),
+                fields=self.Meta.return_only
+                or self.fields.keys(),
             )
         )
 
@@ -95,11 +66,12 @@ class BaseModel:
         response = await req_cls(*args, **kwargs).send()
 
         if method != methods.DELETE:
-            response.data = self._deserialize(response.data)
+            response.data = self.load(response.data, many=isinstance(response.data, list), partial=True)
 
         return response
 
     async def __aenter__(self) -> BaseModel:
+        self.session = self._client.get_session()
         return self
 
     async def __aexit__(self, *_: list) -> None:
@@ -109,7 +81,7 @@ class BaseModel:
     def _pk_candidates(self) -> list:
         return [
             n
-            for n, f in self.schema.fields.items()
+            for n, f in self.fields.items()
             if isinstance(f, fields.BaseField) and f.is_primary is True
         ]
 
@@ -126,9 +98,6 @@ class BaseModel:
 
         return pks[0]
 
-    def dumps(self, data: Dict[Any, Any]) -> str:
-        return self.schema.dumps(data)
-
     @property
     def name(self) -> str:
-        return self.schema.__class__.__name__
+        return self.__class__.__name__
