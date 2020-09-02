@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import Any, AsyncGenerator, Type, Union
-
-import aiohttp
+from typing import Any, AsyncGenerator, Union
 
 from aiosnow.config import ConfigSchema
 from aiosnow.exceptions import (
@@ -14,17 +12,32 @@ from aiosnow.exceptions import (
     SchemaError,
     SelectError,
     TooManyItems,
-    UnexpectedModelSchema,
+    InvalidModelMeta,
     UnexpectedResponseContent,
 )
 from aiosnow.query import Condition, QueryBuilder, select
+from aiosnow.client import Client
 from aiosnow.request import Pagestream, Response, methods
 
-from ..common import BaseModel
-from .schema import TableSchema
+from ..common import BaseModel, BaseSchema
 
 
-class TableModel(BaseModel):
+class TableSchema(BaseSchema):
+    class Meta:
+        """Meta config object"""
+
+        @property
+        def table_name(self) -> str:
+            """Table name"""
+            raise NotImplementedError
+
+        @property
+        def return_only(self) -> None:
+            """Return only these fields"""
+            return None
+
+
+class TableModel(BaseModel, TableSchema):
     """Table API model
 
     Args:
@@ -47,22 +60,20 @@ class TableModel(BaseModel):
 
     def __init__(
         self,
-        schema_cls: Type[TableSchema],
-        instance_url: str,
-        session: aiohttp.ClientSession,
-        config: ConfigSchema,
+        client: Client
     ):
-        super(TableModel, self).__init__(schema_cls, instance_url, session, config)
-        meta = self.schema.aiosnow_meta
-        if not getattr(meta, "table_name", None) or not meta.table_name:
-            raise UnexpectedModelSchema(
+        super(BaseSchema, self).__init__()
+        super(TableModel, self).__init__(client)
+
+        if not self.Meta.table_name:
+            raise InvalidModelMeta(
                 f"Missing Meta.table_name in {self.__class__.__name__}"
             )
 
     @property
     def api_url(self) -> str:
         return (
-            self.instance_url + "/api/now/table/" + self.schema.aiosnow_meta.table_name
+            self._client.base_url + "/api/now/table/" + self.Meta.table_name
         )
 
     async def stream(
@@ -90,8 +101,8 @@ class TableModel(BaseModel):
             api_url=self.api_url,
             query=select(selection).sysparms,
             session=self.session,
-            fields=self.schema.aiosnow_meta.return_only or self.schema.fields.keys(),
-            nested_fields=self.schema.nested_fields,
+            fields=self.aiosnow_meta.return_only or self.fields.keys(),
+            nested_fields=self._nested_fields,
             **kwargs,
         )
 
@@ -111,7 +122,7 @@ class TableModel(BaseModel):
             Response
         """
 
-        if not self.primary_key:
+        if not self._primary_key:
             raise SchemaError(
                 f'The selected resource "{self.name}" cannot '
                 f'be queried: this schema lacks a field with "is_primary" set'
@@ -144,7 +155,7 @@ class TableModel(BaseModel):
         """
 
         response = await self.get_one(sysparm_query)
-        return response[self.primary_key]
+        return response[self._primary_key]
 
     async def get_object_id(self, value: Union[Condition, str]) -> str:
         """Get object id by str or Condition
@@ -189,7 +200,7 @@ class TableModel(BaseModel):
         return await self.request(
             methods.GET,
             query=select(selection).sysparms,
-            nested_fields=self.schema.nested_fields,
+            nested_fields=self._nested_fields,
             **kwargs,
         )
 

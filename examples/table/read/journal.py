@@ -19,11 +19,11 @@ class Incident(IncidentSchema):
         return_only = ["sys_id", "number", "short_description"]
 
 
-async def main(app):
-    async with app.get_table(Incident) as inc:
+async def main(snow):
+    async with snow.get_table(Incident) as inc:
         for response in await inc.get(limit=1):
             record = dict(response)
-            async with app.get_table(Journal) as journal:
+            async with snow.get_table(Journal) as journal:
                 wn_query = select(
                     Journal.element_id.equals(record["sys_id"])
                     & Journal.element.equals("work_notes")
