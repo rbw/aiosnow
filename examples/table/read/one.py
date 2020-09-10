@@ -1,7 +1,7 @@
-from aiosnow.schemas.table import IncidentSchema as Incident
+from aiosnow.models.table.examples import IncidentModel as Incident
 
 
-async def main(snow):
-    async with snow.get_table(Incident) as inc:
-        response = await inc.get_one(Incident.number == "INC0010240")
+async def main(client, q_number: str):
+    async with Incident(client, table_name="incident") as i:
+        response = await i.get_one(Incident.number == q_number)
         print(response["description"])

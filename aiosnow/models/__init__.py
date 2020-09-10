@@ -1,2 +1,2 @@
-from .common import BaseModel, BaseSchema, PartialSchema, Pluck, fields
-from .table import TableModel, TableSchema
+from .common import BaseModel, ModelSchema, Pluck, fields
+from .table import TableModel

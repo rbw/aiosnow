@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Any, Dict, Union
+from typing import Any, Type
 
+import aiohttp
 import marshmallow
 
-from aiosnow.config import ConfigSchema
-from aiosnow.exceptions import SchemaError
 from aiosnow.client import Client
+from aiosnow.exceptions import InvalidFieldName
 from aiosnow.request import (
     DeleteRequest,
     GetRequest,
@@ -17,7 +17,8 @@ from aiosnow.request import (
     methods,
 )
 
-from .schema import BaseSchema, fields
+from .schema import ModelSchema, Nested
+from .schema.fields import BaseField
 
 req_cls_map = {
     methods.GET: GetRequest,
@@ -27,37 +28,69 @@ req_cls_map = {
 }
 
 
-class BaseModel(BaseSchema):
-    """Abstract base model
+class BaseModelMeta(type):
+    def __new__(mcs, name: str, bases: tuple, attrs: dict) -> Any:
+        fields = {}
 
-    Args:
-        client: Client object
-    """
+        for base in bases:
+            fields.update(base.schema_cls._declared_fields)
 
-    def __init__(
-        self,
-        client: Client
-    ):
-        super(BaseSchema, self).__init__(unknown=marshmallow.EXCLUDE)
+        for key, value in attrs.copy().items():
+            if isinstance(value, BaseField):
+                fields[key] = value
+                fields[key].name = key
+            elif isinstance(value, marshmallow.schema.SchemaMeta):
+                fields[key] = Nested(key, value, allow_none=True, required=False)
+            else:
+                continue
+
+            # Do not allow override of base members with schema Field attributes.
+            for base in bases:
+                existing_member = getattr(base, key, None)
+                if existing_member is not None and not issubclass(
+                    existing_member.__class__,
+                    (BaseField, marshmallow.schema.SchemaMeta),
+                ):
+                    raise InvalidFieldName(
+                        f"Field :{name}.{key}: conflicts with a base member, name it something else. "
+                        f"The Field :attribute: parameter can be used to give a field an alias."
+                    )
+
+        attrs["schema_cls"] = type(name.capitalize() + "Schema", (ModelSchema,), fields)
+        cls = super().__new__(mcs, name, bases, attrs)
+
+        return cls
+
+
+class BaseModel(metaclass=BaseModelMeta):
+    """Model base"""
+
+    _session: aiohttp.ClientSession
+    _client: Client
+    _config: dict = {"return_only": []}
+    schema_cls: Type[ModelSchema]
+    schema: ModelSchema
+
+    def __init__(self, client: Client):
         self._client = client
-        self._primary_key = self._get_primary_key()
+        self._primary_key = getattr(self.schema_cls, "_primary_key")
+        self.fields = dict(self.schema_cls.fields)
+        self.nested_fields = {
+            n: f for n, f in self.fields.items() if isinstance(f, Nested)
+        }
+        self.schema = self.schema_cls(unknown=marshmallow.EXCLUDE)
 
     @property
     @abstractmethod
-    def _schema_type(self) -> Any:
-        pass
-
-    @property
-    @abstractmethod
-    def api_url(self) -> Any:
+    def _api_url(self) -> Any:
         pass
 
     async def request(self, method: str, *args: Any, **kwargs: Any) -> Response:
         kwargs.update(
             dict(
-                api_url=self.api_url,
-                session=self._client.get_session(),
-                fields=self.Meta.return_only
+                api_url=self._api_url,
+                session=self._session,
+                fields=kwargs.pop("return_only", self._config["return_only"])
                 or self.fields.keys(),
             )
         )
@@ -66,38 +99,15 @@ class BaseModel(BaseSchema):
         response = await req_cls(*args, **kwargs).send()
 
         if method != methods.DELETE:
-            response.data = self.load(response.data, many=isinstance(response.data, list), partial=True)
+            response.data = self.schema.load_content(
+                response.data, many=isinstance(response.data, list)
+            )
 
         return response
 
     async def __aenter__(self) -> BaseModel:
-        self.session = self._client.get_session()
+        self._session = self._client.get_session()
         return self
 
     async def __aexit__(self, *_: list) -> None:
-        await self.session.close()
-
-    @property
-    def _pk_candidates(self) -> list:
-        return [
-            n
-            for n, f in self.fields.items()
-            if isinstance(f, fields.BaseField) and f.is_primary is True
-        ]
-
-    def _get_primary_key(self) -> Union[str, None]:
-        pks = self._pk_candidates
-
-        if len(pks) > 1:
-            raise SchemaError(
-                f"Multiple primary keys (is_primary) supplied "
-                f"in {self.name}. Maximum allowed is 1."
-            )
-        elif len(pks) == 0:
-            return None
-
-        return pks[0]
-
-    @property
-    def name(self) -> str:
-        return self.__class__.__name__
+        await self._session.close()

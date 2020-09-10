@@ -82,8 +82,8 @@ class InvalidContentMethod(AiosnowException):
     """Raised if the response content was incorrectly accessed"""
 
 
-class InvalidModelMeta(AiosnowException):
-    """Raised if the Model Meta class is invalid"""
+class InvalidFieldName(AiosnowException):
+    """Usually raised if an attempt is made to override a base member with a Field"""
 
 
 class NoSchemaFields(AiosnowException):

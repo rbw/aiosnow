@@ -61,4 +61,5 @@ class Pagestream(GetRequest):
             self.exhausted = True
             self.log.debug(f"{self._req_id}: No more pages, setting exhausted")
 
+        await response.load_document()
         yield response

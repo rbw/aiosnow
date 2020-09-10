@@ -4,14 +4,8 @@ import pytest
 from aiohttp import web
 
 from aiosnow.client import Client
-from aiosnow.config import ConfigSchema
-from aiosnow.models.common import BaseModel, BaseSchema, fields
+from aiosnow.models.common import BaseModel, ModelSchema, fields
 from aiosnow.request.response import Response
-from aiosnow.utils import get_url
-
-
-class TestSchema(BaseSchema):
-    test = fields.String()
 
 
 class TestModel(BaseModel):
@@ -59,37 +53,66 @@ def mock_session(aiohttp_client, mock_server):
 
 
 @pytest.fixture
-def mock_app():
+def mock_client():
     return Client(
         address="test.service-now.com", basic_auth=("test", "test"), use_ssl=False
     )
 
 
 @pytest.fixture
-def mock_model(mock_session, mock_model_raw):
-    async def go(
-        server_method="GET",
-        server_path="/",
-        content=None,
-        status=0,
-        model=TestModel,
-        schema=TestSchema,
-    ):
-        session = await mock_session(
-            server_method, server_path, content or dict(result=""), status
-        )
-        return await mock_model_raw(session, server_path, model, schema)
+def mock_field():
+    def go(cls, name, **kwargs):
+        field = cls(**kwargs)
+        field.name = name
+        return field
 
     yield go
 
 
 @pytest.fixture
-def mock_model_raw():
-    async def go(session, path, model, schema):
-        config = ConfigSchema(many=False).load(dict(address=TEST_TCP_ADDRESS))
-        url = get_url(address=config.address, use_ssl=False)
-        return model(
-            schema_cls=schema, instance_url=url + path, session=session, config=config,
-        )
+def mock_datetime_field(mock_field):
+    def go(name, **kwargs):
+        return mock_field(fields.DateTime, name, **kwargs)
 
     yield go
+
+
+@pytest.fixture
+def mock_boolean_field(mock_field):
+    def go(name, **kwargs):
+        return mock_field(fields.Boolean, name, **kwargs)
+
+    yield go
+
+
+@pytest.fixture
+def mock_string_field(mock_field):
+    def go(name, **kwargs):
+        return mock_field(fields.String, name, **kwargs)
+
+    yield go
+
+
+@pytest.fixture
+def mock_stringmap_field(mock_field):
+    def go(name, **kwargs):
+        return mock_field(fields.StringMap, name, **kwargs)
+
+    yield go
+
+
+@pytest.fixture
+def mock_integer_field(mock_field):
+    def go(name, **kwargs):
+        return mock_field(fields.Integer, name, **kwargs)
+
+    yield go
+
+
+@pytest.fixture
+def mock_integermap_field(mock_field):
+    def go(name, **kwargs):
+        return mock_field(fields.IntegerMap, name, **kwargs)
+
+    yield go
+

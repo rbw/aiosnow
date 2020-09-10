@@ -1,4 +1,4 @@
-from typing import Dict, Type, Union
+from typing import Dict, Union
 
 import aiohttp
 from marshmallow import ValidationError

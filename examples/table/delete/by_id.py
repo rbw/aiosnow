@@ -1,6 +1,7 @@
-from aiosnow.schemas.table import IncidentSchema as Incident
+from aiosnow.models.table.examples import IncidentModel as Incident
 
 
-async def main(snow):
-    async with snow.get_table(Incident) as inc:
-        await inc.delete("636da7ebdb6c1010fba0560868961961")
+async def main(client, q_sys_id: str):
+    async with Incident(client, table_name="incident") as inc:
+        if await inc.delete(q_sys_id):
+            print(f"Successfully deleted {q_sys_id}")

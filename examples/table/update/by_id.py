@@ -1,9 +1,9 @@
-from aiosnow.schemas.table import IncidentSchema as Incident
+from aiosnow.models.table.examples import IncidentModel as Incident
 
 
-async def main(snow):
-    async with snow.get_table(Incident) as inc:
-        response = await inc.update("01b9e36bdb6c1010fba0560868961925", {"impact": 1})
+async def main(client, q_sys_id: str):
+    async with Incident(client, table_name="incident") as inc:
+        response = await inc.update(q_sys_id, {"impact": 1})
 
         print(
             f"Updated: {response['number']} ({response['sys_id']}), "

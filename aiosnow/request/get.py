@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import Any, Dict, Iterable, Union
-from urllib.parse import urlencode, urlparse
+from urllib.parse import urlparse
 
 from . import methods
 from .base import BaseRequest
@@ -47,16 +47,6 @@ class GetRequest(BaseRequest):
         for field in self.nested_fields.values():
             yield from field.nested.fields.keys()
 
-    async def get_cached(self, url: str) -> dict:
-        if url not in _cache:
-            record_id = urlparse(url).path.split("/")[-1]
-
-            response = await self._send(method=methods.GET, url=url)
-            self.log.debug(f"Caching response for: {record_id}")
-            _cache[url] = response.data
-
-        return _cache[url]
-
     async def _expand_nested(
         self, content: Union[dict, list, None]
     ) -> Union[dict, list, None]:
@@ -84,13 +74,19 @@ class GetRequest(BaseRequest):
                 nested[field_name] = item
                 continue
 
-            params = dict(sysparm_fields=",".join(nested_attrs),)
-
-            nested[field_name] = await self.get_cached(
-                f"{item['link']}?{urlencode(params)}"
-            )
+            nested[field_name] = await self.get_cached(item["link"], nested_attrs)
 
         return nested
+
+    async def get_cached(self, url: str, fields: list) -> dict:
+        if url not in _cache:
+            record_id = urlparse(url).path.split("/")[-1]
+            request = GetRequest(url, self.session, fields=fields)
+            response = await request._send(method=methods.GET)
+            self.log.debug(f"Caching response for: {record_id}")
+            _cache[url] = response.data
+
+        return _cache[url]
 
     async def send(self, *args: Any, resolve: bool = True, **kwargs: Any) -> Any:
         response = await self._send(**kwargs)
