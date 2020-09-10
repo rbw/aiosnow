@@ -1,11 +1,7 @@
-from aiosnow.models.common.schema import fields
-from aiosnow.models.table import TableSchema
+from aiosnow.models import TableModel, fields
 
 
-class JournalSchema(TableSchema):
-    class Meta:
-        table_name = "sys_journal_field"
-
+class JournalModel(TableModel):
     sys_id = fields.String(is_primary=True)
     sys_created_on = fields.DateTime()
     sys_created_by = fields.String()

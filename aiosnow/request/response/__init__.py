@@ -33,16 +33,9 @@ class Response(ClientResponse):
         self.data: Union[list, dict, None] = None
 
     def __repr__(self) -> str:
-        if isinstance(self.data, list):
-            content_overview = f"Content: List ({len(self.data)} items)"
-        elif self.data and isinstance(self.data, dict):
-            content_overview = "Content: Dictionary object"
-        else:
-            content_overview = "Content: Unknown"
-
         return (
             f"<{self.__class__.__name__} {hex(id(self))} {self.url.path} "
-            f"[{self.status} {self.reason}] {content_overview}>"
+            f"[{self.status} {self.reason}]>"
         )
 
     def __getitem__(self, name: Any) -> Any:
@@ -65,7 +58,7 @@ class Response(ClientResponse):
 
         return 1
 
-    async def load(self) -> None:
+    async def load_document(self) -> None:
         """Deserialize and set response content
 
         Raises:

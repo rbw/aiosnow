@@ -1,5 +1,4 @@
 import warnings
-from copy import deepcopy
 from typing import Any, Iterable, Tuple, Union
 
 import marshmallow
@@ -7,6 +6,7 @@ import marshmallow
 from aiosnow.exceptions import (
     DeserializationError,
     IncompatiblePayloadField,
+    SchemaError,
     SerializationError,
     UnexpectedPayloadType,
     UnknownPayloadField,
@@ -14,71 +14,48 @@ from aiosnow.exceptions import (
 
 from .fields.base import BaseField
 from .fields.mapped import MappedField
+from .nested import Nested
 
 
-class BaseSchemaMeta(marshmallow.schema.SchemaMeta):
+class ModelSchemaMeta(marshmallow.schema.SchemaMeta):
     def __new__(mcs, name: str, bases: tuple, attrs: dict) -> Any:
-        base_cls = bases[0]
-        base_fields = getattr(base_cls, "_declared_fields", {})
-        fields = deepcopy(base_fields)
-        fields.update(getattr(mcs, "_declared_fields", {}))  # Merge
-
-        for key, value in attrs.items():
-            if isinstance(value, BaseField):
-                fields[key] = value
-                fields[key].name = key
-            elif isinstance(value, BaseSchemaMeta):
-                fields[key] = Nested(key, value, allow_none=True, required=False)
-
-        attrs["fields"] = fields
-
-        if "Meta" in attrs:
-            attrs["Meta"] = type("Meta", (base_cls.Meta, ), {**attrs["Meta"].__dict__})
-
+        attrs["fields"] = fields = {
+            k: v for k, v in attrs.items() if isinstance(v, (BaseField, Nested))
+        }
         cls = super().__new__(mcs, name, bases, attrs)
-
-        for name, field in fields.items():
-            setattr(cls, name, field)
+        for k, v in fields.items():
+            setattr(cls, k, v)
 
         return cls
 
 
-class Nested(marshmallow.fields.Nested):
-    def __init__(self, parent_name: str, nested_cls: type, *args: Any, **kwargs: Any):
-        fields = getattr(nested_cls, "_declared_fields", {})
+class ModelSchema(marshmallow.Schema, metaclass=ModelSchemaMeta):
+    @property
+    def _primary_key(self) -> Union[str, None]:
+        pks = self._pk_candidates
 
-        for name, field in fields.items():
-            field.name = f"{parent_name}.{name}"
-            setattr(self, name, field)
-
-        super(Nested, self).__init__(nested_cls, *args, **kwargs)
-
-
-class BaseSchema(marshmallow.Schema, metaclass=BaseSchemaMeta):
-    """Abstract base schema
-
-    Attributes:
-        nested_fields (list): List of nested field names
-    """
-
-    class Meta:
-        @property
-        def return_only(self) -> None:
-            """Return only these fields"""
+        if len(pks) > 1:
+            raise SchemaError(
+                f"Multiple primary keys (is_primary) supplied "
+                f"in {self.__class__.__name__}. Maximum allowed is 1."
+            )
+        elif len(pks) == 0:
             return None
 
-    aiosnow_meta: Any = None
-    _nested_fields = {}
+        return pks[0]
 
-    def __init__(self, *args: Any, **kwargs: Any):
-        self._nested_fields.update({
-            n: f for n, f in self.fields.items() if isinstance(f, Nested)
-        })
-        super(BaseSchema, self).__init__(*args, **kwargs)
+    @property
+    def _pk_candidates(self) -> list:
+        return [
+            n
+            for n, f in self.fields.items()
+            if isinstance(f, BaseField) and f.is_primary is True
+        ]
 
     @marshmallow.pre_load
     def _load_response(self, data: Union[list, dict], **_: Any) -> Union[list, dict]:
         """Load response content
+        @TODO - move into load()
 
         Args:
             data: Dictionary of fields to deserialize
@@ -106,7 +83,7 @@ class BaseSchema(marshmallow.Schema, metaclass=BaseSchemaMeta):
         """
 
         for key, value in content.items():
-            field = self.fields.get(key, None)
+            field = self._declared_fields.get(key, None)
 
             if not field:
                 warnings.warn(
@@ -154,9 +131,9 @@ class BaseSchema(marshmallow.Schema, metaclass=BaseSchemaMeta):
 
             yield key, value
 
-    def load(self, *args: Any, **kwargs: Any) -> dict:
+    def load_content(self, *args: Any, **kwargs: Any) -> dict:
         try:
-            return super().load(*args, **kwargs)
+            return self._do_load(*args, partial=True, postprocess=True, **kwargs)
         except marshmallow.exceptions.ValidationError as e:
             raise DeserializationError(e)
 

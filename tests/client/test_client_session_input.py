@@ -18,7 +18,7 @@ def test_client_session_invalid_type():
         Client(**fail_int)
 
 
-def test_client_session_mutual_exclusive():
+def test_client_session_mutually_exclusive():
     """Passing both a session and session factory configuration should raise ConfigurationException"""
 
     session = Session()
@@ -31,7 +31,7 @@ def test_client_session_mutual_exclusive():
 
 
 def test_client_session_no_auth_method():
-    """No authentication method to Client should raise ConfigurationException"""
+    """No passing of authentication method to Client should raise ConfigurationException"""
 
     with pytest.raises(ConfigurationError):
         Client("test.service-now.com")
@@ -47,20 +47,20 @@ def test_client_session_config_full():
         verify_ssl=True,
     )
 
-    snow = Client(**config)
+    client = Client(**config)
 
-    assert snow.config.address == config["address"]
-    assert snow.config.session.basic_auth == config["basic_auth"]
-    assert snow.config.session.use_ssl == config["use_ssl"]
-    assert snow.config.session.verify_ssl == config["verify_ssl"]
+    assert client.config.address == config["address"]
+    assert client.config.session.basic_auth == config["basic_auth"]
+    assert client.config.session.use_ssl == config["use_ssl"]
+    assert client.config.session.verify_ssl == config["verify_ssl"]
 
 
 def test_client_session_object():
     """Compatible user-provided Session objects should be returned from Client.get_session"""
 
     session = Session()
-    snow = Client("test.service-now.com", session=session)
-    assert snow.get_session() == snow._preconf_session == session
+    client = Client("test.service-now.com", session=session)
+    assert client.get_session() == client._preconf_session == session
 
 
 def test_client_session_invalid_response_class():
@@ -76,6 +76,6 @@ def test_client_session_response_class():
     """Compatible user-provided Session objects should be returned from Client.get_session"""
 
     session = aiohttp.ClientSession(response_class=Response)
-    snow = Client("test.service-now.com", session=session)
+    client = Client("test.service-now.com", session=session)
 
-    assert snow.get_session()._response_class == Response
+    assert client.get_session()._response_class == Response

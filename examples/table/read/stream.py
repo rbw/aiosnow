@@ -1,10 +1,10 @@
 from aiosnow import select
-from aiosnow.schemas.table import IncidentSchema as Incident
+from aiosnow.models.table.examples import IncidentModel as Incident
 
 
-async def main(snow):
-    async with snow.get_table(Incident) as inc:
-        query = select(Incident.number.starts_with("INC001")).order_asc(Incident.number)
+async def main(client):
+    async with Incident(client, table_name="incident") as inc:
+        query = select().order_asc(inc.number)
 
-        async for _, record in inc.stream(query, limit=500, page_size=50):
+        async for response, record in inc.stream(query, limit=500, page_size=50):
             print(record["number"], record["short_description"])
