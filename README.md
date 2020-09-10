@@ -16,14 +16,15 @@
 
 ```python
 import asyncio
-import aiosnow
-from aiosnow.schemas.table import IncidentSchema as Incident
 
-snow = aiosnow.Client("<instance>.service-now.com", basic_auth=("<username>", "<password>"))
+import aiosnow
+from aiosnow.models.table.examples import IncidentModel as Incident
 
 async def main():
+    client = aiosnow.Client("<instance>.service-now.com", basic_auth=("<username>", "<password>"))
+
     # Make a TableModel object for interacting with the table API
-    async with snow.get_table(Incident) as inc:
+    async with Incident(client, table_name="incident") as inc:
         # Fetch high-priority incidents
         for response in await inc.get(Incident.priority <= 3, limit=5):
             print(f"Number: {response['number']}, Priority: {response['priority'].value}")
