@@ -1,4 +1,4 @@
 from . import fields
-from .base import BaseSchema, BaseSchemaMeta
+from .base import ModelSchema, ModelSchemaMeta
 from .helpers import Pluck
-from .partial import PartialSchema
+from .nested import Nested

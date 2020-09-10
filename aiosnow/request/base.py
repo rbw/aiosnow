@@ -25,14 +25,18 @@ class BaseRequest(ABC):
     ):
         self.api_url = api_url
         self.session = session
-        self.fields = fields or []
+        self.fields = [str(f) for f in fields or []]
         self.url_segments: List[str] = []
         self.headers_default = {"Content-type": CONTENT_TYPE}
         self._req_id = f"REQ_{hex(int(round(time.time() * 1000)))}"
 
     @property
     def url_params(self) -> dict:
-        return dict(sysparm_display_value="all", sysparm_fields=",".join(self.fields),)
+        params = dict(sysparm_display_value="all")
+        if self.fields:
+            params["sysparm_fields"] = ",".join(self.fields)
+
+        return params
 
     @property
     def url(self) -> str:
@@ -72,11 +76,10 @@ class BaseRequest(ABC):
         kwargs["headers"] = headers
 
         method = kwargs.pop("method", self._method)
-        url = kwargs.pop("url", self.url)
 
         try:
             self.log.debug(f"{self._req_id}: {self}")
-            response = await self.session.request(method, url, **kwargs)
+            response = await self.session.request(method, self.url, **kwargs)
             self.log.debug(f"{self._req_id}: {response}")
         except client_exceptions.ClientConnectionError as exc:
             raise ClientConnectionError(str(exc)) from exc
@@ -92,7 +95,7 @@ class BaseRequest(ABC):
             )
 
         if decode:
-            await response.load()
+            await response.load_document()
         else:
             response.data = await response.read()
 

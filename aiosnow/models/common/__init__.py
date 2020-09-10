@@ -1,2 +1,2 @@
 from .base import BaseModel
-from .schema import BaseSchema, BaseSchemaMeta, PartialSchema, Pluck, fields
+from .schema import ModelSchema, Pluck, fields

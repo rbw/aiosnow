@@ -1,11 +1,7 @@
-from aiosnow.models.common.schema import fields
-from aiosnow.models.table import TableSchema
+from aiosnow.models import TableModel, fields
 
 
-class IncidentSchema(TableSchema):
-    class Meta:
-        table_name = "incident"
-
+class IncidentModel(TableModel):
     sys_id = fields.String(is_primary=True)
     impact = fields.IntegerMap()
     number = fields.String()
