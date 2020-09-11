@@ -1,5 +1,5 @@
-import pytest
 import marshmallow
+import pytest
 
 from aiosnow.models import fields
 from aiosnow.query.utils import select
@@ -24,8 +24,12 @@ def test_fields_boolean_deserialize_plain_invalid(mock_boolean_field):
 
 
 def test_fields_boolean_select_falsy(mock_boolean_field):
-    assert select(mock_boolean_field("test_bool").is_falsy()).sysparms == "test_bool!=true"
+    assert (
+        select(mock_boolean_field("test_bool").is_falsy()).sysparms == "test_bool!=true"
+    )
 
 
 def test_fields_boolean_select_true(mock_boolean_field):
-    assert select(mock_boolean_field("test_bool").is_true()).sysparms == "test_bool=true"
+    assert (
+        select(mock_boolean_field("test_bool").is_true()).sysparms == "test_bool=true"
+    )

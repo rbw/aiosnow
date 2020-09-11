@@ -4,7 +4,7 @@ import pytest
 from aiohttp import web
 
 from aiosnow.client import Client
-from aiosnow.models.common import BaseModel, ModelSchema, fields
+from aiosnow.models.common import BaseModel, fields
 from aiosnow.request.response import Response
 
 
@@ -115,4 +115,3 @@ def mock_integermap_field(mock_field):
         return mock_field(fields.IntegerMap, name, **kwargs)
 
     yield go
-
