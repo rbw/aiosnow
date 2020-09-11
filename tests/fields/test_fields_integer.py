@@ -1,5 +1,5 @@
-import pytest
 import marshmallow
+import pytest
 
 from aiosnow.query.utils import select
 
@@ -21,7 +21,10 @@ def test_fields_integer_deserialize_mapping(mock_integermap_field):
 
 
 def test_fields_integer_query_between(mock_integer_field):
-    assert select(mock_integer_field("test_int").between(1, 3)).sysparms == "test_intBETWEEN1@3"
+    assert (
+        select(mock_integer_field("test_int").between(1, 3)).sysparms
+        == "test_intBETWEEN1@3"
+    )
 
 
 def test_fields_integer_query_equals(mock_integer_field):
@@ -29,15 +32,23 @@ def test_fields_integer_query_equals(mock_integer_field):
 
 
 def test_fields_integer_greater_or_equals(mock_integer_field):
-    assert select(mock_integer_field("test_int").greater_or_equals(0)).sysparms == "test_int>=0"
+    assert (
+        select(mock_integer_field("test_int").greater_or_equals(0)).sysparms
+        == "test_int>=0"
+    )
 
 
 def test_fields_integer_greater_than(mock_integer_field):
-    assert select(mock_integer_field("test_int").greater_than(2)).sysparms == "test_int>2"
+    assert (
+        select(mock_integer_field("test_int").greater_than(2)).sysparms == "test_int>2"
+    )
 
 
 def test_fields_integer_less_or_equals(mock_integer_field):
-    assert select(mock_integer_field("test_int").less_or_equals(2)).sysparms == "test_int<=2"
+    assert (
+        select(mock_integer_field("test_int").less_or_equals(2)).sysparms
+        == "test_int<=2"
+    )
 
 
 def test_fields_integer_less_than(mock_integer_field):
@@ -45,4 +56,6 @@ def test_fields_integer_less_than(mock_integer_field):
 
 
 def test_fields_integer_not_equals(mock_integer_field):
-    assert select(mock_integer_field("test_int").not_equals(2)).sysparms == "test_int!=2"
+    assert (
+        select(mock_integer_field("test_int").not_equals(2)).sysparms == "test_int!=2"
+    )
