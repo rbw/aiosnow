@@ -3,20 +3,21 @@
 Fields
 ======
 
-The field classes serves two purposes. First, they are used when defining schemas. Second, they can be used for building queries.
+The :ref:`aiosnow.fields <fields-root>` module provides a set of typed classes for:
+
+    1) Defining schemas
+    2) Building queries
+    3) Serializing data
 
 *Example, schema definition & querying*
 
 .. code-block:: python
 
     import aiosnow
-    from aiosnow.models import fields, TableSchema
+    from aiosnow.models import fields, TableModel
 
 
-    class Incident(TableSchema):
-        class Meta:
-            table_name = "incident"
-
+    class Incident(TableModel):
         sys_id = fields.String(is_primary=True)
         number = fields.String()
         description = fields.String()
