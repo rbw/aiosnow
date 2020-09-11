@@ -1,6 +1,5 @@
-import pytest
-
 import marshmallow
+import pytest
 
 from aiosnow.models import fields
 from aiosnow.query.utils import select
@@ -52,7 +51,9 @@ def test_fields_datetime_before(mock_datetime_field):
 def test_fields_datetime_between(mock_datetime_field):
     assert (
         select(
-            mock_datetime_field("test_dt").between("2018-12-24 02:03:04", "2019-12-24 02:03:04")
+            mock_datetime_field("test_dt").between(
+                "2018-12-24 02:03:04", "2019-12-24 02:03:04"
+            )
         ).sysparms
         == "test_dtBETWEEN2018-12-24 02:03:04@2019-12-24 02:03:04"
     )
