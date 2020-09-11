@@ -1,13 +1,13 @@
 Example
 -------
 
-A simple **aiosnow** application.
+A simple :class:`aiosnow.Client`.
 
 .. code-block:: python
 
     import aiosnow
 
-    snow = aiosnow.Client(
+    client = aiosnow.Client(
         address="<instance-name>.service-now.com",
         basic_auth=("<username>", "<password>")
     )
