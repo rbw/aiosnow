@@ -3,7 +3,7 @@
 Client
 ======
 
-The :class:`~aiosnow.Client` object provides means to interact with ServiceNow.
+The :class:`~aiosnow.Client` object provides means to communicate with ServiceNow.
 
 API
 ---

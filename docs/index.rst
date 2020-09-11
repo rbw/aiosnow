@@ -50,7 +50,7 @@ Table of Contents
    :titlesonly:
 
    reference/client/index
-   reference/schema/index
    reference/models/index
+   reference/fields/index
    reference/response
    reference/exceptions

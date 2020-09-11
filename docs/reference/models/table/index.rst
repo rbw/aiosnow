@@ -1,8 +1,7 @@
 Table
 =====
 
-Objects of this type are typically created via :meth:`~aiosnow.Client.get_table` and provides an interface for working with the ServiceNow Table API.
-
+ServiceNow Table API model.
 
 API
 ---
@@ -15,6 +14,5 @@ API
 .. toctree::
    :hidden:
 
-   schema
    example
-
+   schemas/index
