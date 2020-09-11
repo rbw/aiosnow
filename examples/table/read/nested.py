@@ -23,6 +23,8 @@ async def main(client):
             agrp = response["assignment_group"]
             print(
                 "{number} is assigned to group: {ag_name} ({ag_id})".format(
-                    number=response["number"], ag_id=agrp["sys_id"], ag_name=agrp["name"]
+                    number=response["number"],
+                    ag_id=agrp["sys_id"],
+                    ag_name=agrp["name"],
                 )
             )
