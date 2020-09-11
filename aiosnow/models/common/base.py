@@ -56,7 +56,7 @@ class BaseModelMeta(type):
                         f"The Field :attribute: parameter can be used to give a field an alias."
                     )
 
-        attrs["schema_cls"] = type(name.capitalize() + "Schema", (ModelSchema,), fields)
+        attrs["schema_cls"] = type(name + "Schema", (ModelSchema,), fields)
         cls = super().__new__(mcs, name, bases, attrs)
 
         return cls

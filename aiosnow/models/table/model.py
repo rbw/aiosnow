@@ -66,9 +66,7 @@ class TableModel(BaseModel):
 
         while not stream.exhausted:
             async for response in stream.get_next():
-                for record in self.schema.load_content(
-                    response.data, many=True
-                ):
+                for record in self.schema.load_content(response.data, many=True):
                     yield response, record
 
     async def get(
