@@ -46,7 +46,7 @@ Table of Contents
 
 .. toctree::
    :caption: Reference
-   :maxdepth: 3
+   :maxdepth: 4
    :titlesonly:
 
    reference/client/index
