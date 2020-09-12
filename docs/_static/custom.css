@@ -4,10 +4,6 @@ span.pre {
     color: #28748c;
 }
 
-span:hover {
-    text-decoration: none !important;
-}
-
 pre {
     background-color: #f6f7e2;
     border: 1px solid #a8bd0b;

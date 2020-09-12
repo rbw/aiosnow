@@ -18,7 +18,7 @@
 import asyncio
 
 import aiosnow
-from aiosnow.models.table.examples import IncidentModel as Incident
+from aiosnow.models.table.builtins import IncidentModel as Incident
 
 async def main():
     client = aiosnow.Client("<instance>.service-now.com", basic_auth=("<username>", "<password>"))

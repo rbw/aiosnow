@@ -1,10 +1,9 @@
-.. _ref-model:
+.. _models:
 
 Models
 ======
 
-Models are single, definitive sources of information that contains :ref:`attributes <fields-root>` and behaviors
-for reading and manipulating data via the ServiceNow API.
+Models contain :ref:`attributes <fields-root>` and *behaviors* for reading and manipulating data in ServiceNow.
 
 
 .. toctree::

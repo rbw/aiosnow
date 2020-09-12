@@ -1,5 +1,5 @@
 from aiosnow import fields, select
-from aiosnow.models.table.examples import IncidentModel as Incident, JournalModel
+from aiosnow.models.table.builtins import IncidentModel as Incident, JournalModel
 
 
 class Journal(JournalModel):

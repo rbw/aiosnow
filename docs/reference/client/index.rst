@@ -3,7 +3,7 @@
 Client
 ======
 
-The :class:`aiosnow.Client` object provides means to communicate with ServiceNow.
+The *Client* object, typically used via :ref:`Models <models>`, provides means to communicate with ServiceNow.
 
 API
 ---
