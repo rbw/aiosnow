@@ -23,7 +23,6 @@ from aiosnow.models.table.examples import IncidentModel as Incident
 async def main():
     client = aiosnow.Client("<instance>.service-now.com", basic_auth=("<username>", "<password>"))
 
-    # Make a TableModel object for interacting with the table API
     async with Incident(client, table_name="incident") as inc:
         # Fetch high-priority incidents
         for response in await inc.get(Incident.priority <= 3, limit=5):
