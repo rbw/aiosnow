@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from typing import Any, AsyncGenerator, Union
 
+from aiosnow.client import Client
 from aiosnow.exceptions import (
     DeleteError,
     NoItems,
@@ -24,7 +25,7 @@ class TableModel(BaseModel):
 
     _config: dict = {"table_name": str, "return_only": []}
 
-    def __init__(self, client, table_name: str, return_only=None):
+    def __init__(self, client: Client, table_name: str, return_only: list = None):
         self._config["table_name"] = table_name
         self._config["return_only"] = return_only or []
         super(TableModel, self).__init__(client)
@@ -129,23 +130,10 @@ class TableModel(BaseModel):
 
         return response
 
-    async def get_pk_value(self, sysparm_query: str) -> str:
-        """Given a query, return the resulting record's PK field's value
-
-        Args:
-            sysparm_query: aiosnow-compatible query
-
-        Returns:
-            PK field's value
-        """
-
-        response = await self.get_one(sysparm_query)
-        return response[self._primary_key]
-
     async def get_object_id(self, value: Union[Condition, str]) -> str:
         """Get object id by str or Condition
 
-        Immediately return if value is str.
+        Immediately return if value is of str type.
 
         Args:
             value: Condition or str
@@ -155,8 +143,8 @@ class TableModel(BaseModel):
         """
 
         if isinstance(value, Condition):
-            record = await self.get_one(value, return_only=["sys_id"])
-            return record.data["sys_id"]
+            record = await self.get_one(value, return_only=[self._primary_key])
+            return record.__dict__[self._primary_key]
         elif isinstance(value, str):
             return value
         else:
