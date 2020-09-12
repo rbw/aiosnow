@@ -1,3 +1,13 @@
+span.pre {
+    border-bottom: 1px dotted;
+    font-weight: normal !important;
+    color: #28748c;
+}
+
+span:hover {
+    text-decoration: none !important;
+}
+
 pre {
     background-color: #f6f7e2;
     border: 1px solid #a8bd0b;
@@ -63,7 +73,7 @@ img.logo {
 
 .note {
     background-color: #fffeeb !important;
-    padding: 20px 20px 10px 30px !important;
+    padding: 10px 20px 10px 20px !important;
 }
 
 dl.field-list > dt {
