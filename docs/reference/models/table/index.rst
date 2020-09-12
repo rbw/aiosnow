@@ -1,7 +1,7 @@
 Table
 =====
 
-ServiceNow Table API model.
+ServiceNow Table API Model.
 
 API
 ---
@@ -15,4 +15,4 @@ API
    :hidden:
 
    example
-   classes/index
+   builtins/index
