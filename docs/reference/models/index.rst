@@ -3,10 +3,13 @@
 Models
 ======
 
-Models contain :ref:`attributes <fields-root>` and *behaviors* for reading and manipulating data in ServiceNow.
+Models contain :ref:`attributes <fields-root>` and behaviors for reading and manipulating data in ServiceNow.
 
 
 .. toctree::
    :titlesonly:
 
    table/index
+   attachment/index
+   aggregate/index
+   importset/index
