@@ -3,11 +3,11 @@
 Fields
 ======
 
-The :ref:`aiosnow.fields <fields-root>` module offers a set of typed classes for:
+The :ref:`aiosnow.fields <fields-root>` module is a collection of typed field classes for:
 
-    - Defining Models
+    - Defining Model schemas
+    - Performing serialization
     - Building queries
-    - Serializing data
 
 *Example, schema definition & querying*
 

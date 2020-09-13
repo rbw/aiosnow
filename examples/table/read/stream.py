@@ -1,5 +1,5 @@
 from aiosnow import select
-from aiosnow.models.table.builtins import IncidentModel as Incident
+from aiosnow.models.table.declared import IncidentModel as Incident
 
 
 async def main(client):
