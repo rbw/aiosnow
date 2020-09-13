@@ -3,11 +3,6 @@ IntegerMap
 
 Converts nested mapping to a named tuple.
 
-.. note::
-
-    This field has querying powers of :ref:`Integer <fields-integer>`: (id <Integer>, string <String>)
-
-
 Response content of:
 
 .. code-block:: json
@@ -23,4 +18,10 @@ Gets deserialized into:
 
 .. code-block:: python
 
-    Mapping(id=2, text="2 - Medium")
+    Mapping(key=2, value="2 - Medium")
+
+
+.. note::
+
+    This field has querying powers of :ref:`Integer <fields-integer>`: (id <Integer>, string <String>)
+

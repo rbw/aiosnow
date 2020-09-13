@@ -5,9 +5,9 @@ Fields
 
 The :ref:`aiosnow.fields <fields-root>` module is a collection of typed field classes for:
 
-    - Defining Model schemas
-    - Performing serialization
+    - Declaring Models
     - Building queries
+    - Serializing data
 
 *Example, schema definition & querying*
 
@@ -38,6 +38,7 @@ The :ref:`aiosnow.fields <fields-root>` module is a collection of typed field cl
 
 .. toctree::
    :maxdepth: 2
+   :hidden:
 
    string
    integer

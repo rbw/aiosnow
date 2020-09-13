@@ -4,9 +4,12 @@ span.pre {
     color: #28748c;
 }
 
+pre, .viewcode-block {
+    background-color: #f4fff5 !important;
+}
+
 pre {
-    background-color: #f6f7e2;
-    border: 1px solid #a8bd0b;
+    border: 1px solid #d7e8bf;
 }
 
 body {
