@@ -15,4 +15,4 @@ API
    :hidden:
 
    example
-   builtins/index
+   schemas/index

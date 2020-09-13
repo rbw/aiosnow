@@ -3,7 +3,7 @@
 Client
 ======
 
-The *Client* object, typically used via :ref:`Models <models>`, provides means to communicate with ServiceNow.
+The *Client* is typically invoked via :ref:`Models <models>` and provides means to communicate with ServiceNow.
 
 API
 ---

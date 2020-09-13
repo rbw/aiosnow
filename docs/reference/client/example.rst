@@ -1,7 +1,7 @@
 Example
 -------
 
-A simple :class:`aiosnow.Client`.
+A simple :class:`aiosnow.Client` using *basic auth* for authentication.
 
 .. code-block:: python
 

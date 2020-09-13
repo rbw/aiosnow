@@ -1,5 +1,5 @@
 from aiosnow import fields, select
-from aiosnow.models.table.builtins import IncidentModel
+from aiosnow.models.table.declared import IncidentModel
 from aiosnow.models.common.schema import ModelSchema
 
 
