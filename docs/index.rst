@@ -52,5 +52,6 @@ Table of Contents
    reference/client/index
    reference/models/index
    reference/fields/index
+   reference/query
    reference/response
    reference/exceptions
