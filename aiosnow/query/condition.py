@@ -13,7 +13,6 @@ class Condition:
         self.operator_logical = ""
         self.selection = [self]
 
-    @property
     def __str__(self) -> str:
         return (
             (self.operator_logical or "")

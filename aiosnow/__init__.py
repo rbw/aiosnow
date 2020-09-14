@@ -1,3 +1,3 @@
 from .client import Client
-from .models.common import BaseModel, Pluck, fields
+from .models import BaseModel, ModelSchema, Pluck, TableModel, fields
 from .query import QueryBuilder, select
