@@ -1,13 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, List, Union
+from typing import Any, List, Union
 
 from aiosnow.consts import SORT_ASCENDING, SORT_DESCENDING
 
 from .condition import Condition
-
-if TYPE_CHECKING:
-    from aiosnow.models.common.schema.fields import BaseField
 
 
 class QueryBuilder:
@@ -21,7 +18,7 @@ class QueryBuilder:
 
     @classmethod
     def from_segments(cls, items: List[Condition]) -> QueryBuilder:
-        sysparms = "".join([i.__str__ for i in items])
+        sysparms = "".join([str(i) for i in items])
         return cls.produce_builder(sysparms)
 
     @classmethod
