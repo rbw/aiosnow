@@ -12,6 +12,6 @@ def select(value: Union[QueryBuilder, Condition, str] = None) -> QueryBuilder:
     elif isinstance(value, QueryBuilder):
         return value
     elif isinstance(value, Condition):
-        return QueryBuilder.from_segments(value.selection)
+        return QueryBuilder.from_chain(value.selection)
     else:
         raise SelectError(f"Can only query by type {Condition} or {str}")
