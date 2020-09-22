@@ -1,4 +1,5 @@
-from aiosnow.query import Condition, DateTimeOperator
+from aiosnow.query.condition import Condition
+from aiosnow.query.operators import DateTimeOperator
 
 from .base import BaseQueryable
 

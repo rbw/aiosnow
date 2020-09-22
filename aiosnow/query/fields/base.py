@@ -1,7 +1,9 @@
 from typing import Any, Union
 
 from aiosnow.exceptions import AiosnowException, UnexpectedValue
-from aiosnow.query import BaseOperator, Condition
+from aiosnow.query.condition import Condition
+from aiosnow.query.operators import BaseOperator
+
 
 from .utils import serialize_list
 

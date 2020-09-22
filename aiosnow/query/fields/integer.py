@@ -1,4 +1,5 @@
-from aiosnow.query import Condition, NumericOperator
+from aiosnow.query.condition import Condition
+from aiosnow.query.operators import IntegerOperator
 
 from .base import BaseQueryable
 
@@ -12,7 +13,7 @@ class IntegerQueryable(BaseQueryable):
         """
 
         return self._condition(
-            NumericOperator.EQUALS, value, field_operator=NumericOperator.SAME
+            IntegerOperator.EQUALS, value, field_operator=IntegerOperator.SAME
         )
 
     def not_equals(self, value: int) -> Condition:
@@ -23,7 +24,7 @@ class IntegerQueryable(BaseQueryable):
         """
 
         return self._condition(
-            NumericOperator.NOT_EQUALS, value, field_operator=NumericOperator.DIFFERENT
+            IntegerOperator.NOT_EQUALS, value, field_operator=IntegerOperator.DIFFERENT
         )
 
     def less_than(self, value: int) -> Condition:
@@ -34,7 +35,7 @@ class IntegerQueryable(BaseQueryable):
         """
 
         return self._condition(
-            NumericOperator.LESS, value, field_operator=NumericOperator.Related.LESS
+            IntegerOperator.LESS, value, field_operator=IntegerOperator.Related.LESS
         )
 
     def greater_than(self, value: int) -> Condition:
@@ -45,9 +46,9 @@ class IntegerQueryable(BaseQueryable):
         """
 
         return self._condition(
-            NumericOperator.GREATER,
+            IntegerOperator.GREATER,
             value,
-            field_operator=NumericOperator.Related.GREATER,
+            field_operator=IntegerOperator.Related.GREATER,
         )
 
     def less_or_equals(self, value: int) -> Condition:
@@ -58,9 +59,9 @@ class IntegerQueryable(BaseQueryable):
         """
 
         return self._condition(
-            NumericOperator.LESS_EQUALS,
+            IntegerOperator.LESS_EQUALS,
             value,
-            field_operator=NumericOperator.Related.LESS_EQUALS,
+            field_operator=IntegerOperator.Related.LESS_EQUALS,
         )
 
     def greater_or_equals(self, value: int) -> Condition:
@@ -71,9 +72,9 @@ class IntegerQueryable(BaseQueryable):
         """
 
         return self._condition(
-            NumericOperator.GREATER_EQUALS,
+            IntegerOperator.GREATER_EQUALS,
             value,
-            field_operator=NumericOperator.Related.GREATER_EQUALS,
+            field_operator=IntegerOperator.Related.GREATER_EQUALS,
         )
 
     def between(self, value1: int, value2: int) -> Condition:
@@ -87,4 +88,4 @@ class IntegerQueryable(BaseQueryable):
         """
 
         value = f"{value1}@{value2}"
-        return self._condition(NumericOperator.BETWEEN, value)
+        return self._condition(IntegerOperator.BETWEEN, value)

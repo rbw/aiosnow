@@ -1,4 +1,5 @@
-from aiosnow.query import Condition, StringOperator
+from aiosnow.query.condition import Condition
+from aiosnow.query.operators import StringOperator
 
 from .base import BaseQueryable
 

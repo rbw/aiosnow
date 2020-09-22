@@ -27,7 +27,7 @@ class ReferenceField(StringOperator):
     pass
 
 
-class NumericOperator(BaseOperator):
+class IntegerOperator(BaseOperator):
     class Related:
         GREATER = "GT_FIELD"
         LESS = "LT_FIELD"

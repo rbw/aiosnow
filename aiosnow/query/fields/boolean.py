@@ -1,4 +1,5 @@
-from aiosnow.query import BooleanOperator, Condition
+from aiosnow.query.condition import Condition
+from aiosnow.query.operators import BooleanOperator
 
 from .base import BaseQueryable
 

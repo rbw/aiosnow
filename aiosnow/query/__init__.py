@@ -12,7 +12,7 @@ from .operators import (
     DateTimeOperator,
     EmailOperator,
     LogicalOperator,
-    NumericOperator,
+    IntegerOperator,
     ReferenceField,
     StringOperator,
 )
