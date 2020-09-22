@@ -143,8 +143,8 @@ class TableModel(BaseModel):
         """
 
         if isinstance(value, Condition):
-            record = await self.get_one(value, return_only=[self._primary_key])
-            return record.__dict__[self._primary_key]
+            response = await self.get_one(value, return_only=[self._primary_key])
+            return response.data[self._primary_key]
         elif isinstance(value, str):
             return value
         else:

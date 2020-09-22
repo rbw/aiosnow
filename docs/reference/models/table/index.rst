@@ -1,7 +1,7 @@
 Table
 =====
 
-ServiceNow Table API Model.
+The *TableModel* defines items of, and provides means for working with, a ServiceNow table.
 
 API
 ---
@@ -14,5 +14,4 @@ API
 .. toctree::
    :hidden:
 
-   example
    schemas/index

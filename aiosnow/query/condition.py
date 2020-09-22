@@ -13,8 +13,12 @@ class Condition:
         self.operator_logical = ""
         self.selection = [self]
 
-    @property
     def __str__(self) -> str:
+        """Condition string representation
+
+        Returns: ServiceNow sysparm string
+        """
+
         return (
             (self.operator_logical or "")
             + self.operand_left
@@ -23,15 +27,30 @@ class Condition:
         )
 
     def _set_next(self, next_cond: Condition, operator: str) -> Condition:
+        """Append the given condition to the chain
+
+        Args:
+            next_cond: Condition
+            operator: Logical operator
+
+        Returns: Condition
+        """
+
         next_cond.operator_logical = operator
         self.selection.append(next_cond)
         return self
 
     def __and__(self, next_cond: Condition) -> Condition:
+        """Appends ^ Condition to chain"""
+
         return self._set_next(next_cond, LogicalOperator.AND)
 
     def __or__(self, next_cond: Condition) -> Condition:
+        """Appends ^OR Condition to chain"""
+
         return self._set_next(next_cond, LogicalOperator.OR)
 
     def __xor__(self, next_cond: Condition) -> Condition:
+        """Appends ^NQ Condition to chain"""
+
         return self._set_next(next_cond, LogicalOperator.NQ)

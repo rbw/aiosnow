@@ -46,11 +46,19 @@ Table of Contents
 
 .. toctree::
    :caption: Reference
-   :maxdepth: 4
+   :maxdepth: 3
    :titlesonly:
 
-   reference/client/index
+   reference/client
    reference/models/index
    reference/fields/index
+   reference/condition
    reference/response
    reference/exceptions
+
+.. toctree::
+   :caption: Usage
+
+   usage/connect
+   usage/model/index
+   usage/query/index

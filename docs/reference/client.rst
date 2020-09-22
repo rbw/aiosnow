@@ -11,10 +11,3 @@ API
 .. automodule:: aiosnow
    :members: Client
    :exclude-members: get_session
-
-
-.. toctree::
-   :hidden:
-
-   config
-   example
