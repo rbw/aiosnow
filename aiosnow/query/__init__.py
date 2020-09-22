@@ -10,4 +10,10 @@ from .operators import (
     ReferenceField,
     StringOperator,
 )
+from .fields import (
+    StringQueryable,
+    IntegerQueryable,
+    BooleanQueryable,
+    DateTimeQueryable
+)
 from .utils import select
