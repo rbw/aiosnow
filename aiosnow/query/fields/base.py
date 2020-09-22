@@ -50,7 +50,9 @@ class BaseQueryable:
     ) -> Condition:
         if isinstance(value, self.__class__):
             if not field_operator:
-                raise UnexpectedValue(f"{operator} does not support field-to-field comparison")
+                raise UnexpectedValue(
+                    f"{operator} does not support field-to-field comparison"
+                )
 
             operator = field_operator
             value = value.name

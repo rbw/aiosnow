@@ -1,5 +1,11 @@
 from .builder import QueryBuilder
 from .condition import Condition
+from .fields import (
+    BooleanQueryable,
+    DateTimeQueryable,
+    IntegerQueryable,
+    StringQueryable,
+)
 from .operators import (
     BaseOperator,
     BooleanOperator,
@@ -9,11 +15,5 @@ from .operators import (
     NumericOperator,
     ReferenceField,
     StringOperator,
-)
-from .fields import (
-    StringQueryable,
-    IntegerQueryable,
-    BooleanQueryable,
-    DateTimeQueryable
 )
 from .utils import select
