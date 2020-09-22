@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, List, Union
+from typing import Any, List
 
 from aiosnow.consts import SORT_ASCENDING, SORT_DESCENDING
 
@@ -17,7 +17,7 @@ class QueryBuilder:
         return builder
 
     @classmethod
-    def from_segments(cls, items: List[Condition]) -> QueryBuilder:
+    def from_chain(cls, items: List[Condition]) -> QueryBuilder:
         sysparms = "".join([str(i) for i in items])
         return cls.produce_builder(sysparms)
 
@@ -44,7 +44,7 @@ class QueryBuilder:
         self.sysparms += self._order_by(value, ascending=False)
         return self
 
-    def order_asc(self, value: Union[str, BaseField]) -> QueryBuilder:
+    def order_asc(self, value: Any) -> QueryBuilder:
         self.sysparms += self._order_by(value)
         return self
 
