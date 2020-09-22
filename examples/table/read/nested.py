@@ -22,7 +22,8 @@ async def main(client):
         for response in await api.get(query, limit=1):
             agrp = response["assignment_group"]
             print(
-                "{number} is assigned to group: {ag_name} ({ag_id})".format(
+                "{number} ({sys_id}) is assigned to group: {ag_name} ({ag_id})".format(
+                    sys_id=response["sys_id"],
                     number=response["number"],
                     ag_id=agrp["sys_id"],
                     ag_name=agrp["name"],

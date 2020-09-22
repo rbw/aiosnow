@@ -11,23 +11,24 @@ CREDENTIALS = "<username>", "<password>"
 DEBUG = True
 
 
-if len(sys.argv) != 2:
+if len(sys.argv) < 2:
     print(
         f"Usage: run.py <path.to.example>\nExample: python3 examples/run.py table.read.nested"
     )
     sys.exit(1)
 
 
-def run_example(path, client):
+def run_example(path):
     module = import_module(path)
     if not hasattr(module, "main"):
         raise AttributeError(f"Missing member main() in example {path}")
 
-    example = import_module(path).main(client)
+    client = Client(ADDRESS, basic_auth=CREDENTIALS)
+    example = import_module(path).main(client, *sys.argv[2:])
     asyncio.run(example)
 
 
 if DEBUG:
     logging.basicConfig(level=logging.DEBUG)
 
-run_example(sys.argv[1], client=Client(ADDRESS, basic_auth=CREDENTIALS))
+run_example(sys.argv[1])

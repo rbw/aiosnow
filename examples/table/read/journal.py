@@ -9,13 +9,13 @@ class Journal(JournalModel):
     value = fields.String(attribute="message")
 
 
-async def main(client):
+async def main(client, q_number: str):
     async with Incident(
         client,
         table_name="incident",
         return_only=["sys_id", "number", "short_description"],
     ) as inc:
-        response = await inc.get_one(Incident.number == "INC0000005")
+        response = await inc.get_one(Incident.number == q_number)
         record = response.data
         async with Journal(
             client,
