@@ -73,12 +73,12 @@ class BaseModel(metaclass=BaseModelMeta):
 
     def __init__(self, client: Client):
         self._client = client
-        self._primary_key = getattr(self.schema_cls, "_primary_key")
         self.fields = dict(self.schema_cls.fields)
         self.nested_fields = {
             n: f for n, f in self.fields.items() if isinstance(f, Nested)
         }
         self.schema = self.schema_cls(unknown=marshmallow.EXCLUDE)
+        self._primary_key = getattr(self.schema, "_primary_key")
 
     @property
     @abstractmethod
