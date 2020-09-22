@@ -20,7 +20,3 @@ Gets deserialized into:
 
     Mapping(key="2", value="2 - Medium")
 
-
-.. note::
-
-    This field has querying powers of :ref:`String <fields-string>`: (id <String>, string <String>)

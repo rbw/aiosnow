@@ -1,7 +1,8 @@
-Example
+Connect
 -------
 
-A simple :class:`aiosnow.Client` using *basic auth* for authentication.
+To connect to ServiceNow, a :class:`~aiosnow.Client` must be created.
+
 
 .. code-block:: python
 

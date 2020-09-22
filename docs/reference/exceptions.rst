@@ -1,5 +1,5 @@
 Exceptions
-----------
+==========
 
 .. automodule:: aiosnow.exceptions
    :members:
