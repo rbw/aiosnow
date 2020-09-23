@@ -1,3 +1,5 @@
+.. _usage-query-list:
+
 List
 ====
 
@@ -15,5 +17,6 @@ When querying for a list of items, :func:`aiosnow.select` with chained condition
         Incident.assignment_group.name.equals("Hardware")
     ).order_desc(Incident.number)
 
-    response = await inc.get(query, limit=10)
-    print(f"The query yielded {len(response.data)} items.")
+    async with Incident(client, table_name="incident") as inc:
+        response = await inc.get(query, limit=10)
+        print("The query yielded {} items.".format(len(response.data)))

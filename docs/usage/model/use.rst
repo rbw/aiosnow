@@ -1,7 +1,9 @@
 Use
 ---
 
-Declared Models can be instantiated and used to read and manipulate data in ServiceNow.
+A declared Model can be instantiated for reading and altering data in ServiceNow.
+
+*Example*
 
 .. code-block:: python
 

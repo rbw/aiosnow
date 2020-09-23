@@ -1,7 +1,7 @@
 Declare
 -------
 
-Model declaration can be done using :ref:`aiosnow.fields <fields-root>`.
+Model declaration is done using :ref:`aiosnow.fields <fields-root>`.
 
 
 *Example*
@@ -11,9 +11,10 @@ Model declaration can be done using :ref:`aiosnow.fields <fields-root>`.
     from aiosnow import TableModel, fields
 
     class Incident(TableModel):
-        name = fields.String()
-        group = fields.StringMap()
-        age = fields.Integer()
-        enabled = fields.Boolean()
-        created_at = fields.DateTime()
-
+        sys_id = fields.String(primary_key=True)
+        number = fields.String()
+        impact = fields.IntegerMap()
+        priority = fields.Integer()
+        assignment_group = fields.StringMap()
+        sys_created_on = fields.DateTime()
+        made_sla = fields.Boolean()

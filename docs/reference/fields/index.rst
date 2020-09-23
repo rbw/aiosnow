@@ -10,7 +10,7 @@ The :ref:`aiosnow.fields <fields-root>` module is a collection of typed field cl
     - Serializing data
 
 
-*Field types*
+*Classes*
 
 .. toctree::
    :maxdepth: 2
