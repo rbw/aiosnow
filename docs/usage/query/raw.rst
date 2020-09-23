@@ -2,7 +2,7 @@ Raw
 ===
 
 Shows how a sysparm query string can be passed directly to a query method.
-See the :class:`aiosnow.query.Condition` equivalent :ref:`here <usage-query-list>`.
+See the :class:`~aiosnow.query.condition.Condition` equivalent :ref:`here <usage-query-list>`.
 
 .. code-block:: python
 
