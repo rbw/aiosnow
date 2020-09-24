@@ -11,7 +11,7 @@ Model declaration is done using :ref:`aiosnow.fields <fields-root>`.
     from aiosnow import TableModel, fields
 
     class Incident(TableModel):
-        sys_id = fields.String(primary_key=True)
+        sys_id = fields.String(is_primary=True)
         number = fields.String()
         impact = fields.IntegerMap()
         priority = fields.Integer()
