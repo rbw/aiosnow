@@ -11,46 +11,64 @@ class Condition:
         self.operand_right = value
         self.operator_conditional = operator
         self.operator_logical = ""
-        self.selection = [self]
+        self.registry = [self]
 
     def __str__(self) -> str:
-        """Condition string representation
+        return self.serialize()
 
-        Returns: ServiceNow sysparm string
-        """
-
-        return (
-            (self.operator_logical or "")
-            + self.operand_left
-            + self.operator_conditional
-            + str(self.operand_right)
+    def serialize(self, cond: Condition = None) -> str:
+        c = cond or self
+        return "".join(
+            [
+                c.operator_logical,
+                c.operand_left,
+                c.operator_conditional,
+                str(c.operand_right),
+            ]
         )
 
-    def _set_next(self, next_cond: Condition, operator: str) -> Condition:
-        """Append the given condition to the chain
+    def serialize_registry(self) -> str:
+        """Condition string representation
 
-        Args:
-            next_cond: Condition
-            operator: Logical operator
-
-        Returns: Condition
+        Returns: sysparm query
         """
 
-        next_cond.operator_logical = operator
-        self.selection.append(next_cond)
+        chain = ""
+
+        for c in self.registry:
+            chain += self.serialize(c)
+
+        return chain
+
+    def _merge_registry(self, registry: list) -> None:
+        self.registry += registry
+
+    def _add_condition(self, cond: Condition, operator: str) -> Condition:
+        """Adds a new condition to chain
+
+        Args:
+            cond: Condition
+            operator: Logical operator
+
+        Returns: self
+        """
+
+        cond.operator_logical = str(operator)
+        self._merge_registry(cond.registry)
+
         return self
 
     def __and__(self, next_cond: Condition) -> Condition:
         """Appends ^ Condition to chain"""
 
-        return self._set_next(next_cond, LogicalOperator.AND)
+        return self._add_condition(next_cond, LogicalOperator.AND)
 
     def __or__(self, next_cond: Condition) -> Condition:
         """Appends ^OR Condition to chain"""
 
-        return self._set_next(next_cond, LogicalOperator.OR)
+        return self._add_condition(next_cond, LogicalOperator.OR)
 
     def __xor__(self, next_cond: Condition) -> Condition:
         """Appends ^NQ Condition to chain"""
 
-        return self._set_next(next_cond, LogicalOperator.NQ)
+        return self._add_condition(next_cond, LogicalOperator.NQ)

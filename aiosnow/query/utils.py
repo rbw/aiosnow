@@ -2,16 +2,18 @@ from typing import Union
 
 from aiosnow.exceptions import SelectError
 
-from .builder import QueryBuilder
 from .condition import Condition
+from .selector import Selector
 
 
-def select(value: Union[QueryBuilder, Condition, str] = None) -> QueryBuilder:
+def select(value: Union[Selector, Condition, str] = None) -> Selector:
     if value is None or isinstance(value, str):
-        return QueryBuilder.from_raw(value or "")
-    elif isinstance(value, QueryBuilder):
-        return value
+        sysparms = value or ""
     elif isinstance(value, Condition):
-        return QueryBuilder.from_chain(value.selection)
+        sysparms = value.serialize_registry()
+    elif isinstance(value, Selector):
+        return value
     else:
         raise SelectError(f"Can only query by type {Condition} or {str}")
+
+    return Selector(sysparms)

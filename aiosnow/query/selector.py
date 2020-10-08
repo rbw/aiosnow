@@ -1,29 +1,15 @@
 from __future__ import annotations
 
-from typing import Any, List
+from typing import Any
 
 from aiosnow.consts import SORT_ASCENDING, SORT_DESCENDING
 
-from .condition import Condition
 
-
-class QueryBuilder:
+class Selector:
     sysparms: str = ""
 
-    @classmethod
-    def produce_builder(cls, sysparms: str) -> QueryBuilder:
-        builder = cls()
-        builder.sysparms = sysparms
-        return builder
-
-    @classmethod
-    def from_chain(cls, items: List[Condition]) -> QueryBuilder:
-        sysparms = "".join([str(i) for i in items])
-        return cls.produce_builder(sysparms)
-
-    @classmethod
-    def from_raw(cls, sysparms: str) -> QueryBuilder:
-        return cls.produce_builder(sysparms)
+    def __init__(self, sysparms: str):
+        self.sysparms = sysparms
 
     def _order_by(self, value: Any, ascending: bool = True) -> str:
         items = value if isinstance(value, list) else [value]
@@ -40,11 +26,11 @@ class QueryBuilder:
         prefix = "^" if self.sysparms else ""
         return prefix + "^".join(sort_statements)
 
-    def order_desc(self, value: Any) -> QueryBuilder:
+    def order_desc(self, value: Any) -> Selector:
         self.sysparms += self._order_by(value, ascending=False)
         return self
 
-    def order_asc(self, value: Any) -> QueryBuilder:
+    def order_asc(self, value: Any) -> Selector:
         self.sysparms += self._order_by(value)
         return self
 
