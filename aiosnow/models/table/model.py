@@ -14,7 +14,7 @@ from aiosnow.exceptions import (
     TooManyItems,
     UnexpectedResponseContent,
 )
-from aiosnow.query import Condition, QueryBuilder, select
+from aiosnow.query import Condition, Selector, select
 from aiosnow.request import Pagestream, Response, methods
 
 from ..common import BaseModel
@@ -35,7 +35,7 @@ class TableModel(BaseModel):
         return self._client.base_url + "/api/now/table/" + self._config["table_name"]
 
     async def stream(
-        self, selection: Union[QueryBuilder, Condition, str] = None, **kwargs: Any
+        self, selection: Union[Selector, Condition, str] = None, **kwargs: Any
     ) -> AsyncGenerator:
         """Stream-like async generator
 
@@ -71,7 +71,7 @@ class TableModel(BaseModel):
                     yield response, record
 
     async def get(
-        self, selection: Union[QueryBuilder, Condition, str] = None, **kwargs: Any
+        self, selection: Union[Selector, Condition, str] = None, **kwargs: Any
     ) -> Response:
         """Buffered many
 
@@ -97,7 +97,7 @@ class TableModel(BaseModel):
         )
 
     async def get_one(
-        self, selection: Union[QueryBuilder, Condition, str], **kwargs: Any
+        self, selection: Union[Selector, Condition, str], **kwargs: Any
     ) -> Response:
         """Get one record
 

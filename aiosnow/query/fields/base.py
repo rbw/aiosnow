@@ -4,7 +4,6 @@ from aiosnow.exceptions import AiosnowException, UnexpectedValue
 from aiosnow.query.condition import Condition
 from aiosnow.query.operators import BaseOperator
 
-
 from .utils import serialize_list
 
 
