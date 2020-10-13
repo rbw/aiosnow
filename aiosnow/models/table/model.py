@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import json
 from typing import Any, AsyncGenerator, Union
 
@@ -23,11 +21,8 @@ from ..common import BaseModel
 class TableModel(BaseModel):
     """Table API model"""
 
-    _config: dict = {"table_name": str, "return_only": []}
-
     def __init__(self, client: Client, table_name: str, return_only: list = None):
-        self._config["table_name"] = table_name
-        self._config["return_only"] = return_only or []
+        self._config = dict(table_name=table_name, return_only=return_only or [])
         super(TableModel, self).__init__(client)
 
     @property
