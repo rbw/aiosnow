@@ -54,10 +54,7 @@ class AttachmentModel(TableModel):
         )
         file = FileWriter(attachment["file_name"])
         with file as f:
-            # The idea here is to fetch chunks of data as yielded
-            # by the API and write directly to the file's buffer.
-            async for data_chunk, _ in response.content.iter_chunks():
-                await self.loop.run_in_executor(self.io_pool_exc, f.write, data_chunk)
+            await self.loop.run_in_executor(self.io_pool_exc, f.write, await response.read())
 
         return file
 
