@@ -38,10 +38,10 @@ class AttachmentModel(TableModel):
     hash = fields.String()
     sys_created_by = fields.String()
 
-    def __init__(self, client: Client, table_name: str, return_only: list = None):
+    def __init__(self, client: Client, return_only: list = None):
         self.io_pool_exc = ThreadPoolExecutor(max_workers=10)
         self.loop = asyncio.get_running_loop()
-        super(AttachmentModel, self).__init__(client, table_name, return_only)
+        super(AttachmentModel, self).__init__(client, "", return_only)
 
     @property
     def _api_url(self) -> str:
