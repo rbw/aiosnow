@@ -8,7 +8,7 @@ from aiosnow.models.common import fields
 from aiosnow.models.table import TableModel
 from aiosnow.query import Condition, Selector
 from aiosnow.request import methods
-from aiosnow.request.response import ClientResponse
+from aiosnow.request.response import ClientResponse, Response
 
 from .file import FileHandler, FileReader, FileWriter
 
@@ -63,6 +63,9 @@ class AttachmentModel(TableModel):
 
         return f
 
+    async def update(self, selection: Union[Condition, str], payload: dict) -> Response:
+        pass
+
     async def upload(
         self, table_name: str, record_sys_id: str, file_name: str, **kwargs: Any
     ) -> ClientResponse:
@@ -70,7 +73,7 @@ class AttachmentModel(TableModel):
             content = await self.loop.run_in_executor(self.io_pool_exc, f.read)
 
         content_type, _ = guess_type(file_name)
-        response = await self._session.request(
+        response = await self.request(
             methods.POST,
             url=f"{self._api_url}/file",
             params=dict(
@@ -79,5 +82,4 @@ class AttachmentModel(TableModel):
             headers={"Content-type": content_type},
             data=content,
         )
-
         return response

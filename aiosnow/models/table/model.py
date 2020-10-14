@@ -86,6 +86,7 @@ class TableModel(BaseModel):
 
         return await self.request(
             methods.GET,
+            fields=kwargs.pop("return_only", self._config["return_only"]),
             query=select(selection).sysparms,
             nested_fields=self.nested_fields,
             **kwargs,
