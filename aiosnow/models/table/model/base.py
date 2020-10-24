@@ -1,4 +1,5 @@
 import json
+from abc import abstractmethod
 from typing import Any, AsyncGenerator, Union
 
 from aiosnow.client import Client
@@ -15,19 +16,23 @@ from aiosnow.exceptions import (
 from aiosnow.query import Condition, Selector, select
 from aiosnow.request import Pagestream, Response, methods
 
-from ..common import BaseModel
+from aiosnow.models.common import BaseModel
 
 
-class TableModel(BaseModel):
+class BaseTableModel(BaseModel):
     """Table API model"""
 
-    def __init__(self, client: Client, table_name: str, return_only: list = None):
-        self._config = dict(table_name=table_name, return_only=return_only or [])
-        super(TableModel, self).__init__(client)
+    def __init__(
+        self, client: Client, table_name: str = None, return_only: list = None
+    ):
+        self._table_name = table_name
+        self._return_only = return_only
+        super(BaseTableModel, self).__init__(client)
 
     @property
-    def _api_url(self) -> str:
-        return self._client.base_url + "/api/now/table/" + self._config["table_name"]
+    @abstractmethod
+    def _api_url(self) -> Any:
+        pass
 
     async def stream(
         self, selection: Union[Selector, Condition, str] = None, **kwargs: Any
@@ -54,7 +59,7 @@ class TableModel(BaseModel):
             api_url=self._api_url,
             query=select(selection).sysparms,
             session=self._session,
-            fields=kwargs.pop("return_only", self._config["return_only"])
+            fields=kwargs.pop("return_only", self._return_only)
             or self.schema.fields.keys(),
             nested_fields=self.nested_fields,
             **kwargs,
@@ -86,7 +91,6 @@ class TableModel(BaseModel):
 
         return await self.request(
             methods.GET,
-            fields=kwargs.pop("return_only", self._config["return_only"]),
             query=select(selection).sysparms,
             nested_fields=self.nested_fields,
             **kwargs,

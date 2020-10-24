@@ -3,9 +3,8 @@ from concurrent.futures import ThreadPoolExecutor
 from mimetypes import guess_type
 from typing import Any, Union
 
-from aiosnow.client import Client
 from aiosnow.models.common import fields
-from aiosnow.models.table import TableModel
+from aiosnow.models.table import BaseTableModel
 from aiosnow.query import Condition, Selector
 from aiosnow.request import methods
 from aiosnow.request.response import ClientResponse, Response
@@ -13,7 +12,7 @@ from aiosnow.request.response import ClientResponse, Response
 from .file import FileHandler, FileReader, FileWriter
 
 
-class AttachmentModel(TableModel):
+class AttachmentModel(BaseTableModel):
     """Attachment API model"""
 
     sys_id = fields.String(is_primary=True)
@@ -38,10 +37,10 @@ class AttachmentModel(TableModel):
     hash = fields.String()
     sys_created_by = fields.String()
 
-    def __init__(self, client: Client, return_only: list = None):
+    def __init__(self, *args, **kwargs):
         self.io_pool_exc = ThreadPoolExecutor(max_workers=10)
         self.loop = asyncio.get_running_loop()
-        super(AttachmentModel, self).__init__(client, "", return_only)
+        super(AttachmentModel, self).__init__(*args, **kwargs)
 
     @property
     def _api_url(self) -> str:
@@ -50,8 +49,9 @@ class AttachmentModel(TableModel):
     async def download(
         self, selection: Union[Selector, Condition, str], dst_dir: str = "."
     ) -> FileHandler:
+        print(selection)
         meta = await self.get_one(selection)
-        data = await self._session.request(
+        data = await self.request(
             methods.GET,
             url=meta["download_link"],
             headers={"Content-type": meta["content_type"]},
@@ -80,6 +80,6 @@ class AttachmentModel(TableModel):
                 table_name=table_name, table_sys_id=record_sys_id, file_name=file_name
             ),
             headers={"Content-type": content_type},
-            data=content,
+            payload=content,
         )
         return response

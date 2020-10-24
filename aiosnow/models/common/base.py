@@ -85,18 +85,18 @@ class BaseModel(metaclass=BaseModelMeta):
     def _api_url(self) -> Any:
         pass
 
-    async def request(self, method: str, *args: Any, **kwargs: Any) -> Response:
-        kwargs.update(
-            dict(
-                api_url=self._api_url,
-                session=self._session,
-                fields=kwargs.pop("return_only", self._config["return_only"])
-                or self.fields.keys(),
-            )
-        )
+    #@classmethod
+    #def use(cls):
 
+    async def request(self, method: str, *args: Any, **kwargs: Any) -> Response:
         req_cls = req_cls_map[method]
-        response = await req_cls(*args, **kwargs).send()
+        response = await req_cls(
+            *args,
+            api_url=kwargs.pop("url", self._api_url),
+            session=self._session,
+            fields=kwargs.pop("return_only", self._config["return_only"]),
+            **kwargs,
+        ).send()
 
         if method != methods.DELETE:
             response.data = self.schema.load_content(
