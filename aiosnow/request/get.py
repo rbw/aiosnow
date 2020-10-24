@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, Iterable, Union
+from typing import Any, Dict, Union
 from urllib.parse import urlparse
 
 from . import methods
@@ -21,8 +21,7 @@ class GetRequest(BaseRequest):
         query: str = None,
         **kwargs: Any,
     ):
-        self.nested_fields = nested_fields or {}
-        self.nested_attrs = list(self._nested_attrs)
+        self.nested_fields = list(self._nested_with_path(nested_fields or {}, []))
         self._limit = offset + limit
         self._offset = offset
         self.query = query
@@ -42,10 +41,36 @@ class GetRequest(BaseRequest):
     def limit(self) -> int:
         return self._limit
 
-    @property
-    def _nested_attrs(self) -> Iterable:
-        for field in self.nested_fields.values():
-            yield from field.nested.fields.keys()
+    def _nested_with_path(self, fields, path_base):
+        path = path_base or []
+
+        for k, v in fields.items():
+            if not hasattr(v, "nested"):
+                continue
+
+            yield path + [k], k, v.schema
+            yield from list(self._nested_with_path(v.schema.fields, path_base=path + [k]))
+
+    def _get_expanded(self, path, document, nested_data, level=1):
+        waypoint = path[level - 1]
+
+        if waypoint not in document:
+            document[waypoint] = {}
+
+        if level < len(path):
+            return self._get_expanded(path, document, nested_data, level+1)
+        elif level == len(path):
+            document[waypoint] = nested_data
+
+        return document
+
+    async def __expand_nested(self, document: dict):
+        for path, field_name, _ in self.nested_fields:
+            data = document.get(field_name)
+            if data and "link" in data:
+                document[field_name] = self._get_expanded(path, document, await self.get_cached(data["link"]))
+
+        return document
 
     async def _expand_nested(
         self, content: Union[dict, list, None]
@@ -53,35 +78,17 @@ class GetRequest(BaseRequest):
         if not self.nested_fields:
             pass
         elif isinstance(content, dict):
-            nested = await self._resolve_nested(content)
-            content.update(nested)
+            content = await self.__expand_nested(content)
         elif isinstance(content, list):
             for idx, record in enumerate(content):
-                nested = await self._resolve_nested(record)
-                content[idx].update(nested)
+                content[idx] = await self.__expand_nested(record)
 
         return content
 
-    async def _resolve_nested(self, content: dict) -> dict:
-        nested: Dict[Any, Any] = {}
-        nested_attrs = list(self.nested_attrs)
-
-        for field_name in self.nested_fields.keys():
-            item = content[field_name]
-            if not item or not item["display_value"]:
-                continue
-            elif "link" not in item:
-                nested[field_name] = item
-                continue
-
-            nested[field_name] = await self.get_cached(item["link"], nested_attrs)
-
-        return nested
-
-    async def get_cached(self, url: str, fields: list) -> dict:
+    async def get_cached(self, url: str) -> dict:
         if url not in _cache:
             record_id = urlparse(url).path.split("/")[-1]
-            request = GetRequest(url, self.session, fields=fields)
+            request = GetRequest(url, self.session)
             response = await request._send(method=methods.GET)
             self.log.debug(f"Caching response for: {record_id}")
             _cache[url] = response.data
