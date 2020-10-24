@@ -17,7 +17,7 @@ from aiosnow.request import (
     methods,
 )
 
-from .schema import ModelSchema, Nested
+from .schema import ModelSchema, ModelSchemaMeta, Nested
 from .schema.fields import BaseField
 
 req_cls_map = {
@@ -30,36 +30,27 @@ req_cls_map = {
 
 class BaseModelMeta(type):
     def __new__(mcs, name: str, bases: tuple, attrs: dict) -> Any:
-        fields = {}
+        attrs["fields"] = fields = {}
+        base_attrs = {}
 
         for base in bases:
-            fields.update(base.schema_cls._declared_fields)
+            base_attrs.update(base.__dict__)
+            inherited_fields = getattr(base.schema_cls, "_declared_fields")
+            fields.update(inherited_fields)
 
-        for key, value in attrs.copy().items():
-            if isinstance(value, BaseField):
-                fields[key] = value
-                fields[key].name = key
-            elif isinstance(value, marshmallow.schema.SchemaMeta):
-                fields[key] = Nested(key, value, allow_none=True, required=False)
-            else:
-                continue
-
-            # Do not allow override of base members with schema Field attributes.
-            for base in bases:
-                existing_member = getattr(base, key, None)
-                if existing_member is not None and not issubclass(
-                    existing_member.__class__,
-                    (BaseField, marshmallow.schema.SchemaMeta),
-                ):
+        for k, v in attrs.copy().items():
+            if isinstance(v, (BaseField, Nested, ModelSchemaMeta)):
+                if k in base_attrs.keys():
                     raise InvalidFieldName(
-                        f"Field :{name}.{key}: conflicts with a base member, name it something else. "
+                        f"Field :{name}.{k}: conflicts with a base member, name it something else. "
                         f"The Field :attribute: parameter can be used to give a field an alias."
                     )
 
-        attrs["schema_cls"] = type(name + "Schema", (ModelSchema,), fields)
-        cls = super().__new__(mcs, name, bases, attrs)
+                fields[k] = v
 
-        return cls
+        # Create the Model Schema
+        attrs["schema_cls"] = type(name + "Schema", (ModelSchema,), attrs["fields"])
+        return super().__new__(mcs, name, bases, attrs)
 
 
 class BaseModel(metaclass=BaseModelMeta):
@@ -74,10 +65,8 @@ class BaseModel(metaclass=BaseModelMeta):
     def __init__(self, client: Client):
         self._client = client
         self.fields = dict(self.schema_cls.fields)
-        self.nested_fields = {
-            n: f for n, f in self.fields.items() if isinstance(f, Nested)
-        }
         self.schema = self.schema_cls(unknown=marshmallow.EXCLUDE)
+        self.nested_fields = self.schema.nested_fields
         self._primary_key = getattr(self.schema, "_primary_key")
 
     @property
