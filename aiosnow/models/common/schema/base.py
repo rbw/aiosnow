@@ -19,10 +19,19 @@ from .nested import Nested
 
 class ModelSchemaMeta(marshmallow.schema.SchemaMeta):
     def __new__(mcs, name: str, bases: tuple, attrs: dict) -> Any:
-        attrs["fields"] = fields = {
-            k: v for k, v in attrs.items() if isinstance(v, (BaseField, Nested))
-        }
-        cls = super().__new__(mcs, name, bases, attrs)
+        fields = attrs["fields"] = {}
+
+        for k, v in attrs.copy().items():
+            if isinstance(v, BaseField):
+                fields[k] = v
+                fields[k].name = k
+            elif isinstance(v, ModelSchemaMeta):
+                fields[k] = Nested(k, v, allow_none=True, required=False)
+            else:
+                continue
+
+        cls = super().__new__(mcs, name, bases, {**attrs, **fields})
+
         for k, v in fields.items():
             setattr(cls, k, v)
 
@@ -130,6 +139,10 @@ class ModelSchema(marshmallow.Schema, metaclass=ModelSchemaMeta):
                 raise UnknownPayloadField(f"Unknown field in payload {key}")
 
             yield key, value
+
+    @property
+    def nested_fields(self):
+        return {n: f for n, f in self.fields.items() if isinstance(f, Nested)}
 
     def load_content(self, *args: Any, **kwargs: Any) -> dict:
         try:
