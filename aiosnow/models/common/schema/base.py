@@ -1,4 +1,3 @@
-import warnings
 from typing import Any, Iterable, Tuple, Union
 
 import marshmallow
@@ -93,12 +92,6 @@ class ModelSchema(marshmallow.Schema, metaclass=ModelSchemaMeta):
 
         for key, value in content.items():
             field = self._declared_fields.get(key, None)
-
-            if not field:
-                warnings.warn(
-                    f"Unexpected field in response content: {key}, skipping..."
-                )
-                continue
 
             if isinstance(field, BaseField):
                 if isinstance(value, dict) and {"value", "display_value"} <= set(
