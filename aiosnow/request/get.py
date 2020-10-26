@@ -1,6 +1,4 @@
-from __future__ import annotations
-
-from typing import Any, Dict, Union
+from typing import Any, Union
 from urllib.parse import urlparse
 
 from . import methods
@@ -51,54 +49,64 @@ class GetRequest(BaseRequest):
             yield path + [k], k, v.schema
             yield from list(self._nested_with_path(v.schema.fields, path_base=path + [k]))
 
-    def _get_expanded(self, path, document, nested_data, level=1):
-        waypoint = path[level - 1]
+    async def __expand_document(self, document):
+        for path, field_name, schema in self.nested_fields:
+            if not path or not isinstance(path, list):
+                continue
 
-        if waypoint not in document:
-            document[waypoint] = {}
+            target_field = path.pop(-1)
+            sub_document = document.copy()
 
-        if level < len(path):
-            return self._get_expanded(path, document, nested_data, level+1)
-        elif level == len(path):
-            document[waypoint] = nested_data
+            while len(path) > 0:
+                current_field = path[-1]
+                sub_document = sub_document[current_field]
+                path = path[1:]
+
+            if not sub_document.get(target_field):
+                continue
+            elif "link" not in sub_document[target_field]:
+                continue
+
+            nested_data = await self.get_cached(
+                sub_document[target_field]["link"],
+                fields=schema.fields.keys()
+            )
+            sub_document[field_name] = nested_data
+            document.update(sub_document)
 
         return document
 
-    async def __expand_nested(self, document: dict):
-        for path, field_name, _ in self.nested_fields:
-            data = document.get(field_name)
-            if data and "link" in data:
-                document[field_name] = self._get_expanded(path, document, await self.get_cached(data["link"]))
-
-        return document
-
-    async def _expand_nested(
+    async def _expand_document(
         self, content: Union[dict, list, None]
     ) -> Union[dict, list, None]:
         if not self.nested_fields:
             pass
         elif isinstance(content, dict):
-            content = await self.__expand_nested(content)
+            content = await self.__expand_document(content)
         elif isinstance(content, list):
             for idx, record in enumerate(content):
-                content[idx] = await self.__expand_nested(record)
+                content[idx] = await self.__expand_document(record)
 
         return content
 
-    async def get_cached(self, url: str) -> dict:
+    async def get_cached(self, url: str, fields: list = None) -> dict:
+        cache_key = hash(url + "".join(fields or []))
+        record_id = urlparse(url).path.split("/")[-1]
+
         if url not in _cache:
-            record_id = urlparse(url).path.split("/")[-1]
-            request = GetRequest(url, self.session)
+            request = GetRequest(url, self.session, fields=fields)
             response = await request._send(method=methods.GET)
             self.log.debug(f"Caching response for: {record_id}")
-            _cache[url] = response.data
+            _cache[cache_key] = response.data
+        else:
+            self.log.debug(f"Feching {record_id} from cache")
 
-        return _cache[url]
+        return _cache[cache_key]
 
     async def send(self, *args: Any, resolve: bool = True, **kwargs: Any) -> Any:
         response = await self._send(**kwargs)
         if resolve:
-            response.data = await self._expand_nested(response.data)
+            response.data = await self._expand_document(response.data)
 
         return response
 
