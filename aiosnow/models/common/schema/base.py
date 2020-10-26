@@ -20,7 +20,7 @@ class ModelSchemaMeta(marshmallow.schema.SchemaMeta):
     def __new__(mcs, name: str, bases: tuple, attrs: dict) -> Any:
         fields = attrs["fields"] = {}
 
-        for k, v in attrs.copy().items():
+        for k, v in attrs.items():
             if isinstance(v, BaseField):
                 fields[k] = v
                 fields[k].name = k
