@@ -19,15 +19,31 @@ from .nested import Nested
 class ModelSchemaMeta(marshmallow.schema.SchemaMeta):
     def __new__(mcs, name: str, bases: tuple, attrs: dict) -> Any:
         fields = attrs["fields"] = {}
+        nested_fields = attrs["nested_fields"] = {}
+        pks = []
 
         for k, v in attrs.items():
             if isinstance(v, BaseField):
+                if v.is_primary:
+                    pks.append(k)
+
                 fields[k] = v
                 fields[k].name = k
             elif isinstance(v, ModelSchemaMeta):
                 fields[k] = Nested(k, v, allow_none=True, required=False)
+                nested_fields.update({k: fields[k]})
             else:
                 continue
+
+        if len(pks) == 1:
+            attrs["_primary_key"] = pks[0]
+        elif len(pks) == 0:
+            attrs["_primary_key"] = None
+        elif len(pks) > 1:
+            raise SchemaError(
+                f"Multiple primary keys (is_primary) supplied "
+                f"in {name}. Maximum allowed is 1."
+            )
 
         cls = super().__new__(mcs, name, bases, {**attrs, **fields})
 
@@ -38,28 +54,6 @@ class ModelSchemaMeta(marshmallow.schema.SchemaMeta):
 
 
 class ModelSchema(marshmallow.Schema, metaclass=ModelSchemaMeta):
-    @property
-    def _primary_key(self) -> Union[str, None]:
-        pks = self._pk_candidates
-
-        if len(pks) > 1:
-            raise SchemaError(
-                f"Multiple primary keys (is_primary) supplied "
-                f"in {self.__class__.__name__}. Maximum allowed is 1."
-            )
-        elif len(pks) == 0:
-            return None
-
-        return pks[0]
-
-    @property
-    def _pk_candidates(self) -> list:
-        return [
-            n
-            for n, f in self.fields.items()
-            if isinstance(f, BaseField) and f.is_primary is True
-        ]
-
     @marshmallow.pre_load
     def _load_response(self, data: Union[list, dict], **_: Any) -> Union[list, dict]:
         """Load response content
@@ -132,10 +126,6 @@ class ModelSchema(marshmallow.Schema, metaclass=ModelSchemaMeta):
                 raise UnknownPayloadField(f"Unknown field in payload {key}")
 
             yield key, value
-
-    @property
-    def nested_fields(self):
-        return {n: f for n, f in self.fields.items() if isinstance(f, Nested)}
 
     def load_content(self, *args: Any, **kwargs: Any) -> dict:
         try:
