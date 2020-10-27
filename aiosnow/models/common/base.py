@@ -31,16 +31,16 @@ req_cls_map = {
 class BaseModelMeta(type):
     def __new__(mcs, name: str, bases: tuple, attrs: dict) -> Any:
         attrs["fields"] = fields = {}
-        base_attrs = {}
+        base_members = {}
 
         for base in bases:
-            base_attrs.update(base.__dict__)
+            base_members.update({k: v for k, v in base.__dict__.items() if not isinstance(v, (BaseField, Nested, ModelSchemaMeta))})
             inherited_fields = getattr(base.schema_cls, "_declared_fields")
             fields.update(inherited_fields)
 
-        for k, v in attrs.copy().items():
+        for k, v in attrs.items():
             if isinstance(v, (BaseField, Nested, ModelSchemaMeta)):
-                if k in base_attrs.keys():
+                if k in base_members.keys():
                     raise InvalidFieldName(
                         f"Field :{name}.{k}: conflicts with a base member, name it something else. "
                         f"The Field :attribute: parameter can be used to give a field an alias."
