@@ -21,7 +21,7 @@ class BaseRequest(ABC):
     log = logging.getLogger("aiosnow.request")
 
     def __init__(
-        self, api_url: str, session: Session, fields: list = None,
+        self, api_url: str, session: Session, fields: dict = None,
     ):
         self.api_url = api_url
         self.session = session

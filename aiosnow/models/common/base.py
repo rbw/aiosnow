@@ -34,7 +34,13 @@ class BaseModelMeta(type):
         base_members = {}
 
         for base in bases:
-            base_members.update({k: v for k, v in base.__dict__.items() if not isinstance(v, (BaseField, Nested, ModelSchemaMeta))})
+            base_members.update(
+                {
+                    k: v
+                    for k, v in base.__dict__.items()
+                    if not isinstance(v, (BaseField, Nested, ModelSchemaMeta))
+                }
+            )
             inherited_fields = getattr(base.schema_cls, "_declared_fields")
             fields.update(inherited_fields)
 
@@ -66,7 +72,7 @@ class BaseModel(metaclass=BaseModelMeta):
         self._client = client
         self.fields = dict(self.schema_cls.fields)
         self.schema = self.schema_cls(unknown=marshmallow.EXCLUDE)
-        self.nested_fields = self.schema.nested_fields
+        self.nested_fields = getattr(self.schema, "nested_fields")
         self._primary_key = getattr(self.schema, "_primary_key")
 
     @property
