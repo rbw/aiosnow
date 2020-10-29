@@ -1,4 +1,4 @@
-from typing import Any, Union
+from typing import Any, Union, Generator
 from urllib.parse import urlparse
 
 from . import methods
@@ -39,7 +39,7 @@ class GetRequest(BaseRequest):
     def limit(self) -> int:
         return self._limit
 
-    def _nested_with_path(self, fields, path_base):
+    def _nested_with_path(self, fields: dict, path_base: list) -> Generator:
         path = path_base or []
 
         for k, v in fields.items():
@@ -47,9 +47,11 @@ class GetRequest(BaseRequest):
                 continue
 
             yield path + [k], k, v.schema
-            yield from list(self._nested_with_path(v.schema.fields, path_base=path + [k]))
+            yield from list(
+                self._nested_with_path(v.schema.fields, path_base=path + [k])
+            )
 
-    async def __expand_document(self, document):
+    async def __expand_document(self, document: dict) -> dict:
         for path, field_name, schema in self.nested_fields:
             if not path or not isinstance(path, list):
                 continue
@@ -68,8 +70,7 @@ class GetRequest(BaseRequest):
                 continue
 
             nested_data = await self.get_cached(
-                sub_document[target_field]["link"],
-                fields=schema.fields.keys()
+                sub_document[target_field]["link"], fields=schema.fields.keys()
             )
             sub_document[field_name] = nested_data
             document.update(sub_document)

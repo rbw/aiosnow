@@ -1,8 +1,8 @@
 import pytest
 
-from aiosnow.models import fields, ModelSchema
-from aiosnow.query.fields import StringQueryable, IntegerQueryable
 from aiosnow.exceptions import SchemaError
+from aiosnow.models import ModelSchema, fields
+from aiosnow.query.fields import IntegerQueryable, StringQueryable
 
 
 def test_model_schema_field_registration():
@@ -18,10 +18,14 @@ def test_model_schema_field_registration():
 
 def test_model_schema_primary_key():
     with pytest.raises(SchemaError):
-        type("TestSchema", (ModelSchema, ), dict(
-            test1=fields.String(is_primary=True),
-            test2=fields.Integer(is_primary=True)
-        ))
+        type(
+            "TestSchema",
+            (ModelSchema,),
+            dict(
+                test1=fields.String(is_primary=True),
+                test2=fields.Integer(is_primary=True),
+            ),
+        )
 
 
 def test_model_schema_nested():
@@ -42,4 +46,3 @@ def test_model_schema_load_response_content():
 
 def test_model_schema_dump_request_payload():
     pass
-
