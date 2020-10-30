@@ -1,7 +1,7 @@
 import pytest
 
 from aiosnow.exceptions import SchemaError
-from aiosnow.models import ModelSchema, fields, Pluck
+from aiosnow.models import ModelSchema, Pluck, fields
 from aiosnow.query.fields import IntegerQueryable, StringQueryable
 
 
@@ -37,10 +37,7 @@ def test_model_schema_dumps_loads():
         test1 = fields.String()
         test2 = fields.Integer()
 
-    dict_obj = dict(
-        test1="test",
-        test2=123
-    )
+    dict_obj = dict(test1="test", test2=123)
 
     json_obj = MainDocument().dumps(dict_obj)
     assert isinstance(json_obj, str)
@@ -55,10 +52,7 @@ def test_model_schema_loads():
         test2 = fields.Integer()
 
     json_obj = """{"test1": "test", "test2": 123}"""
-    dict_obj = dict(
-        test1="test",
-        test2=123
-    )
+    dict_obj = dict(test1="test", test2=123)
 
     assert MainDocument().loads(json_obj) == dict_obj
 
@@ -83,13 +77,7 @@ def test_model_schema_nested():
     }
     """
 
-    dict_obj = dict(
-        test1="test2",
-        related=dict(
-            test2="test1",
-            test3=123
-        )
-    )
+    dict_obj = dict(test1="test2", related=dict(test2="test1", test3=123))
 
     query = MainDocument.related.test2.equals("test123")
     assert str(query) == "related.test2=test123"
