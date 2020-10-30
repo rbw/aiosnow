@@ -1,4 +1,4 @@
-from typing import Any, Union, Generator
+from typing import Any, Generator, Union
 from urllib.parse import urlparse
 
 from . import methods
