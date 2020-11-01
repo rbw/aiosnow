@@ -56,13 +56,11 @@ class GetRequest(BaseRequest):
             if not path or not isinstance(path, list):
                 continue
 
-            target_field = path.pop(-1)
+            target_field = path[-1]
             sub_document = document.copy()
 
-            while len(path) > 0:
-                current_field = path[-1]
-                sub_document = sub_document[current_field]
-                path = path[1:]
+            for name in path[:-1]:
+                sub_document = sub_document[name]
 
             if not sub_document.get(target_field):
                 continue
@@ -86,7 +84,7 @@ class GetRequest(BaseRequest):
             content = await self.__expand_document(content)
         elif isinstance(content, list):
             for idx, record in enumerate(content):
-                content[idx] = await self.__expand_document(record)
+                content[idx] = await self._expand_document(record)
 
         return content
 
