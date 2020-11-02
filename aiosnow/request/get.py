@@ -1,6 +1,6 @@
+from time import time
 from typing import Any, Generator, Union
 from urllib.parse import urlparse
-from time import time
 
 from . import methods
 from .base import BaseRequest
@@ -94,7 +94,10 @@ class GetRequest(BaseRequest):
         cache_key = hash(url + "".join(fields or []))
         record_id = urlparse(url).path.split("/")[-1]
 
-        if cache_key in self._cache and self._cache[cache_key][1] > time() - self._cache_secs:
+        if (
+            cache_key in self._cache
+            and self._cache[cache_key][1] > time() - self._cache_secs
+        ):
             self.log.debug(f"Feching {record_id} from cache")
         else:
             request = GetRequest(url, self.session, fields=fields)
