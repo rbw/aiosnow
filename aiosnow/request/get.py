@@ -1,14 +1,14 @@
 from typing import Any, Generator, Union
 from urllib.parse import urlparse
+from time import time
 
 from . import methods
 from .base import BaseRequest
 
-_cache: dict = {}
-
 
 class GetRequest(BaseRequest):
     _method = methods.GET
+    _cache: dict = {}
 
     def __init__(
         self,
@@ -17,9 +17,11 @@ class GetRequest(BaseRequest):
         limit: int = 10000,
         offset: int = 0,
         query: str = None,
+        cache_secs: int = 20,
         **kwargs: Any,
     ):
         self.nested_fields = list(self._nested_with_path(nested_fields or {}, []))
+        self._cache_secs = cache_secs
         self._limit = offset + limit
         self._offset = offset
         self.query = query
@@ -92,15 +94,15 @@ class GetRequest(BaseRequest):
         cache_key = hash(url + "".join(fields or []))
         record_id = urlparse(url).path.split("/")[-1]
 
-        if url not in _cache:
+        if cache_key in self._cache and self._cache[cache_key][1] > time() - self._cache_secs:
+            self.log.debug(f"Feching {record_id} from cache")
+        else:
             request = GetRequest(url, self.session, fields=fields)
             response = await request._send(method=methods.GET)
             self.log.debug(f"Caching response for: {record_id}")
-            _cache[cache_key] = response.data
-        else:
-            self.log.debug(f"Feching {record_id} from cache")
+            self._cache[cache_key] = response.data, time()
 
-        return _cache[cache_key]
+        return self._cache[cache_key][0]
 
     async def send(self, *args: Any, resolve: bool = True, **kwargs: Any) -> Any:
         response = await self._send(**kwargs)
