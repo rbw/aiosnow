@@ -1,16 +1,14 @@
-from __future__ import annotations
-
-from typing import Any, Dict, Iterable, Union
+from time import time
+from typing import Any, Generator, Union
 from urllib.parse import urlparse
 
 from . import methods
 from .base import BaseRequest
 
-_cache: dict = {}
-
 
 class GetRequest(BaseRequest):
     _method = methods.GET
+    _cache: dict = {}
 
     def __init__(
         self,
@@ -19,10 +17,11 @@ class GetRequest(BaseRequest):
         limit: int = 10000,
         offset: int = 0,
         query: str = None,
+        cache_secs: int = 20,
         **kwargs: Any,
     ):
-        self.nested_fields = nested_fields or {}
-        self.nested_attrs = list(self._nested_attrs)
+        self.nested_fields = list(self._nested_with_path(nested_fields or {}, []))
+        self._cache_secs = cache_secs
         self._limit = offset + limit
         self._offset = offset
         self.query = query
@@ -42,56 +41,76 @@ class GetRequest(BaseRequest):
     def limit(self) -> int:
         return self._limit
 
-    @property
-    def _nested_attrs(self) -> Iterable:
-        for field in self.nested_fields.values():
-            yield from field.nested.fields.keys()
+    def _nested_with_path(self, fields: dict, path_base: list) -> Generator:
+        path = path_base or []
 
-    async def _expand_nested(
+        for k, v in fields.items():
+            if not hasattr(v, "nested"):
+                continue
+
+            yield path + [k], k, v.schema
+            yield from list(
+                self._nested_with_path(v.schema.fields, path_base=path + [k])
+            )
+
+    async def __expand_document(self, document: dict) -> dict:
+        for path, field_name, schema in self.nested_fields:
+            if not path or not isinstance(path, list):
+                continue
+
+            target_field = path[-1]
+            sub_document = document.copy()
+
+            for name in path[:-1]:
+                sub_document = sub_document[name]
+
+            if not sub_document.get(target_field):
+                continue
+            elif "link" not in sub_document[target_field]:
+                continue
+
+            nested_data = await self.get_cached(
+                sub_document[target_field]["link"], fields=schema.fields.keys()
+            )
+            sub_document[field_name] = nested_data
+            document.update(sub_document)
+
+        return document
+
+    async def _expand_document(
         self, content: Union[dict, list, None]
     ) -> Union[dict, list, None]:
         if not self.nested_fields:
             pass
         elif isinstance(content, dict):
-            nested = await self._resolve_nested(content)
-            content.update(nested)
+            content = await self.__expand_document(content)
         elif isinstance(content, list):
             for idx, record in enumerate(content):
-                nested = await self._resolve_nested(record)
-                content[idx].update(nested)
+                content[idx] = await self._expand_document(record)
 
         return content
 
-    async def _resolve_nested(self, content: dict) -> dict:
-        nested: Dict[Any, Any] = {}
-        nested_attrs = list(self.nested_attrs)
+    async def get_cached(self, url: str, fields: list = None) -> dict:
+        cache_key = hash(url + "".join(fields or []))
+        record_id = urlparse(url).path.split("/")[-1]
 
-        for field_name in self.nested_fields.keys():
-            item = content[field_name]
-            if not item or not item["display_value"]:
-                continue
-            elif "link" not in item:
-                nested[field_name] = item
-                continue
-
-            nested[field_name] = await self.get_cached(item["link"], nested_attrs)
-
-        return nested
-
-    async def get_cached(self, url: str, fields: list) -> dict:
-        if url not in _cache:
-            record_id = urlparse(url).path.split("/")[-1]
+        if (
+            cache_key in self._cache
+            and self._cache[cache_key][1] > time() - self._cache_secs
+        ):
+            self.log.debug(f"Feching {record_id} from cache")
+        else:
             request = GetRequest(url, self.session, fields=fields)
             response = await request._send(method=methods.GET)
             self.log.debug(f"Caching response for: {record_id}")
-            _cache[url] = response.data
+            self._cache[cache_key] = response.data, time()
 
-        return _cache[url]
+        return self._cache[cache_key][0]
 
     async def send(self, *args: Any, resolve: bool = True, **kwargs: Any) -> Any:
         response = await self._send(**kwargs)
         if resolve:
-            response.data = await self._expand_nested(response.data)
+            response.data = await self._expand_document(response.data)
 
         return response
 

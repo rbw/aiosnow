@@ -21,11 +21,11 @@ class BaseRequest(ABC):
     log = logging.getLogger("aiosnow.request")
 
     def __init__(
-        self, api_url: str, session: Session, fields: list = None,
+        self, api_url: str, session: Session, fields: dict = None,
     ):
         self.api_url = api_url
         self.session = session
-        self.fields = [str(f) for f in fields or []]
+        self.fields = fields or {}
         self.url_segments: List[str] = []
         self.headers_default = {"Content-type": CONTENT_TYPE}
         self._req_id = f"REQ_{hex(int(round(time.time() * 1000)))}"

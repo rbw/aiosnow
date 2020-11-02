@@ -9,7 +9,7 @@
 **aiosnow** is a Python [asyncio](https://docs.python.org/3/library/asyncio.html) library for interacting with ServiceNow programmatically. It hopes to be:
 
 - Convenient: A good deal of work is put into making **aiosnow** flexible and easy to use.
-- Performant: Remote API calls uses non-blocking sockets tracked by an event loop, allowing large amounts of lightweight request tasks to run concurrently.
+- Performant: Uses non-blocking I/O to allow large amounts of API request tasks to run concurrently while being friendly on system resources.
 - Modular: Core functionality is componentized into modules that are built with composability and extensibility in mind.
 
 *Example code*
