@@ -5,10 +5,6 @@ from aiosnow.models import ModelSchema, Pluck, fields
 from aiosnow.query.fields import IntegerQueryable, StringQueryable
 
 
-def to_mapping(key, value):
-    return dict(value=key, display_value=value)
-
-
 def test_model_schema_field_registration():
     class TestSchema(ModelSchema):
         test1 = fields.String()
