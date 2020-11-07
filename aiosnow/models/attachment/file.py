@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from typing import BinaryIO
 
-from .utils import convert_size
+from aiosnow.utils import convert_size
 
 
 class FileHandler:

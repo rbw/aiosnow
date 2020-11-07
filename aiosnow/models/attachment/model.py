@@ -1,15 +1,15 @@
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from mimetypes import guess_type
-from typing import Any, Union
+from typing import Union
 
-from aiosnow.models.common import fields
-from aiosnow.models.table import BaseTableModel
 from aiosnow.query import Condition, Selector
 from aiosnow.request import methods
 from aiosnow.request.response import ClientResponse, Response
 
 from .file import FileHandler, FileReader, FileWriter
+
+from .._base import fields, BaseTableModel
 
 
 class AttachmentModel(BaseTableModel):
@@ -67,9 +67,9 @@ class AttachmentModel(BaseTableModel):
         pass
 
     async def upload(
-        self, table_name: str, record_sys_id: str, file_name: str, **kwargs: Any
+        self, table_name: str, record_sys_id: str, file_name: str, dir_name: str
     ) -> ClientResponse:
-        with FileReader(file_name, **kwargs) as f:
+        with FileReader(file_name, dir_name) as f:
             content = await self.loop.run_in_executor(self.io_pool_exc, f.read)
 
         content_type, _ = guess_type(file_name)
