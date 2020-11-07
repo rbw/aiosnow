@@ -1,5 +1,5 @@
 from . import fields
-from .schema import ModelSchema, ModelSchemaMeta
+from .fields import BaseField
 from .helpers import Pluck
 from .nested import Nested
-from .fields import BaseField
+from .schema import ModelSchema, ModelSchemaMeta

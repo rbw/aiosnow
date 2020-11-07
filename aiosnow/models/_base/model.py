@@ -18,7 +18,7 @@ from aiosnow.request import (
     methods,
 )
 
-from .._schema import ModelSchema, ModelSchemaMeta, BaseField, Nested
+from .._schema import BaseField, ModelSchema, ModelSchemaMeta, Nested
 
 req_cls_map = {
     methods.GET: GetRequest,

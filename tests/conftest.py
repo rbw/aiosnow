@@ -6,7 +6,6 @@ from aiohttp import web
 from aiosnow import Client, fields
 from aiosnow.request.response import Response
 
-
 TEST_TCP_ADDRESS = "127.0.0.1"
 
 

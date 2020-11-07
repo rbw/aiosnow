@@ -7,10 +7,9 @@ from aiosnow.query import Condition, Selector
 from aiosnow.request import methods
 from aiosnow.request.response import ClientResponse, Response
 
-from .file import FileHandler, FileReader, FileWriter
-
 from .._base import BaseTableModel
 from .._schema import fields
+from .file import FileHandler, FileReader, FileWriter
 
 
 class AttachmentModel(BaseTableModel):
