@@ -115,10 +115,10 @@ class GetRequest(BaseRequest):
         return response
 
     @property
-    def url_params(self) -> dict:
+    def params(self) -> dict:
         return dict(
             sysparm_offset=self.offset,
             sysparm_limit=self.limit,
             sysparm_query=self.query,
-            **super().url_params,
+            **super().params,
         )
