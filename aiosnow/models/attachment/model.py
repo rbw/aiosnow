@@ -9,7 +9,8 @@ from aiosnow.request.response import ClientResponse, Response
 
 from .file import FileHandler, FileReader, FileWriter
 
-from .._base import fields, BaseTableModel
+from .._base import BaseTableModel
+from .._schema import fields
 
 
 class AttachmentModel(BaseTableModel):

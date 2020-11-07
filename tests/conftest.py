@@ -3,7 +3,7 @@ import json
 import pytest
 from aiohttp import web
 
-from aiosnow import fields, Client
+from aiosnow import Client, fields
 from aiosnow.request.response import Response
 
 

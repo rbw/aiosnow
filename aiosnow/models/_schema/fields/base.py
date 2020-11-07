@@ -2,7 +2,7 @@ from typing import Any
 
 import marshmallow
 
-from aiosnow.models._base.schema.helpers import Pluck
+from aiosnow.models._schema.helpers.pluck import Pluck
 
 
 class BaseField(marshmallow.fields.Field):
