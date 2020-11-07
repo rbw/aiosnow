@@ -21,22 +21,28 @@ class BaseRequest(ABC):
     log = logging.getLogger("aiosnow.request")
 
     def __init__(
-        self, api_url: str, session: Session, fields: dict = None,
+        self,
+        api_url: str,
+        session: Session,
+        fields: dict = None,
+        headers: dict = None,
+        params: dict = None,
     ):
         self.api_url = api_url
         self.session = session
         self.fields = fields or {}
         self.url_segments: List[str] = []
-        self.headers_default = {"Content-type": CONTENT_TYPE}
+        self._default_headers = {"Content-type": CONTENT_TYPE, **(headers or {})}
+        self._default_params = params or {}
         self._req_id = f"REQ_{hex(int(round(time.time() * 1000)))}"
 
     @property
-    def url_params(self) -> dict:
+    def params(self) -> dict:
         params = dict(sysparm_display_value="all")
         if self.fields:
             params["sysparm_fields"] = ",".join(self.fields)
 
-        return params
+        return {**params, **self._default_params}
 
     @property
     def url(self) -> str:
@@ -46,7 +52,7 @@ class BaseRequest(ABC):
             # Append path segments
             api_url += "/" + "/".join(map(str, self.url_segments))
 
-        return f"{api_url}?{urlencode(self.url_params)}"
+        return f"{api_url}?{urlencode(self.params)}"
 
     @abstractmethod
     def __repr__(self) -> str:
@@ -71,7 +77,7 @@ class BaseRequest(ABC):
     async def _send(
         self, headers_extra: dict = None, decode: bool = True, **kwargs: Any,
     ) -> Response:
-        headers = self.headers_default
+        headers = self._default_headers
         headers.update(**headers_extra or {})
         kwargs["headers"] = headers
 
