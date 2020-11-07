@@ -16,14 +16,14 @@ from aiosnow.exceptions import (
 from aiosnow.query import Condition, Selector, select
 from aiosnow.request import Pagestream, Response, methods
 
-from aiosnow.models.common import BaseModel
+from .._base.model import BaseModel
 
 
 class BaseTableModel(BaseModel):
     """Table API model"""
 
     def __init__(
-        self, client: Client, table_name: str = None, return_only: list = None
+        self, client: Client, table_name: str = None, return_only: list = None,
     ):
         self._table_name = table_name
         self._return_only = return_only
@@ -58,7 +58,7 @@ class BaseTableModel(BaseModel):
         stream = Pagestream(
             api_url=self._api_url,
             query=select(selection).sysparms,
-            session=self._session,
+            session=self.session,
             fields=kwargs.pop("return_only", self._return_only)
             or self.schema.fields.keys(),
             nested_fields=self.nested_fields,

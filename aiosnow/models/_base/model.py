@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from abc import abstractmethod
 from typing import Any, Type
 
@@ -17,8 +18,7 @@ from aiosnow.request import (
     methods,
 )
 
-from .schema import ModelSchema, ModelSchemaMeta, Nested
-from .schema.fields import BaseField
+from .._base.schema import ModelSchema, ModelSchemaMeta, Nested, BaseField
 
 req_cls_map = {
     methods.GET: GetRequest,
@@ -62,7 +62,7 @@ class BaseModelMeta(type):
 class BaseModel(metaclass=BaseModelMeta):
     """Model base"""
 
-    _session: aiohttp.ClientSession
+    session: aiohttp.ClientSession
     _client: Client
     _config: dict = {"return_only": []}
     schema_cls: Type[ModelSchema]
@@ -70,25 +70,24 @@ class BaseModel(metaclass=BaseModelMeta):
 
     def __init__(self, client: Client):
         self._client = client
+        self.log = logging.getLogger(f"aiosnow.models.{self.__class__.__name__}")
         self.fields = dict(self.schema_cls.fields)
         self.schema = self.schema_cls(unknown=marshmallow.EXCLUDE)
         self.nested_fields = getattr(self.schema, "nested_fields")
         self._primary_key = getattr(self.schema, "_primary_key")
+        self.session = self._client.get_session()
 
     @property
     @abstractmethod
     def _api_url(self) -> Any:
         pass
 
-    #@classmethod
-    #def use(cls):
-
     async def request(self, method: str, *args: Any, **kwargs: Any) -> Response:
         req_cls = req_cls_map[method]
         response = await req_cls(
             *args,
             api_url=kwargs.pop("url", self._api_url),
-            session=self._session,
+            session=self.session,
             fields=kwargs.pop("return_only", self._config["return_only"]),
             **kwargs,
         ).send()
@@ -100,9 +99,15 @@ class BaseModel(metaclass=BaseModelMeta):
 
         return response
 
+    async def _close_self(self):
+        self.log.debug(f"Closing session {self.session} of {self}")
+        await self.session.close()
+
+    async def _close_session(self):
+        await self._close_self()
+
     async def __aenter__(self) -> BaseModel:
-        self._session = self._client.get_session()
         return self
 
     async def __aexit__(self, *_: list) -> None:
-        await self._session.close()
+        await self._close_session()
