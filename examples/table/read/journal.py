@@ -1,4 +1,4 @@
-from aiosnow import fields, select
+from aiosnow import select, fields
 from aiosnow.models.table.declared import IncidentModel as Incident, JournalModel
 
 

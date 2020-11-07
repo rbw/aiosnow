@@ -1,4 +1,4 @@
-from aiosnow import ModelSchema, TableModel, fields, select
+from aiosnow import ModelSchema, TableModel, select, fields
 
 
 def test_query_single():

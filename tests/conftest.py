@@ -3,13 +3,8 @@ import json
 import pytest
 from aiohttp import web
 
-from aiosnow.client import Client
-from aiosnow.models.common import BaseModel, fields
+from aiosnow import fields, Client
 from aiosnow.request.response import Response
-
-
-class TestModel(BaseModel):
-    pass
 
 
 TEST_TCP_ADDRESS = "127.0.0.1"
