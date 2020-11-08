@@ -9,7 +9,7 @@ from .._base.table import BaseTableModel
 
 class TableModel(BaseTableModel):
     def __init__(self, client, **kwargs):
-        self._attachment = AttachmentModel(client)
+        self._attachment = AttachmentModel(client, table_name=kwargs.get("table_name"))
         super(TableModel, self).__init__(client, **kwargs)
 
     @property
@@ -25,6 +25,15 @@ class TableModel(BaseTableModel):
             file_name=path_parts[-1],
             dir_name=os.path.join(*path_parts[:-1]),
         )
+
+    async def download_file(self, *args, **kwargs):
+        return await self._attachment.download(*args, **kwargs)
+
+    async def get_attachments(self, *args, stream=False, **kwargs):
+        return await self._attachment.get(*args, **kwargs)
+
+    async def get_attachment(self, selection, **kwargs):
+        return await self._attachment.get_one(selection, **kwargs)
 
     async def _close_session(self):
         await self._close_self()

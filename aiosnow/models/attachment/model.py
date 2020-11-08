@@ -5,7 +5,7 @@ from typing import Union
 
 from aiosnow.query import Condition, Selector
 from aiosnow.request import methods
-from aiosnow.request.response import ClientResponse, Response
+from aiosnow.request.response import ClientResponse
 
 from .._base import BaseTableModel
 from .._schema import fields
@@ -13,7 +13,7 @@ from .file import FileHandler, FileReader, FileWriter
 
 
 class AttachmentModel(BaseTableModel):
-    """Attachment API model"""
+    """Attachment API Model"""
 
     sys_id = fields.String(is_primary=True)
     table_name = fields.String()
@@ -42,6 +42,19 @@ class AttachmentModel(BaseTableModel):
         self.loop = asyncio.get_running_loop()
         super(AttachmentModel, self).__init__(*args, **kwargs)
 
+    async def get(self, *args, **kwargs):
+        return await super().get(
+            *args, params=dict(table_name=self._table_name), **kwargs
+        )
+
+    async def create(self, *_) -> None:
+        raise AttributeError(
+            "Attachment doesn't support create(), use upload() instead"
+        )
+
+    async def update(self, *_) -> None:
+        raise AttributeError("Attachment doesn't support update()")
+
     @property
     def _api_url(self) -> str:
         return self._client.base_url + "/api/now/attachment"
@@ -49,12 +62,18 @@ class AttachmentModel(BaseTableModel):
     async def download(
         self, selection: Union[Selector, Condition, str], dst_dir: str = "."
     ) -> FileHandler:
-        print(selection)
+        """Download file
+
+        Args:
+            selection: Attachment selection
+            dst_dir: Destination directory
+
+        Returns: FileWriter
+        """
+
         meta = await self.get_one(selection)
         data = await self.request(
-            methods.GET,
-            url=meta["download_link"],
-            headers={"Content-type": meta["content_type"]},
+            methods.GET, url=meta["download_link"], resolve=False, decode=False,
         )
         with FileWriter(meta["file_name"], dst_dir) as f:
             await self.loop.run_in_executor(
@@ -63,12 +82,20 @@ class AttachmentModel(BaseTableModel):
 
         return f
 
-    async def update(self, selection: Union[Condition, str], payload: dict) -> Response:
-        pass
-
     async def upload(
         self, table_name: str, record_sys_id: str, file_name: str, dir_name: str
     ) -> ClientResponse:
+        """Upload file
+
+        Args:
+            table_name: Table name, e.g. incident
+            record_sys_id: Sys id of the record to attach to
+            file_name: Source file name
+            dir_name: Source directory name
+
+        Returns: ClientResponse
+        """
+
         with FileReader(file_name, dir_name) as f:
             content = await self.loop.run_in_executor(self.io_pool_exc, f.read)
 

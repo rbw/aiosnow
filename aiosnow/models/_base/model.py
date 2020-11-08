@@ -84,15 +84,16 @@ class BaseModel(metaclass=BaseModelMeta):
 
     async def request(self, method: str, *args: Any, **kwargs: Any) -> Response:
         req_cls = req_cls_map[method]
+        decode = kwargs.pop("decode", True)
         response = await req_cls(
             *args,
             api_url=kwargs.pop("url", self._api_url),
             session=self.session,
             fields=kwargs.pop("return_only", self._config["return_only"]),
             **kwargs,
-        ).send()
+        ).send(decode=decode)
 
-        if method != methods.DELETE:
+        if decode:
             response.data = self.schema.load_content(
                 response.data, many=isinstance(response.data, list)
             )

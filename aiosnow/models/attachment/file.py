@@ -7,8 +7,8 @@ from aiosnow.utils import convert_size
 
 
 class FileHandler:
-    def __init__(self, file_name: str, dir_name: str = "."):
-        self.path = os.path.join(dir_name, file_name)
+    def __init__(self, file_name: str, dir_path: str = "."):
+        self.file_path = os.path.join(dir_path, file_name)
         self.file = self._open()
         self.open = True
 
@@ -35,13 +35,15 @@ class FileWriter(FileHandler):
     def __repr__(self) -> str:
         written, unit = convert_size(self.bytes_written)
         return (
-            f"<{self.__class__.__name__} [path: {self.path}, "
+            f"<{self.__class__.__name__} [path: {self.file_path}, "
             f"open: {self.open}, written: {written}{unit}]>"
         )
 
     def _open(self) -> BinaryIO:
         self.bytes_written = 0
-        return open(self.path, "wb")
+        dir_path = os.path.dirname(self.file_path)
+        os.makedirs(dir_path, exist_ok=True)
+        return open(self.file_path, "wb")
 
     def write(self, data: bytes) -> None:
         self.bytes_written += self.file.write(data)
@@ -52,10 +54,12 @@ class FileWriter(FileHandler):
 
 class FileReader(FileHandler):
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} [path: {self.path}, open: {self.open}]>"
+        return (
+            f"<{self.__class__.__name__} [path: {self.file_path}, open: {self.open}]>"
+        )
 
     def _open(self) -> BinaryIO:
-        return open(self.path, "rb")
+        return open(self.file_path, "rb")
 
     def read(self) -> bytes:
         return self.file.read()
