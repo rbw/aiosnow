@@ -7,8 +7,9 @@ API
 ---
 
 .. autoclass:: aiosnow.models.table.TableModel
-   :show-inheritance: false
    :members:
+   :inherited-members:
+   :exclude-members: schema_cls
 
 
 .. toctree::

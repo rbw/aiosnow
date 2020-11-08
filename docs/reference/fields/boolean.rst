@@ -1,7 +1,7 @@
 Boolean
 -------
 
-.. automodule:: aiosnow.models.common.schema.fields.boolean
+.. automodule:: aiosnow.fields.boolean
    :members: Boolean
 
    .. autoclass:: BooleanQueryable

@@ -3,7 +3,7 @@
 Integer
 -------
 
-.. automodule:: aiosnow.models.common.schema.fields.integer
+.. automodule:: aiosnow.fields.integer
    :members: Integer
 
    .. autoclass:: IntegerQueryable

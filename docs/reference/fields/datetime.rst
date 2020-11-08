@@ -1,7 +1,7 @@
 DateTime
 --------
 
-.. automodule:: aiosnow.models.common.schema.fields.datetime
+.. automodule:: aiosnow.fields.datetime
    :members: DateTime
 
    .. autoclass:: DateTimeQueryable

@@ -3,7 +3,7 @@
 String
 ------
 
-.. automodule:: aiosnow.models.common.schema.fields.string
+.. automodule:: aiosnow.fields.string
    :members: String
 
    .. autoclass:: StringQueryable
