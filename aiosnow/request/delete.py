@@ -16,5 +16,4 @@ class DeleteRequest(BaseRequest):
         return self._format_repr()
 
     async def send(self, *args: Any, **kwargs: Any) -> Any:
-        kwargs["decode"] = False
         return await self._send(*args, **kwargs)
