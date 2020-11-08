@@ -11,12 +11,16 @@ class Condition:
         self.operand_right = value
         self.operator_conditional = operator
         self.operator_logical = ""
-        self.registry = [self]
+        self.registry = [self]  # Registry of fields connected by logical operators
 
     def __str__(self) -> str:
         return self.serialize()
 
     def serialize(self, cond: Condition = None) -> str:
+        """Serializes this Condition into a sysparm query condition
+
+        Returns: sysparm query string"""
+
         c = cond or self
         return "".join(
             [
