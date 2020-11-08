@@ -27,11 +27,13 @@ class BaseRequest(ABC):
         fields: dict = None,
         headers: dict = None,
         params: dict = None,
+        resolve: bool = False,
     ):
         self.api_url = api_url
         self.session = session
         self.fields = fields or {}
         self.url_segments: List[str] = []
+        self._resolve = resolve
         self._default_headers = {"Content-type": CONTENT_TYPE, **(headers or {})}
         self._default_params = params or {}
         self._req_id = f"REQ_{hex(int(round(time.time() * 1000)))}"
@@ -74,14 +76,13 @@ class BaseRequest(ABC):
     def _format_repr(self, params: str = "") -> str:
         return f"<{self.__class__.__name__} {urlparse(self.url).path} [{params}]>"
 
-    async def _send(
-        self, headers_extra: dict = None, decode: bool = True, **kwargs: Any,
-    ) -> Response:
+    async def _send(self, headers_extra: dict = None, **kwargs: Any,) -> Response:
         headers = self._default_headers
         headers.update(**headers_extra or {})
         kwargs["headers"] = headers
 
         method = kwargs.pop("method", self._method)
+        decode = kwargs.pop("decode", True)
 
         try:
             self.log.debug(f"{self._req_id}: {self}")
@@ -93,16 +94,15 @@ class BaseRequest(ABC):
         if method == methods.DELETE and response.status == 204:
             return response
 
-        if not response.content_type.startswith(CONTENT_TYPE):
+        if not decode:
+            response.data = await response.read()
+        elif not response.content_type.startswith(CONTENT_TYPE):
             raise UnexpectedContentType(
                 f"Unexpected content-type in response: "
                 f"{response.content_type}, expected: {CONTENT_TYPE}, "
                 f"probable causes: instance down or REST API disabled"
             )
-
-        if decode:
-            await response.load_document()
         else:
-            response.data = await response.read()
+            await response.load_document()
 
         return response
