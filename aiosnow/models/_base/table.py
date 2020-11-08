@@ -75,10 +75,10 @@ class BaseTableModel(BaseModel):
     ) -> Response:
         """Buffered many
 
-        Fetch and store data in buffer.
+        Fetch and store the entire result in memory.
 
-        Note: It's recommended to use the stream method when dealing with large
-        number of records.
+        Note: It's recommended to use the stream method when dealing with a
+        large number of records.
 
         Keyword Args:
             selection: Aiosnow-compatible query
@@ -93,6 +93,7 @@ class BaseTableModel(BaseModel):
             methods.GET,
             query=select(selection).sysparms,
             nested_fields=self.nested_fields,
+            resolve=True,
             **kwargs,
         )
 
@@ -201,7 +202,7 @@ class BaseTableModel(BaseModel):
         except NoItems:
             raise DeleteError("Cannot delete, no such record")
 
-        response = await self.request(methods.DELETE, object_id=sys_id)
+        response = await self.request(methods.DELETE, object_id=sys_id, decode=False)
 
         if response.status != 204:
             text = await response.text()
