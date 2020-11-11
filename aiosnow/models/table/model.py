@@ -1,8 +1,10 @@
 import os
-from typing import Union
+from typing import Union, Any
 
 from aiosnow.models import AttachmentModel
+from aiosnow.models.attachment.file import FileHandler
 from aiosnow.query import Condition, Selector
+from aiosnow.request import Response
 
 from .._base.table import BaseTableModel
 
@@ -16,7 +18,17 @@ class TableModel(BaseTableModel):
     def _api_url(self) -> str:
         return self._client.base_url + "/api/now/table/" + self._table_name
 
-    async def upload_file(self, selection: Union[Selector, Condition, str], path):
+    async def upload_file(self, selection: Union[Selector, Condition, str], path) -> Response:
+        """Upload incident attachment
+
+        Args:
+            selection: Attachment selection
+            path: Source file path
+
+        Returns:
+            Response
+        """
+
         path_parts = os.path.split(path)
         record_id = await self.get_object_id(selection)
         return await self._attachment.upload(
@@ -26,16 +38,46 @@ class TableModel(BaseTableModel):
             dir_name=os.path.join(*path_parts[:-1]),
         )
 
-    async def download_file(self, *args, **kwargs):
-        return await self._attachment.download(*args, **kwargs)
+    async def download_file(self, selection: Union[Selector, Condition, str], dst_dir: str = ".") -> FileHandler:
+        """Download incident attachment
 
-    async def get_attachments(self, *args, stream=False, **kwargs):
-        return await self._attachment.get(*args, **kwargs)
+        Args:
+            selection: Attachment selection
+            dst_dir: Destination directory
 
-    async def get_attachment(self, selection, **kwargs):
-        return await self._attachment.get_one(selection, **kwargs)
+        Returns:
+            FileHandler object
+        """
 
-    async def _close_session(self):
+        return await self._attachment.download(selection, dst_dir)
+
+    async def get_attachments(self, selection: Union[Selector, Condition, str] = None, **kwargs: Any) -> Response:
+        """Returns list of attachments for this table
+
+        Args:
+            selection: Attachment selection
+            **kwargs: arguments to pass along to AttachmentModel
+
+        Returns:
+            Response object
+        """
+
+        return await self._attachment.get(selection, params=dict(table_name=self._table_name), **kwargs)
+
+    async def get_attachment(self, selection: Union[Selector, Condition, str] = None, **kwargs: Any) -> Response:
+        """Returns Response if the given condition yielded exactly one attachment
+
+        Args:
+            selection: Attachment selection
+            **kwargs: arguments to pass along to AttachmentModel
+
+        Returns:
+            Response object
+        """
+
+        return await self._attachment.get_one(selection, params=dict(table_name=self._table_name), **kwargs)
+
+    async def _close_session(self) -> None:
         await self._close_self()
 
         if self._attachment:
