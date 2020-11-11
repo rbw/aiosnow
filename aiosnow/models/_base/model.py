@@ -30,7 +30,7 @@ req_cls_map = {
 
 class BaseModelMeta(type):
     def __new__(mcs, name: str, bases: tuple, attrs: dict) -> Any:
-        attrs["fields"] = fields = {}
+        fields = {}
         base_members = {}
 
         for base in bases:
@@ -55,7 +55,7 @@ class BaseModelMeta(type):
                 fields[k] = v
 
         # Create the Model Schema
-        attrs["schema_cls"] = type(name + "Schema", (ModelSchema,), attrs["fields"])
+        attrs["schema_cls"] = type(name + "Schema", (ModelSchema,), fields)
         return super().__new__(mcs, name, bases, attrs)
 
 
