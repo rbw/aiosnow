@@ -4,8 +4,7 @@ from mimetypes import guess_type
 from typing import Union
 
 from aiosnow.query import Condition, Selector
-from aiosnow.request import methods
-from aiosnow.request.response import ClientResponse
+from aiosnow.request import methods, Response
 
 from .._base import BaseTableModel
 from .._schema import fields
@@ -41,11 +40,6 @@ class AttachmentModel(BaseTableModel):
         self.io_pool_exc = ThreadPoolExecutor(max_workers=10)
         self.loop = asyncio.get_running_loop()
         super(AttachmentModel, self).__init__(*args, **kwargs)
-
-    async def get(self, *args, **kwargs):
-        return await super().get(
-            *args, params=dict(table_name=self._table_name), **kwargs
-        )
 
     async def create(self, *_) -> None:
         raise AttributeError(
@@ -84,7 +78,7 @@ class AttachmentModel(BaseTableModel):
 
     async def upload(
         self, table_name: str, record_sys_id: str, file_name: str, dir_name: str
-    ) -> ClientResponse:
+    ) -> Response:
         """Upload file
 
         Args:
