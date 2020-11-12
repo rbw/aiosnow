@@ -30,6 +30,9 @@ req_cls_map = {
 
 class BaseModelMeta(type):
     def __new__(mcs, name: str, bases: tuple, attrs: dict) -> Any:
+        if "schema_cls" in attrs and attrs["schema_cls"]:
+            return super().__new__(mcs, name, bases, attrs)
+
         fields = {}
         base_members = {}
 

@@ -7,34 +7,14 @@ from aiosnow.query import Condition, Selector
 from aiosnow.request import methods, Response
 
 from .._base import BaseTableModel
-from .._schema import fields
 from .file import FileHandler, FileReader, FileWriter
+from .schema import AttachmentModelSchema
 
 
 class AttachmentModel(BaseTableModel):
     """Attachment API Model"""
 
-    sys_id = fields.String(is_primary=True)
-    table_name = fields.String()
-    file_name = fields.String()
-    size_bytes = fields.Integer()
-    sys_mod_count = fields.String()
-    average_image_color = fields.String()
-    image_width = fields.String()
-    sys_updated_on = fields.DateTime()
-    sys_tags = fields.String()
-    image_height = fields.String()
-    sys_updated_by = fields.String()
-    download_link = fields.String()
-    content_type = fields.String()
-    sys_created_on = fields.DateTime()
-    size_compressed = fields.String()
-    compressed = fields.Boolean()
-    state = fields.String()
-    table_sys_id = fields.String()
-    chunk_size_bytes = fields.String()
-    hash = fields.String()
-    sys_created_by = fields.String()
+    schema_cls = AttachmentModelSchema
 
     def __init__(self, *args, **kwargs):
         self.io_pool_exc = ThreadPoolExecutor(max_workers=10)

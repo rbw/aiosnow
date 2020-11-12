@@ -39,8 +39,6 @@ class BaseTableModel(BaseModel):
     ) -> AsyncGenerator:
         """Stream-like async generator
 
-        Fetches data in chunks using the ServiceNow pagination system.
-
         Chunk size determines the number of records to fetch in one go.
         Setting a lower chunk size decreases memory usage, but increases the
         number of requests sent to the server.

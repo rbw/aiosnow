@@ -1,7 +1,7 @@
-from aiosnow.models import TableModel, fields
+from aiosnow.models import ModelSchema, TableModel, fields
 
 
-class JournalModel(TableModel):
+class JournalModelSchema(ModelSchema):
     sys_id = fields.String(is_primary=True)
     sys_created_on = fields.DateTime()
     sys_created_by = fields.String()
@@ -10,3 +10,7 @@ class JournalModel(TableModel):
     name = fields.String()
     value = fields.String()
     sys_tags = fields.String()
+
+
+class JournalModel(TableModel):
+    schema_cls = JournalModelSchema
