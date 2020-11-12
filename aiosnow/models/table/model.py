@@ -1,5 +1,5 @@
 import os
-from typing import Union, Any
+from typing import Any, Union
 
 from aiosnow.models import AttachmentModel
 from aiosnow.models.attachment.file import FileHandler
@@ -18,7 +18,9 @@ class TableModel(BaseTableModel):
     def _api_url(self) -> str:
         return self._client.base_url + "/api/now/table/" + self._table_name
 
-    async def upload_file(self, selection: Union[Selector, Condition, str], path) -> Response:
+    async def upload_file(
+        self, selection: Union[Selector, Condition, str], path
+    ) -> Response:
         """Upload incident attachment
 
         Args:
@@ -38,7 +40,9 @@ class TableModel(BaseTableModel):
             dir_name=os.path.join(*path_parts[:-1]),
         )
 
-    async def download_file(self, selection: Union[Selector, Condition, str], dst_dir: str = ".") -> FileHandler:
+    async def download_file(
+        self, selection: Union[Selector, Condition, str], dst_dir: str = "."
+    ) -> FileHandler:
         """Download incident attachment
 
         Args:
@@ -51,7 +55,9 @@ class TableModel(BaseTableModel):
 
         return await self._attachment.download(selection, dst_dir)
 
-    async def get_attachments(self, selection: Union[Selector, Condition, str] = None, **kwargs: Any) -> Response:
+    async def get_attachments(
+        self, selection: Union[Selector, Condition, str] = None, **kwargs: Any
+    ) -> Response:
         """Returns list of attachments for this table
 
         Args:
@@ -62,9 +68,13 @@ class TableModel(BaseTableModel):
             Response object
         """
 
-        return await self._attachment.get(selection, params=dict(table_name=self._table_name), **kwargs)
+        return await self._attachment.get(
+            selection, params=dict(table_name=self._table_name), **kwargs
+        )
 
-    async def get_attachment(self, selection: Union[Selector, Condition, str] = None, **kwargs: Any) -> Response:
+    async def get_attachment(
+        self, selection: Union[Selector, Condition, str] = None, **kwargs: Any
+    ) -> Response:
         """Returns Response if the given condition yielded exactly one attachment
 
         Args:
@@ -75,7 +85,9 @@ class TableModel(BaseTableModel):
             Response object
         """
 
-        return await self._attachment.get_one(selection, params=dict(table_name=self._table_name), **kwargs)
+        return await self._attachment.get_one(
+            selection, params=dict(table_name=self._table_name), **kwargs
+        )
 
     async def _close_session(self) -> None:
         await self._close_self()

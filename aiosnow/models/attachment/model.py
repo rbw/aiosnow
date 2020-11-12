@@ -4,7 +4,7 @@ from mimetypes import guess_type
 from typing import Union
 
 from aiosnow.query import Condition, Selector
-from aiosnow.request import methods, Response
+from aiosnow.request import Response, methods
 
 from .._base import BaseTableModel
 from .file import FileHandler, FileReader, FileWriter
