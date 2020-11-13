@@ -1,11 +1,11 @@
 import os
 from typing import Any, Union
 
+from aiosnow.client import Client
 from aiosnow.models import AttachmentModel
 from aiosnow.models.attachment.file import FileHandler
 from aiosnow.query import Condition, Selector
 from aiosnow.request import Response
-from aiosnow.client import Client
 
 from .._base.table import BaseTableModel
 
@@ -16,11 +16,11 @@ class TableModel(BaseTableModel):
         super(TableModel, self).__init__(client, **kwargs)
 
     @property
-    def _api_url(self) -> str:
-        return self._client.base_url + "/api/now/table/" + self._table_name
+    def _api_url(self) -> Any:
+        return f"{self._client.base_url}/api/now/table/{self._table_name}"
 
     async def upload_file(
-        self, selection: Union[Selector, Condition, str], path
+        self, selection: Union[Selector, Condition, str], path: str
     ) -> Response:
         """Upload incident attachment
 
@@ -35,7 +35,7 @@ class TableModel(BaseTableModel):
         path_parts = os.path.split(path)
         record_id = await self.get_object_id(selection)
         return await self._attachment.upload(
-            self._table_name,
+            self._table_name or "",
             record_id,
             file_name=path_parts[-1],
             dir_name=os.path.join(*path_parts[:-1]),

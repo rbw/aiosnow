@@ -96,7 +96,7 @@ class BaseTableModel(BaseModel):
         )
 
     async def get_one(
-        self, selection: Union[Selector, Condition, str], **kwargs: Any
+        self, selection: Union[Selector, Condition, str] = None, **kwargs: Any
     ) -> Response:
         """Get one record
 
@@ -129,7 +129,7 @@ class BaseTableModel(BaseModel):
 
         return response
 
-    async def get_object_id(self, value: Union[Condition, str]) -> str:
+    async def get_object_id(self, value: Union[Selector, Condition, str]) -> str:
         """Get object id by str or Condition
 
         Immediately return if value is of str type.

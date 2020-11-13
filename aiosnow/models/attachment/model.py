@@ -1,7 +1,7 @@
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from mimetypes import guess_type
-from typing import Union, Any
+from typing import Any, Union
 
 from aiosnow.query import Condition, Selector
 from aiosnow.request import Response, methods
