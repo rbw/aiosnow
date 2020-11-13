@@ -1,7 +1,7 @@
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from mimetypes import guess_type
-from typing import Union
+from typing import Union, Any
 
 from aiosnow.query import Condition, Selector
 from aiosnow.request import Response, methods
@@ -11,22 +11,20 @@ from .file import FileHandler, FileReader, FileWriter
 from .schema import AttachmentModelSchema
 
 
-class AttachmentModel(BaseTableModel):
+class AttachmentModel(BaseTableModel, AttachmentModelSchema):
     """Attachment API Model"""
 
-    schema_cls = AttachmentModelSchema
-
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         self.io_pool_exc = ThreadPoolExecutor(max_workers=10)
         self.loop = asyncio.get_running_loop()
         super(AttachmentModel, self).__init__(*args, **kwargs)
 
-    async def create(self, *_) -> None:
+    async def create(self, payload: dict) -> Response:
         raise AttributeError(
             "Attachment doesn't support create(), use upload() instead"
         )
 
-    async def update(self, *_) -> None:
+    async def update(self, selection: Union[Condition, str], payload: dict) -> Response:
         raise AttributeError("Attachment doesn't support update()")
 
     @property

@@ -5,12 +5,13 @@ from aiosnow.models import AttachmentModel
 from aiosnow.models.attachment.file import FileHandler
 from aiosnow.query import Condition, Selector
 from aiosnow.request import Response
+from aiosnow.client import Client
 
 from .._base.table import BaseTableModel
 
 
 class TableModel(BaseTableModel):
-    def __init__(self, client, **kwargs):
+    def __init__(self, client: Client, **kwargs: Any):
         self._attachment = AttachmentModel(client, table_name=kwargs.get("table_name"))
         super(TableModel, self).__init__(client, **kwargs)
 
