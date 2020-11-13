@@ -2,7 +2,7 @@ Attachment
 ==========
 
 The *AttachmentModel* is typically used in context of another API,
-e.g. via the :class:`~aiosnow.models.table.TableModel`, but can be used directly in a global context as well.
+e.g. via a :class:`~aiosnow.models.table.TableModel` type, but can be used directly in a global context as well.
 
 *Reference*
 

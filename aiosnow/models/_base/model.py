@@ -30,9 +30,6 @@ req_cls_map = {
 
 class BaseModelMeta(type):
     def __new__(mcs, name: str, bases: tuple, attrs: dict) -> Any:
-        if "schema_cls" in attrs and attrs["schema_cls"]:
-            return super().__new__(mcs, name, bases, attrs)
-
         fields = {}
         base_members = {}
 
@@ -44,8 +41,14 @@ class BaseModelMeta(type):
                     if not isinstance(v, (BaseField, Nested, ModelSchemaMeta))
                 }
             )
-            inherited_fields = getattr(base.schema_cls, "_declared_fields")
-            fields.update(inherited_fields)
+
+            if hasattr(base, "schema_cls"):
+                inherited_fields = getattr(base.schema_cls, "_declared_fields")
+                fields.update(inherited_fields)
+            else:
+                for k, v in base.__dict__.items():
+                    if isinstance(v, (BaseField, Nested, ModelSchemaMeta)):
+                        fields[k] = v
 
         for k, v in attrs.items():
             if isinstance(v, (BaseField, Nested, ModelSchemaMeta)):
@@ -103,11 +106,11 @@ class BaseModel(metaclass=BaseModelMeta):
 
         return response
 
-    async def _close_self(self):
+    async def _close_self(self) -> None:
         self.log.debug(f"Closing session {self.session} of {self}")
         await self.session.close()
 
-    async def _close_session(self):
+    async def _close_session(self) -> None:
         await self._close_self()
 
     async def __aenter__(self) -> BaseModel:

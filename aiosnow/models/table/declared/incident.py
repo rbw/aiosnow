@@ -1,7 +1,7 @@
-from aiosnow.models import ModelSchema, TableModel, fields
+from aiosnow.models import TableModel, fields
 
 
-class IncidentModelSchema(ModelSchema):
+class IncidentModelSchema:
     sys_id = fields.String(is_primary=True)
     impact = fields.IntegerMap()
     number = fields.String()
@@ -87,5 +87,5 @@ class IncidentModelSchema(ModelSchema):
     category = fields.String()
 
 
-class IncidentModel(TableModel):
-    schema_cls = IncidentModelSchema
+class IncidentModel(TableModel, IncidentModelSchema):
+    """Incident API Model"""

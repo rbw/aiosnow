@@ -1,7 +1,7 @@
-from .._schema import ModelSchema, fields
+from .._schema import fields
 
 
-class AttachmentModelSchema(ModelSchema):
+class AttachmentModelSchema:
     """Attachment API model schema"""
 
     sys_id = fields.String(is_primary=True)

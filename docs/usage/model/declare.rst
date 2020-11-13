@@ -2,7 +2,7 @@ Declare
 -------
 
 Model declaration is done using or or more :ref:`aiosnow.fields <fields-root>` assigned directly
-to members of the Model class, or using a separate *ModelSchema* associated via the `model_cls` member.
+to members of the Model class.
 
 Model
 *****
@@ -28,13 +28,13 @@ Assign fields directly on the *BaseModel* derived class.
 ModelSchema
 ***********
 
-Assign fields using a *ModelSchema* derived class.
+Assign fields in separate class, which is then subclassed.
 
 .. code-block:: python
 
-    from aiosnow import ModelSchema, TableModel, fields
+    from aiosnow import TableModel, fields
 
-    class IncidentModelSchema(ModelSchema):
+    class IncidentModelSchema:
         sys_id = fields.String(is_primary=True)
         number = fields.String()
         impact = fields.IntegerMap()
@@ -44,5 +44,5 @@ Assign fields using a *ModelSchema* derived class.
         made_sla = fields.Boolean()
 
 
-    class IncidentModel(TableModel):
-        schema_cls = IncidentModelSchema
+    class IncidentModel(TableModel, IncidentModelSchema):
+        """Incident API Model"""
