@@ -1,8 +1,7 @@
 Declare
 -------
 
-Model declaration is done using or or more :ref:`aiosnow.fields <fields-root>` assigned directly
-to members of the Model class.
+The Model Declaration is done by making one or more :ref:`aiosnow.fields <fields-root>` members of the Model.
 
 Model
 *****

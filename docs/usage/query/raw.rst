@@ -8,6 +8,6 @@ See the :class:`~aiosnow.query.condition.Condition` equivalent :ref:`here <usage
 
     async with Incident(client, table_name="incident") as inc:
         response = await inc.get(
-            "numberSTARTSWITHINC00000^impact<3^ORDERBYDESCnumber"
+            "numberSTARTSWITHINC123^impact<3^NQassignment_group.name=Hardware^ORDERBYDESCnumber"
         )
         print("The query yielded {} items.".format(len(response.data)))
