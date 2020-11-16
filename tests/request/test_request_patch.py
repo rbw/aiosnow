@@ -4,11 +4,11 @@ from urllib.parse import urlparse
 from aiosnow.request import PatchRequest
 
 
-async def test_core_patch_success(mock_session):
+async def test_core_patch_success(mock_client):
     object_id = "some_id"
     resp_content, resp_status = dict(result={"test_key": "updated value"}), 200
 
-    session = await mock_session(
+    session = await mock_client(
         server_method="PATCH",
         server_path=f"/test/{object_id}",
         content=resp_content,
@@ -25,11 +25,11 @@ async def test_core_patch_success(mock_session):
     assert response.status == resp_status
 
 
-async def test_core_patch_path(mock_session):
+async def test_core_patch_path(mock_client):
     object_id = "some_id"
     resp_content, resp_status = dict(result={"test_key": "updated value"}), 200
 
-    session = await mock_session(
+    session = await mock_client(
         server_method="PATCH",
         server_path=f"/test/{object_id}",
         content=resp_content,

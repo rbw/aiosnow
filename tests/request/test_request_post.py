@@ -4,10 +4,10 @@ from urllib.parse import urlparse
 from aiosnow.request import PostRequest
 
 
-async def test_core_post_success(mock_session):
+async def test_core_post_success(mock_client):
     resp_content, resp_status = dict(result={"test_key": "test_value"}), 201
 
-    session = await mock_session(
+    session = await mock_client(
         server_method="POST",
         server_path="/test",
         content=resp_content,
@@ -22,8 +22,8 @@ async def test_core_post_success(mock_session):
     assert response.status == resp_status
 
 
-async def test_core_post_path(mock_session):
-    session = await mock_session(server_method="POST", server_path="/test")
+async def test_core_post_path(mock_client):
+    session = await mock_client(server_method="POST", server_path="/test")
     request = PostRequest("/test", session=session, payload="")
 
     assert urlparse(request.url).path == "/test"

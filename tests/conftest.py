@@ -4,7 +4,15 @@ import pytest
 from aiohttp import web
 
 from aiosnow import Client, fields
+from aiosnow.models import BaseTableModel
 from aiosnow.request.response import Response
+
+
+class TestModel(BaseTableModel):
+    @property
+    def _api_url(self):
+        return f"{self._client.base_url}/{self._table_name}"
+
 
 TEST_TCP_ADDRESS = "127.0.0.1"
 
@@ -36,21 +44,23 @@ def mock_server():
 
 
 @pytest.fixture
-def mock_session(aiohttp_client, mock_server):
-    async def go(server_method="GET", server_path="/", content="", status=0):
+def mock_client(aiohttp_client, mock_server):
+    async def go(server_method="GET", server_path="/api/now/table/test", content="", status=0):
         server = mock_server(server_method, server_path, content, status)
         return await aiohttp_client(
-            server, server_kwargs={"skip_url_asserts": True}, response_class=Response,
+            server, server_kwargs={"skip_url_asserts": True}, response_class=Response
         )
 
     yield go
 
 
 @pytest.fixture
-def mock_client():
-    return Client(
-        address="test.service-now.com", basic_auth=("test", "test"), use_ssl=False
-    )
+def mock_table_model(mock_server, mock_client):
+    async def go(model_cls=TestModel, **kwargs):
+        client = await mock_client(**kwargs)
+        return model_cls(client, table_name="test")
+
+    yield go
 
 
 @pytest.fixture
