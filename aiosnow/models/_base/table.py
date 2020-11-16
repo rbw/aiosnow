@@ -20,7 +20,7 @@ from .._base.model import BaseModel
 
 
 class BaseTableModel(BaseModel):
-    """Table API model"""
+    """Abstract table model"""
 
     def __init__(
         self, client: Client, table_name: str = None, return_only: list = None,

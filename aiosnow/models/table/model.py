@@ -11,8 +11,10 @@ from .._base.table import BaseTableModel
 
 
 class TableModel(BaseTableModel):
-    def __init__(self, client: Client, **kwargs: Any):
-        self._attachment = AttachmentModel(client, table_name=kwargs.get("table_name"))
+    def __init__(self, client: Client, attachment=True, **kwargs: Any):
+        if attachment:
+            self._attachment = AttachmentModel(client, table_name=kwargs.get("table_name"))
+
         super(TableModel, self).__init__(client, **kwargs)
 
     @property
