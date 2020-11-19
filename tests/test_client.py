@@ -1,9 +1,12 @@
-import pytest
 import aiohttp
+import pytest
 
+from aiosnow.client import Client
 from aiosnow.config import ConfigSchema
-from aiosnow.client import Client, Session
-from aiosnow.exceptions import MissingClientAuthentication, AmbiguousClientAuthentication
+from aiosnow.exceptions import (
+    AmbiguousClientAuthentication,
+    MissingClientAuthentication,
+)
 
 
 def test_client_config_schema_missing_auth():
@@ -11,13 +14,7 @@ def test_client_config_schema_missing_auth():
 
     with pytest.raises(MissingClientAuthentication):
         ConfigSchema(many=False).load(
-            dict(
-                address="test",
-                session=dict(
-                    use_ssl=True,
-                    verify_ssl=True,
-                )
-            )
+            dict(address="test", session=dict(use_ssl=True, verify_ssl=True,))
         )
 
 
@@ -33,7 +30,7 @@ def test_client_config_schema_ambiguous_auth():
                     oauth={},
                     use_ssl=True,
                     verify_ssl=True,
-                )
+                ),
             )
         )
 
@@ -45,10 +42,8 @@ def test_client_config_schema_common():
         dict(
             address="test",
             session=dict(
-                basic_auth=("username", "password"),
-                use_ssl=True,
-                verify_ssl=True,
-            )
+                basic_auth=("username", "password"), use_ssl=True, verify_ssl=True,
+            ),
         )
     )
 
@@ -82,5 +77,5 @@ async def test_client_get_session():
     client = Client("test.service-now.com", basic_auth=("test", "test"))
     session = client.get_session()
 
-    assert isinstance(session, Session)
+    assert isinstance(session, aiohttp.ClientSession)
     assert isinstance(client._auth, aiohttp.helpers.BasicAuth)

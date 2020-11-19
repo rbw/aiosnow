@@ -78,8 +78,8 @@ class GetRequest(BaseRequest):
         return document
 
     async def _expand_document(
-        self, content: Union[dict, list, None]
-    ) -> Union[dict, list, None]:
+        self, content: Union[dict, list, bytes, None]
+    ) -> Union[dict, list, bytes, None]:
         if not self.nested_fields:
             pass
         elif isinstance(content, dict):

@@ -1,4 +1,4 @@
-from typing import Any, Iterable, Tuple, Union
+from typing import Any, Dict, Iterable, Tuple, Union
 
 import marshmallow
 
@@ -54,7 +54,7 @@ class ModelSchemaMeta(marshmallow.schema.SchemaMeta):
 
 
 class ModelSchema(marshmallow.Schema, metaclass=ModelSchemaMeta):
-    fields = {}
+    fields: Dict = {}
 
     @marshmallow.pre_load
     def _load_response(self, data: Union[list, dict], **_: Any) -> Union[list, dict]:

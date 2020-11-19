@@ -30,7 +30,7 @@ class Response(ClientResponse):
 
     def __init__(self, *args: Any, **kwargs: Any):
         super(Response, self).__init__(*args, **kwargs)
-        self.data: Union[list, dict, None] = None
+        self.data: Union[list, dict, bytes, None] = None
 
     def __repr__(self) -> str:
         return (

@@ -1,10 +1,8 @@
 import json
 
 import pytest
+from aiohttp import ClientSession, test_utils, web
 
-from aiohttp import web, test_utils
-
-from aiosnow.client import Session
 from aiosnow.models.common import BaseModel, fields
 from aiosnow.request.response import Response
 
@@ -13,13 +11,10 @@ class TestModel(BaseModel):
     pass
 
 
-TEST_TCP_ADDRESS = "127.0.0.1"
-
-
 class TestClient(test_utils.TestClient):
     def __init__(self, *args, **kwargs):
         super(TestClient, self).__init__(*args, **kwargs)
-        self._session = Session(**kwargs)
+        self._session = ClientSession(**kwargs)
 
 
 @pytest.fixture

@@ -5,7 +5,11 @@ from typing import Any
 
 from marshmallow import Schema, ValidationError, fields, post_load
 
-from aiosnow.exceptions import ConfigurationError, AmbiguousClientAuthentication, MissingClientAuthentication
+from aiosnow.exceptions import (
+    AmbiguousClientAuthentication,
+    ConfigurationError,
+    MissingClientAuthentication,
+)
 
 
 class ConfigEncoder(json.JSONEncoder):
@@ -59,11 +63,15 @@ class ClientConfig(BaseConfigSchema):
     @post_load
     def make_object(self, data: dict, **_: Any) -> Any:
         if {"basic_auth", "oauth"} <= set(data):
-            raise AmbiguousClientAuthentication("Cannot use multiple authentication methods")
+            raise AmbiguousClientAuthentication(
+                "Cannot use multiple authentication methods"
+            )
         elif data.get("basic_auth"):
             pass
         else:
-            raise MissingClientAuthentication("No supported authentication method provided")
+            raise MissingClientAuthentication(
+                "No supported authentication method provided"
+            )
 
         return super().make_object(data)
 
