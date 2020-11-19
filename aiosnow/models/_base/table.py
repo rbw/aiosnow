@@ -56,10 +56,10 @@ class BaseTableModel(BaseModel):
         stream = Pagestream(
             api_url=self._api_url,
             query=select(selection).sysparms,
-            session=self.session,
+            session=self._session,
             fields=kwargs.pop("return_only", self._return_only)
             or self.schema.fields.keys(),
-            nested_fields=self.nested_fields,
+            nested_fields=self._nested_fields,
             **kwargs,
         )
 
@@ -90,7 +90,7 @@ class BaseTableModel(BaseModel):
         return await self.request(
             methods.GET,
             query=select(selection).sysparms,
-            nested_fields=self.nested_fields,
+            nested_fields=self._nested_fields,
             resolve=True,
             **kwargs,
         )
