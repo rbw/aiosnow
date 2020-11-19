@@ -10,8 +10,12 @@ class StreamExhausted(AiosnowException):
     """Signals there are no further items produced by the iterator"""
 
 
-class NoAuthenticationMethod(AiosnowException):
-    """No authentication method was provided"""
+class AmbiguousClientAuthentication(AiosnowException):
+    """Multiple authentication methods provided"""
+
+
+class MissingClientAuthentication(AiosnowException):
+    """No authentication method provided"""
 
 
 class UnexpectedContentType(AiosnowException):
@@ -60,10 +64,6 @@ class IncompatiblePayloadField(AiosnowException):
 
 class UnknownPayloadField(AiosnowException):
     """A field unknown to the schema was found in the payload"""
-
-
-class IncompatibleSession(AiosnowException):
-    """Raised if a custom session object passed to aiosnow.Client is not of aiosnow.Session type"""
 
 
 class UnexpectedValue(AiosnowException):
