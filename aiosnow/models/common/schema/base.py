@@ -54,6 +54,8 @@ class ModelSchemaMeta(marshmallow.schema.SchemaMeta):
 
 
 class ModelSchema(marshmallow.Schema, metaclass=ModelSchemaMeta):
+    fields = {}
+
     @marshmallow.pre_load
     def _load_response(self, data: Union[list, dict], **_: Any) -> Union[list, dict]:
         """Load response content
