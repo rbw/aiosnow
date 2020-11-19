@@ -1,15 +1,12 @@
-from typing import Any
+from typing import Union, Any
 
 import aiohttp
 
-from aiosnow.request.response import Response
+from aiosnow.request import Response
 
 
 class Session(aiohttp.ClientSession):
-    def __init__(self, *args: Any, **kwargs: Any):
-        super(Session, self).__init__(
-            *args, response_class=kwargs.pop("response_class", Response), **kwargs
-        )
-
-    async def request(self, *args, **kwargs) -> Any:  # type: ignore
-        return await super().request(*args, **kwargs)
+    async def request(
+        self, method: str, url: aiohttp.client.StrOrURL, **kwargs: Any
+    ) -> Union[Response, aiohttp.ClientResponse]:
+        return await super().request(method, url, **kwargs)
