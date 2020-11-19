@@ -1,10 +1,10 @@
 import json
 
 import pytest
-from aiohttp import web
+from aiohttp import ClientSession, test_utils, web
 
-from aiosnow import Client, fields
 from aiosnow.models import BaseTableModel
+from aiosnow.models import fields
 from aiosnow.request.response import Response
 
 
@@ -14,7 +14,39 @@ class TestModel(BaseTableModel):
         return f"{self._client.base_url}/{self._table_name}"
 
 
-TEST_TCP_ADDRESS = "127.0.0.1"
+class TestClient(test_utils.TestClient):
+    def __init__(self, *args, **kwargs):
+        super(TestClient, self).__init__(*args, **kwargs)
+        self._session = ClientSession(**kwargs)
+
+
+@pytest.fixture
+def aiosnow_client(loop):  # type: ignore
+    """Factory to create a TestClient instance.
+
+    aiohttp_client(app, **kwargs)
+    aiohttp_client(server, **kwargs)
+    aiohttp_client(raw_server, **kwargs)
+    """
+    clients = []
+
+    async def go(app, server_kwargs=None, **kwargs):  # type: ignore
+        server_kwargs = server_kwargs or {}
+
+        server = test_utils.TestServer(app, loop=loop, **server_kwargs)
+        client = TestClient(server, loop=loop, **kwargs)
+
+        await client.start_server()
+        clients.append(client)
+        return client
+
+    yield go
+
+    async def finalize():  # type: ignore
+        while clients:
+            await clients.pop().close()
+
+    loop.run_until_complete(finalize())
 
 
 @pytest.fixture
@@ -29,7 +61,7 @@ def mock_error():
 
 
 @pytest.fixture
-def mock_server():
+def mock_app():
     def go(method, path, content, status):
         async def handler(_):
             return web.Response(
@@ -44,10 +76,10 @@ def mock_server():
 
 
 @pytest.fixture
-def mock_client(aiohttp_client, mock_server):
+def mock_client(aiosnow_client, mock_server):
     async def go(server_method="GET", server_path="/api/now/table/test", content="", status=0):
         server = mock_server(server_method, server_path, content, status)
-        return await aiohttp_client(
+        return await aiosnow_client(
             server, server_kwargs={"skip_url_asserts": True}, response_class=Response
         )
 
@@ -55,8 +87,8 @@ def mock_client(aiohttp_client, mock_server):
 
 
 @pytest.fixture
-def mock_table_model(mock_server, mock_client):
-    async def go(model_cls=TestModel, **kwargs):
+def mock_table_model(mock_client):
+    async def go(model_cls, **kwargs):
         client = await mock_client(**kwargs)
         return model_cls(client, table_name="test")
 

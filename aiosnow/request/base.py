@@ -6,24 +6,23 @@ from abc import ABC, abstractmethod
 from typing import Any, List, Tuple
 from urllib.parse import urlencode, urlparse
 
-from aiohttp import client_exceptions
+from aiohttp import ClientSession, client_exceptions
 
 from aiosnow.consts import CONTENT_TYPE
 from aiosnow.exceptions import ClientConnectionError, UnexpectedContentType
 from aiosnow.request import methods
-from aiosnow.session import Session
 
 from .response import Response
 
 
 class BaseRequest(ABC):
-    session: Session
+    session: ClientSession
     log = logging.getLogger("aiosnow.request")
 
     def __init__(
         self,
         api_url: str,
-        session: Session,
+        session: ClientSession,
         fields: dict = None,
         headers: dict = None,
         params: dict = None,
@@ -76,6 +75,9 @@ class BaseRequest(ABC):
     def _format_repr(self, params: str = "") -> str:
         return f"<{self.__class__.__name__} {urlparse(self.url).path} [{params}]>"
 
+    async def _do_send(self, *args: Any, **kwargs: Any) -> Any:
+        return await self.session.request(*args, **kwargs)
+
     async def _send(self, headers_extra: dict = None, **kwargs: Any,) -> Response:
         headers = self._default_headers
         headers.update(**headers_extra or {})
@@ -86,7 +88,7 @@ class BaseRequest(ABC):
 
         try:
             self.log.debug(f"{self._req_id}: {self}")
-            response = await self.session.request(method, self.url, **kwargs)
+            response = await self._do_send(method, self.url, **kwargs)
             self.log.debug(f"{self._req_id}: {response}")
         except client_exceptions.ClientConnectionError as exc:
             raise ClientConnectionError(str(exc)) from exc

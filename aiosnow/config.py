@@ -5,7 +5,11 @@ from typing import Any
 
 from marshmallow import Schema, ValidationError, fields, post_load
 
-from aiosnow.exceptions import ConfigurationError
+from aiosnow.exceptions import (
+    AmbiguousClientAuthentication,
+    ConfigurationError,
+    MissingClientAuthentication,
+)
 
 
 class ConfigEncoder(json.JSONEncoder):
@@ -36,8 +40,8 @@ class BaseConfigSchema(Schema):
             raise ConfigurationError from exc
 
 
-class SessionConfig(BaseConfigSchema):
-    """Session config schema
+class ClientConfig(BaseConfigSchema):
+    """Client config schema
 
     Attributes:
         address (str): Instance address, e.g. my_instance.service-now.com
@@ -47,22 +51,27 @@ class SessionConfig(BaseConfigSchema):
     """
 
     def __init__(self, *args: Any, **kwargs: Any):
-        super(SessionConfig, self).__init__(*args, **kwargs)
+        super(ClientConfig, self).__init__(*args, **kwargs)
 
     basic_auth = fields.Tuple(
         tuple_fields=(fields.String(), fields.String()), required=False, allow_none=True
     )
+    oauth = fields.Dict(required=False, allow_none=True)
     use_ssl = fields.Boolean(missing=True)
     verify_ssl = fields.Boolean(missing=True)
 
     @post_load
     def make_object(self, data: dict, **_: Any) -> Any:
         if {"basic_auth", "oauth"} <= set(data):
-            raise ValidationError("Cannot use multiple authentication methods")
+            raise AmbiguousClientAuthentication(
+                "Cannot use multiple authentication methods"
+            )
         elif data.get("basic_auth"):
             pass
         else:
-            raise ValidationError("No supported authentication method provided")
+            raise MissingClientAuthentication(
+                "No supported authentication method provided"
+            )
 
         return super().make_object(data)
 
@@ -71,16 +80,19 @@ class ConfigSchema(BaseConfigSchema):
     """Aiosnow config schema
 
     Attributes:
-        session (bool): Session config
+        client (bool): Client config
     """
 
     address = fields.String(required=True)
     session = fields.Nested(
-        SessionConfig, default={}, allow_none=True
-    )  # type: SessionConfig # type: ignore
+        ClientConfig, default={}, allow_none=True
+    )  # type: ClientConfig # type: ignore
 
     def __init__(self, *args: Any, **kwargs: Any):
         super(ConfigSchema, self).__init__(*args, **kwargs)
 
     def load(self, *args: Any, **kwargs: Any) -> ConfigSchema:
-        return super().load(*args, **kwargs)
+        try:
+            return super().load(*args, **kwargs)
+        except ValidationError as e:
+            raise ConfigurationError(e)
