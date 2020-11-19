@@ -3,8 +3,7 @@ import json
 import pytest
 from aiohttp import ClientSession, test_utils, web
 
-from aiosnow.models import BaseTableModel
-from aiosnow.models import fields
+from aiosnow.models import BaseTableModel, fields
 from aiosnow.request.response import Response
 
 
@@ -77,7 +76,9 @@ def mock_app():
 
 @pytest.fixture
 def mock_session(mock_app, aiosnow_client):
-    async def go(server_method="GET", server_path="/api/now/table/test", content="", status=0):
+    async def go(
+        server_method="GET", server_path="/api/now/table/test", content="", status=0
+    ):
         server = mock_app(server_method, server_path, content, status)
         return await aiosnow_client(
             server, server_kwargs={"skip_url_asserts": True}, response_class=Response
