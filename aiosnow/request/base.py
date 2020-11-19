@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import time
 from abc import ABC, abstractmethod
-from typing import Any, List, Tuple
+from typing import Any, List, Tuple, TYPE_CHECKING
 from urllib.parse import urlencode, urlparse
 
 from aiohttp import client_exceptions
@@ -11,9 +11,11 @@ from aiohttp import client_exceptions
 from aiosnow.consts import CONTENT_TYPE
 from aiosnow.exceptions import ClientConnectionError, UnexpectedContentType
 from aiosnow.request import methods
-from aiosnow.session import Session
 
 from .response import Response
+
+if TYPE_CHECKING:
+    from aiosnow.session import Session
 
 
 class BaseRequest(ABC):
