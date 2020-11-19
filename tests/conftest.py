@@ -76,9 +76,9 @@ def mock_app():
 
 
 @pytest.fixture
-def mock_client(aiosnow_client, mock_server):
+def mock_session(mock_app, aiosnow_client):
     async def go(server_method="GET", server_path="/api/now/table/test", content="", status=0):
-        server = mock_server(server_method, server_path, content, status)
+        server = mock_app(server_method, server_path, content, status)
         return await aiosnow_client(
             server, server_kwargs={"skip_url_asserts": True}, response_class=Response
         )
@@ -87,9 +87,9 @@ def mock_client(aiosnow_client, mock_server):
 
 
 @pytest.fixture
-def mock_table_model(mock_client):
+def mock_table_model(mock_session):
     async def go(model_cls, **kwargs):
-        client = await mock_client(**kwargs)
+        client = await mock_session(**kwargs)
         return model_cls(client, table_name="test")
 
     yield go
