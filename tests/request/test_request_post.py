@@ -23,7 +23,7 @@ async def test_core_post_success(mock_session):
 
 
 async def test_core_post_path(mock_session):
-    session = await mock_session(server_method="POST", server_path="/test")
-    request = PostRequest("/test", session=session, payload="")
+    client = await mock_session(server_method="POST", server_path="/test")
+    request = PostRequest("/test", session=client, payload="")
 
     assert urlparse(request.url).path == "/test"
