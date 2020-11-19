@@ -62,7 +62,6 @@ class BaseModelMeta(type):
 class BaseModel(metaclass=BaseModelMeta):
     """Model base"""
 
-    _session: aiohttp.ClientSession
     _client: Client
     _config: dict = {"return_only": []}
     schema_cls: Type[ModelSchema]
@@ -70,6 +69,7 @@ class BaseModel(metaclass=BaseModelMeta):
 
     def __init__(self, client: Client):
         self._client = client
+        self._session = self._client.get_session()
         self.fields = dict(self.schema_cls.fields)
         self.schema = self.schema_cls(unknown=marshmallow.EXCLUDE)
         self.nested_fields = getattr(self.schema, "nested_fields")
@@ -101,7 +101,6 @@ class BaseModel(metaclass=BaseModelMeta):
         return response
 
     async def __aenter__(self) -> BaseModel:
-        self._session = self._client.get_session()
         return self
 
     async def __aexit__(self, *_: list) -> None:
