@@ -1,9 +1,10 @@
 import json
 
 import pytest
-from aiohttp import web
 
-from aiosnow.client import Client
+from aiohttp import web, test_utils
+
+from aiosnow.client import Session
 from aiosnow.models.common import BaseModel, fields
 from aiosnow.request.response import Response
 
@@ -13,6 +14,41 @@ class TestModel(BaseModel):
 
 
 TEST_TCP_ADDRESS = "127.0.0.1"
+
+
+class TestClient(test_utils.TestClient):
+    def __init__(self, *args, **kwargs):
+        super(TestClient, self).__init__(*args, **kwargs)
+        self._session = Session(**kwargs)
+
+
+@pytest.fixture
+def aiosnow_client(loop):  # type: ignore
+    """Factory to create a TestClient instance.
+
+    aiohttp_client(app, **kwargs)
+    aiohttp_client(server, **kwargs)
+    aiohttp_client(raw_server, **kwargs)
+    """
+    clients = []
+
+    async def go(app, server_kwargs=None, **kwargs):  # type: ignore
+        server_kwargs = server_kwargs or {}
+
+        server = test_utils.TestServer(app, loop=loop, **server_kwargs)
+        client = TestClient(server, loop=loop, **kwargs)
+
+        await client.start_server()
+        clients.append(client)
+        return client
+
+    yield go
+
+    async def finalize():  # type: ignore
+        while clients:
+            await clients.pop().close()
+
+    loop.run_until_complete(finalize())
 
 
 @pytest.fixture
@@ -27,7 +63,7 @@ def mock_error():
 
 
 @pytest.fixture
-def mock_server():
+def mock_app():
     def go(method, path, content, status):
         async def handler(_):
             return web.Response(
@@ -42,21 +78,15 @@ def mock_server():
 
 
 @pytest.fixture
-def mock_session(aiohttp_client, mock_server):
+def mock_session(aiosnow_client, mock_app):
     async def go(server_method="GET", server_path="/", content="", status=0):
-        server = mock_server(server_method, server_path, content, status)
-        return await aiohttp_client(
-            server, server_kwargs={"skip_url_asserts": True}, response_class=Response,
+        app = mock_app(server_method, server_path, content, status)
+        client = await aiosnow_client(
+            app, server_kwargs={"skip_url_asserts": True}, response_class=Response,
         )
+        return client
 
     yield go
-
-
-@pytest.fixture
-def mock_client():
-    return Client(
-        address="test.service-now.com", basic_auth=("test", "test"), use_ssl=False
-    )
 
 
 @pytest.fixture
