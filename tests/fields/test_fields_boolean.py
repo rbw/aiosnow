@@ -1,7 +1,7 @@
 import marshmallow
 import pytest
 
-from aiosnow.models import fields
+from aiosnow import fields
 from aiosnow.query.utils import select
 
 

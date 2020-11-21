@@ -6,6 +6,7 @@ The Model object provides an interface for reading and altering data in ServiceN
 *Usage*
 
 .. toctree::
+   :maxdepth: 1
 
    declare
    use

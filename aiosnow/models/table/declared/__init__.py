@@ -1,2 +1,2 @@
-from .incident import IncidentModel
-from .journal import JournalModel
+from .incident import IncidentModel, IncidentModelSchema
+from .journal import JournalModel, JournalModelSchema

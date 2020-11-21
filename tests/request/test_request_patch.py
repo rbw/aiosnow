@@ -4,42 +4,37 @@ from urllib.parse import urlparse
 from aiosnow.request import PatchRequest
 
 
-async def test_core_patch_success(mock_session):
+async def test_request_patch_success(mock_connection):
     object_id = "some_id"
-    resp_content, resp_status = dict(result={"test_key": "updated value"}), 200
+    content = dict(result={"test_key": "updated value"})
+    status = 200
 
-    session = await mock_session(
-        server_method="PATCH",
-        server_path=f"/test/{object_id}",
-        content=resp_content,
-        status=resp_status,
+    server, client, session = await mock_connection(
+        [("PATCH", f"/api/now/table/test/{object_id}", content, 200)]
     )
     response = await PatchRequest(
-        api_url="/test",
-        session=session,
+        "/api/now/table/test",
+        session,
         object_id=object_id,
-        payload=json.dumps(resp_content),
+        payload=json.dumps(content),
     ).send()
 
-    assert response.data == resp_content["result"]
-    assert response.status == resp_status
+    assert response.data == content["result"]
+    assert response.status == status
 
 
-async def test_core_patch_path(mock_session):
+async def test_request_patch_path(mock_connection):
     object_id = "some_id"
-    resp_content, resp_status = dict(result={"test_key": "updated value"}), 200
+    content = dict(result={"test_key": "updated value"})
 
-    session = await mock_session(
-        server_method="PATCH",
-        server_path=f"/test/{object_id}",
-        content=resp_content,
-        status=resp_status,
+    server, client, session = await mock_connection(
+        [("PATCH", f"/api/now/table/test/{object_id}", content, 200)]
     )
     request = PatchRequest(
-        api_url="/test",
-        session=session,
+        "/api/now/table/test",
+        session,
         object_id=object_id,
-        payload=json.dumps(resp_content),
+        payload=json.dumps(content),
     )
 
     assert urlparse(request.url).path.endswith(object_id)

@@ -4,9 +4,9 @@ from aiohttp import ClientResponse, client_exceptions, http_exceptions, web_exce
 from marshmallow import EXCLUDE
 
 from aiosnow.exceptions import (
+    ErrorResponse,
     InvalidContentMethod,
     RequestError,
-    ServerError,
     UnexpectedResponseContent,
 )
 
@@ -107,9 +107,9 @@ class Response(ClientResponse):
             client_exceptions.ClientResponseError,
             http_exceptions.HttpProcessingError,
         ) as exc:
-            raise ServerError(exc.message, exc.code) from exc
+            raise ErrorResponse(exc.message, exc.code)
         except web_exceptions.HTTPException as exc:
-            raise ServerError(exc.text or "", exc.status) from exc
+            raise ErrorResponse(exc.text or "", exc.status)
         else:
             # Non-JSON content along with a HTTP 200 returned: Unexpected.
             text = await self.text()

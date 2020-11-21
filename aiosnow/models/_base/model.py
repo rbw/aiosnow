@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from abc import abstractmethod
 from typing import Any, Type
 
@@ -17,8 +18,7 @@ from aiosnow.request import (
     methods,
 )
 
-from .schema import ModelSchema, ModelSchemaMeta, Nested
-from .schema.fields import BaseField
+from .._schema import BaseField, ModelSchema, ModelSchemaMeta, Nested
 
 req_cls_map = {
     methods.GET: GetRequest,
@@ -30,7 +30,7 @@ req_cls_map = {
 
 class BaseModelMeta(type):
     def __new__(mcs, name: str, bases: tuple, attrs: dict) -> Any:
-        attrs["fields"] = fields = {}
+        fields = {}
         base_members = {}
 
         for base in bases:
@@ -41,8 +41,14 @@ class BaseModelMeta(type):
                     if not isinstance(v, (BaseField, Nested, ModelSchemaMeta))
                 }
             )
-            inherited_fields = getattr(base.schema_cls, "_declared_fields")
-            fields.update(inherited_fields)
+
+            if hasattr(base, "schema_cls"):
+                inherited_fields = getattr(base.schema_cls, "_declared_fields")
+                fields.update(inherited_fields)
+            else:
+                for k, v in base.__dict__.items():
+                    if isinstance(v, (BaseField, Nested, ModelSchemaMeta)):
+                        fields[k] = v
 
         for k, v in attrs.items():
             if isinstance(v, (BaseField, Nested, ModelSchemaMeta)):
@@ -55,13 +61,14 @@ class BaseModelMeta(type):
                 fields[k] = v
 
         # Create the Model Schema
-        attrs["schema_cls"] = type(name + "Schema", (ModelSchema,), attrs["fields"])
+        attrs["schema_cls"] = type(name + "Schema", (ModelSchema,), fields)
         return super().__new__(mcs, name, bases, attrs)
 
 
 class BaseModel(metaclass=BaseModelMeta):
-    """Model base"""
+    """Abstract Base Model"""
 
+    _session: aiohttp.ClientSession
     _client: Client
     _config: dict = {"return_only": []}
     schema_cls: Type[ModelSchema]
@@ -69,10 +76,11 @@ class BaseModel(metaclass=BaseModelMeta):
 
     def __init__(self, client: Client):
         self._client = client
-        self._session = self._client.get_session()
+        self._session = client.get_session()
+        self._log = logging.getLogger(f"aiosnow.models.{self.__class__.__name__}")
         self.fields = dict(self.schema_cls.fields)
         self.schema = self.schema_cls(unknown=marshmallow.EXCLUDE)
-        self.nested_fields = getattr(self.schema, "nested_fields")
+        self._nested_fields = getattr(self.schema, "nested_fields")
         self._primary_key = getattr(self.schema, "_primary_key")
 
     @property
@@ -81,27 +89,32 @@ class BaseModel(metaclass=BaseModelMeta):
         pass
 
     async def request(self, method: str, *args: Any, **kwargs: Any) -> Response:
-        kwargs.update(
-            dict(
-                api_url=self._api_url,
-                session=self._session,
-                fields=kwargs.pop("return_only", self._config["return_only"])
-                or self.fields.keys(),
-            )
-        )
-
         req_cls = req_cls_map[method]
-        response = await req_cls(*args, **kwargs).send()
+        decode = kwargs.pop("decode", True)
+        response = await req_cls(
+            *args,
+            api_url=kwargs.pop("url", self._api_url),
+            session=self._session,
+            fields=kwargs.pop("return_only", self._config["return_only"]),
+            **kwargs,
+        ).send(decode=decode)
 
-        if method != methods.DELETE:
+        if decode:
             response.data = self.schema.load_content(
                 response.data, many=isinstance(response.data, list)
             )
 
         return response
 
+    async def _close_self(self) -> None:
+        self._log.debug(f"Closing session {self._session} of {self}")
+        await self._session.close()
+
+    async def _close_session(self) -> None:
+        await self._close_self()
+
     async def __aenter__(self) -> BaseModel:
         return self
 
     async def __aexit__(self, *_: list) -> None:
-        await self._session.close()
+        await self._close_session()

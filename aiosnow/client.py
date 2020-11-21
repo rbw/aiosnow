@@ -1,6 +1,6 @@
-from typing import Any, Union
+from typing import Any, Type, Union
 
-import aiohttp
+from aiohttp import BasicAuth, ClientSession, TCPConnector
 
 from aiosnow.config import ConfigSchema
 from aiosnow.exceptions import MissingClientAuthentication
@@ -32,7 +32,8 @@ class Client:
         use_ssl: bool = True,
         verify_ssl: bool = None,
         pool_size: int = 100,
-        response_cls: Response = None,
+        response_cls: Type[Response] = None,
+        session_cls: Type[ClientSession] = None,
     ):
         # Load config
         self.config = ConfigSchema(many=False).load(
@@ -47,14 +48,24 @@ class Client:
         )
 
         if self.config.session.basic_auth:
-            self._auth = aiohttp.BasicAuth(*self.config.session.basic_auth)  # type: ignore
+            self._auth = BasicAuth(*self.config.session.basic_auth)  # type: ignore
         else:
             raise MissingClientAuthentication(
                 "No known authentication methods was provided"
             )
 
+        if session_cls and not issubclass(session_cls, ClientSession):
+            raise TypeError(
+                f"Client :session: ({session_cls}) is not of {ClientSession} type"
+            )
+        if response_cls and not issubclass(response_cls, Response):
+            raise TypeError(
+                f"Client :response_cls: ({response_cls}) is not of {Response} type"
+            )
+
+        self.session_cls = session_cls or ClientSession
+        self.response_cls = response_cls or Response
         self.base_url = get_url(str(self.config.address), bool(use_ssl))
-        self.response_cls = response_cls
         self.pool_size = pool_size
 
     def get_session(self) -> Any:
@@ -63,9 +74,9 @@ class Client:
         if self.config.session.use_ssl:
             connector_args["verify_ssl"] = self.config.session.verify_ssl
 
-        return aiohttp.ClientSession(
+        return self.session_cls(
             auth=self._auth,
             skip_auto_headers=["Content-Type"],
-            response_class=self.response_cls or Response,  # type: ignore
-            connector=aiohttp.TCPConnector(**connector_args),
+            response_class=self.response_cls,
+            connector=TCPConnector(**connector_args),
         )

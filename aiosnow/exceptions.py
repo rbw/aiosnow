@@ -6,10 +6,6 @@ class ConfigurationError(AiosnowException):
     """Configuration error"""
 
 
-class StreamExhausted(AiosnowException):
-    """Signals there are no further items produced by the iterator"""
-
-
 class AmbiguousClientAuthentication(AiosnowException):
     """Multiple authentication methods provided"""
 
@@ -35,14 +31,14 @@ class DeserializationError(AiosnowException):
 
 
 class RequestError(AiosnowException):
-    """The application returned an error in the response"""
+    """The application returned a parsable error in the response"""
 
     def __init__(self, message: str, status: int):
         self.message = message
         self.status = status
 
 
-class ServerError(RequestError):
+class ErrorResponse(RequestError):
     """The server returned an error in the response"""
 
 
@@ -84,10 +80,6 @@ class InvalidContentMethod(AiosnowException):
 
 class InvalidFieldName(AiosnowException):
     """Usually raised if an attempt is made to override a base member with a Field"""
-
-
-class NoSchemaFields(AiosnowException):
-    """The schema lacks definition"""
 
 
 class TooManyItems(AiosnowException):

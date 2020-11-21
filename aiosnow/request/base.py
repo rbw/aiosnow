@@ -20,22 +20,30 @@ class BaseRequest(ABC):
     log = logging.getLogger("aiosnow.request")
 
     def __init__(
-        self, api_url: str, session: ClientSession, fields: dict = None,
+        self,
+        api_url: str,
+        session: ClientSession,
+        fields: dict = None,
+        headers: dict = None,
+        params: dict = None,
+        resolve: bool = False,
     ):
         self.api_url = api_url
         self.session = session
         self.fields = fields or {}
         self.url_segments: List[str] = []
-        self.headers_default = {"Content-type": CONTENT_TYPE}
+        self._resolve = resolve
+        self._default_headers = {"Content-type": CONTENT_TYPE, **(headers or {})}
+        self._default_params = params or {}
         self._req_id = f"REQ_{hex(int(round(time.time() * 1000)))}"
 
     @property
-    def url_params(self) -> dict:
+    def params(self) -> dict:
         params = dict(sysparm_display_value="all")
         if self.fields:
             params["sysparm_fields"] = ",".join(self.fields)
 
-        return params
+        return {**params, **self._default_params}
 
     @property
     def url(self) -> str:
@@ -45,7 +53,7 @@ class BaseRequest(ABC):
             # Append path segments
             api_url += "/" + "/".join(map(str, self.url_segments))
 
-        return f"{api_url}?{urlencode(self.url_params)}"
+        return f"{api_url}?{urlencode(self.params)}"
 
     @abstractmethod
     def __repr__(self) -> str:
@@ -70,14 +78,13 @@ class BaseRequest(ABC):
     async def _do_send(self, *args: Any, **kwargs: Any) -> Any:
         return await self.session.request(*args, **kwargs)
 
-    async def _send(
-        self, headers_extra: dict = None, decode: bool = True, **kwargs: Any,
-    ) -> Response:
-        headers = self.headers_default
+    async def _send(self, headers_extra: dict = None, **kwargs: Any,) -> Response:
+        headers = self._default_headers
         headers.update(**headers_extra or {})
         kwargs["headers"] = headers
 
         method = kwargs.pop("method", self._method)
+        decode = kwargs.pop("decode", True)
 
         try:
             self.log.debug(f"{self._req_id}: {self}")
@@ -89,16 +96,15 @@ class BaseRequest(ABC):
         if method == methods.DELETE and response.status == 204:
             return response
 
-        if not response.content_type.startswith(CONTENT_TYPE):
+        if not decode:
+            response.data = await response.read()
+        elif not response.content_type.startswith(CONTENT_TYPE):
             raise UnexpectedContentType(
                 f"Unexpected content-type in response: "
                 f"{response.content_type}, expected: {CONTENT_TYPE}, "
                 f"probable causes: instance down or REST API disabled"
             )
-
-        if decode:
-            await response.load_document()
         else:
-            response.data = await response.read()
+            await response.load_document()
 
         return response

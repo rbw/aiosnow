@@ -54,7 +54,8 @@ class ModelSchemaMeta(marshmallow.schema.SchemaMeta):
 
 
 class ModelSchema(marshmallow.Schema, metaclass=ModelSchemaMeta):
-    fields: Dict = {}
+    fields: Dict
+    nested_fields: Dict
 
     @marshmallow.pre_load
     def _load_response(self, data: Union[list, dict], **_: Any) -> Union[list, dict]:

@@ -1,47 +1,55 @@
 import json
 
 import pytest
-from aiohttp import ClientSession, test_utils, web
+from aiohttp import test_utils, web
 
-from aiosnow.models.common import BaseModel, fields
+from aiosnow.client import Client
+from aiosnow.models import fields
 from aiosnow.request.response import Response
 
 
-class TestModel(BaseModel):
-    pass
+class TestClient(Client):
+    def __init__(self, server, **kwargs):
+        self._server = server
+        super(TestClient, self).__init__(address="", **kwargs)
+        self.base_url = ""
 
-
-class TestClient(test_utils.TestClient):
-    def __init__(self, *args, **kwargs):
-        super(TestClient, self).__init__(*args, **kwargs)
-        self._session = ClientSession(**kwargs)
+    def get_session(self, *args, **kwargs):
+        return test_utils.TestClient(
+            self._server, *args, response_class=self.response_cls, **kwargs
+        )
 
 
 @pytest.fixture
-def aiosnow_client(loop):  # type: ignore
-    """Factory to create a TestClient instance.
+def aiosnow_session(loop):  # type: ignore
+    """Factory to create a
 
-    aiohttp_client(app, **kwargs)
-    aiohttp_client(server, **kwargs)
-    aiohttp_client(raw_server, **kwargs)
+    Returns:
+        Tuple(aiohttp.test_utils.TestServer, aiosnow.TestClient, aiohttp.TestClient)
     """
-    clients = []
+
+    sessions = []
 
     async def go(app, server_kwargs=None, **kwargs):  # type: ignore
         server_kwargs = server_kwargs or {}
 
         server = test_utils.TestServer(app, loop=loop, **server_kwargs)
-        client = TestClient(server, loop=loop, **kwargs)
+        client = TestClient(
+            server,
+            basic_auth=("a", "b"),
+            response_cls=kwargs.pop("response_cls", Response),
+        )
+        session = client.get_session(loop=loop, **kwargs)
 
-        await client.start_server()
-        clients.append(client)
-        return client
+        await session.start_server()
+        sessions.append(session)
+        return server, client, session
 
     yield go
 
     async def finalize():  # type: ignore
-        while clients:
-            await clients.pop().close()
+        while sessions:
+            await sessions.pop().close()
 
     loop.run_until_complete(finalize())
 
@@ -59,27 +67,40 @@ def mock_error():
 
 @pytest.fixture
 def mock_app():
-    def go(method, path, content, status):
-        async def handler(_):
-            return web.Response(
-                text=json.dumps(content), content_type="application/json", status=status
-            )
-
+    def go(routes):
         app = web.Application()
-        app.router.add_route(method, path, handler)
+
+        for method, path, content, status in tuple(routes):
+
+            async def handler(_):
+                text = "" if not content else json.dumps(content)
+                return web.Response(
+                    text=text, content_type="application/json", status=status,
+                )
+
+            app.router.add_route(method, path, handler)
+
         return app
 
     yield go
 
 
 @pytest.fixture
-def mock_session(aiosnow_client, mock_app):
-    async def go(server_method="GET", server_path="/", content="", status=0):
-        app = mock_app(server_method, server_path, content, status)
-        client = await aiosnow_client(
-            app, server_kwargs={"skip_url_asserts": True}, response_class=Response,
+def mock_connection(mock_app, aiosnow_session):
+    async def go(routes):
+        server = mock_app(routes)
+        return await aiosnow_session(server, server_kwargs={"skip_url_asserts": True})
+
+    yield go
+
+
+@pytest.fixture
+def mock_table_model(mock_connection):
+    async def go(model_cls, routes):
+        _, client, _ = await mock_connection(
+            routes or ["GET", "/api/now/table/test", None, 0]
         )
-        return client
+        return model_cls(client, table_name="test")
 
     yield go
 

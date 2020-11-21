@@ -6,7 +6,6 @@ A growing collection of declared :class:`~aiosnow.models.table.TableModel` class
 instance at hand, but can be instantiated and used directly as well.
 
 .. toctree::
-   :maxdepth: 1
 
    incident
    journal

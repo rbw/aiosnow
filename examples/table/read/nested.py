@@ -1,6 +1,5 @@
-from aiosnow import fields, select
+from aiosnow import select, ModelSchema, fields
 from aiosnow.models.table.declared import IncidentModel
-from aiosnow.models.common.schema import ModelSchema
 
 
 class AssignmentGroup(ModelSchema):

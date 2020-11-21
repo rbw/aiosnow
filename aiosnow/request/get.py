@@ -107,18 +107,18 @@ class GetRequest(BaseRequest):
 
         return self._cache[cache_key][0]
 
-    async def send(self, *args: Any, resolve: bool = True, **kwargs: Any) -> Any:
+    async def send(self, *args: Any, **kwargs: Any) -> Any:
         response = await self._send(**kwargs)
-        if resolve:
+        if self._resolve:
             response.data = await self._expand_document(response.data)
 
         return response
 
     @property
-    def url_params(self) -> dict:
+    def params(self) -> dict:
         return dict(
             sysparm_offset=self.offset,
             sysparm_limit=self.limit,
             sysparm_query=self.query,
-            **super().url_params,
+            **super().params,
         )

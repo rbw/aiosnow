@@ -3,29 +3,26 @@ from urllib.parse import urlparse
 from aiosnow.request import DeleteRequest
 
 
-async def test_core_delete_success(mock_session):
+async def test_request_delete_success(mock_connection):
     object_id = "some_id"
-    resp_content, resp_status = {}, 204
+    status = 204
 
-    session = await mock_session(
-        server_method="DELETE",
-        server_path=f"/test/{object_id}",
-        content=resp_content,
-        status=resp_status,
+    server, client, session = await mock_connection(
+        [("DELETE", f"/api/now/table/test/{object_id}", None, status)]
     )
     response = await DeleteRequest(
-        api_url="/test", session=session, object_id=object_id
+        "/api/now/table/test", session, object_id=object_id
     ).send()
 
     assert not response.data
-    assert response.status == resp_status
+    assert response.status == status
 
 
-async def test_core_delete_path(mock_session):
+async def test_request_delete_path(mock_connection):
     object_id = "some_id"
-    session = await mock_session(
-        server_method="DELETE", server_path=f"/test/{object_id}"
+    server, client, session = await mock_connection(
+        [("DELETE", f"/api/now/table/test/{object_id}", None, 204)]
     )
-    request = DeleteRequest(api_url="/test", session=session, object_id=object_id)
+    request = DeleteRequest("/api/now/table/test", session, object_id=object_id)
 
     assert urlparse(request.url).path.endswith(object_id)

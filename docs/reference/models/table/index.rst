@@ -1,17 +1,11 @@
 Table
 =====
 
-The *TableModel* defines items of, and provides means for working with, a ServiceNow table.
+The *TableModel* defines items of, and provides means for working with, ServiceNow Table API resources.
 
-API
----
-
-.. autoclass:: aiosnow.models.table.TableModel
-   :show-inheritance: false
-   :members:
-
+*Reference*
 
 .. toctree::
-   :hidden:
 
+   api
    schemas/index
