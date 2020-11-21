@@ -1,6 +1,6 @@
 import pytest
 
-from aiosnow.exceptions import ErrorResponse, RequestError, PayloadValidationError
+from aiosnow.exceptions import ErrorResponse, PayloadValidationError, RequestError
 from aiosnow.models import TableModel, fields
 
 
@@ -106,7 +106,8 @@ async def test_model_table_update(mock_table_model):
     content = {"result": {"id": 1, "dt": "2020-01-01 10:15:12",}}
 
     model = await mock_table_model(
-        TestModel, routes=[("PATCH", f"/api/now/table/test/{object_id}", content, 201),],
+        TestModel,
+        routes=[("PATCH", f"/api/now/table/test/{object_id}", content, 201),],
     )
 
     response = await model.update(object_id, payload=content)
