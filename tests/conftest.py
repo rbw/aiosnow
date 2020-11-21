@@ -4,14 +4,8 @@ import pytest
 from aiohttp import test_utils, web
 
 from aiosnow.client import Client
-from aiosnow.models import BaseTableModel, fields
+from aiosnow.models import fields
 from aiosnow.request.response import Response
-
-
-class TestModel(BaseTableModel):
-    @property
-    def _api_url(self):
-        return f"{self._client.base_url}/{self._table_name}"
 
 
 class TestClient(Client):
@@ -73,14 +67,19 @@ def mock_error():
 
 @pytest.fixture
 def mock_app():
-    def go(method, path, content, status):
-        async def handler(_):
-            return web.Response(
-                text=json.dumps(content), content_type="application/json", status=status
-            )
-
+    def go(routes):
         app = web.Application()
-        app.router.add_route(method, path, handler)
+
+        for method, path, content, status in tuple(routes):
+
+            async def handler(_):
+                text = "" if not content else json.dumps(content)
+                return web.Response(
+                    text=text, content_type="application/json", status=status,
+                )
+
+            app.router.add_route(method, path, handler)
+
         return app
 
     yield go
@@ -88,39 +87,18 @@ def mock_app():
 
 @pytest.fixture
 def mock_connection(mock_app, aiosnow_session):
-    async def go(
-        server_method="GET", server_path="/api/now/table/test", content="", status=0
-    ):
-        server = mock_app(server_method, server_path, content, status)
+    async def go(routes):
+        server = mock_app(routes)
         return await aiosnow_session(server, server_kwargs={"skip_url_asserts": True})
 
     yield go
 
 
 @pytest.fixture
-def mock_session(mock_connection):
-    async def go(
-        server_method="GET", server_path="/api/now/table/test", content="", status=0
-    ):
-        _, _, session = await mock_connection(
-            server_method, server_path, content, status
-        )
-        return session
-
-    yield go
-
-
-@pytest.fixture
 def mock_table_model(mock_connection):
-    async def go(
-        model_cls,
-        server_method="GET",
-        server_path="/api/now/table/test",
-        content="",
-        status=0,
-    ):
+    async def go(model_cls, routes):
         _, client, _ = await mock_connection(
-            server_method, server_path, content, status
+            routes or ["GET", "/api/now/table/test", None, 0]
         )
         return model_cls(client, table_name="test")
 
