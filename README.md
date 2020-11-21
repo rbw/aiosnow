@@ -24,8 +24,13 @@ async def main():
     client = aiosnow.Client("<instance>.service-now.com", basic_auth=("<username>", "<password>"))
 
     async with Incident(client, table_name="incident") as inc:
-        for response in await inc.get(Incident.priority <= 3, limit=5):
-            print("Number: {number}, Priority: {priority.value}".format(**response))
+        query = aiosnow.select(
+            Incident.priority.less_or_equals(2) & Incident.urgency.less_or_equals(2)
+        ).order_asc(Incident.priority)
+
+        for response in await inc.get(query, limit=5):
+            print("Attaching [readme.txt] to {number} ({sys_id})".format(**response))
+            await inc.upload_file(response["sys_id"], path="./readme.txt")
 
 asyncio.run(main())
 ```
