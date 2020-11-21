@@ -24,9 +24,8 @@ async def main():
     client = aiosnow.Client("<instance>.service-now.com", basic_auth=("<username>", "<password>"))
 
     async with Incident(client, table_name="incident") as inc:
-        # Fetch high-priority incidents
         for response in await inc.get(Incident.priority <= 3, limit=5):
-            print(f"Number: {response['number']}, Priority: {response['priority'].value}")
+            print("Number: {number}, Priority: {priority.value}".format(**response))
 
 asyncio.run(main())
 ```
