@@ -29,7 +29,7 @@ test:
 	poetry run python -m pytest
 
 clean:
-	rm -rf dist .mypy_cache
+	rm -rf dist .mypy_cache docs/build .pytest_cache
 	find aiosnow -type d -name __pycache__ -exec rm -rv {} +
 	find aiosnow -type f -name "*.py[co]" -delete
 
