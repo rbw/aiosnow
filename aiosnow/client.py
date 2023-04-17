@@ -41,8 +41,8 @@ class Client:
                 address=address,
                 session=dict(
                     basic_auth=basic_auth,
-                    use_ssl=use_ssl or True,
-                    verify_ssl=verify_ssl or True,
+                    use_ssl=use_ssl if use_ssl is not None else True,
+                    verify_ssl=verify_ssl if verify_ssl is not None else True,
                 ),
             )
         )
